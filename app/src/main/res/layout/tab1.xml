@@ -1,0 +1,59 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <Button
+            android:id="@+id/mostrarLugares"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#2DEB17"
+            android:text="hola"
+            app:cornerRadius="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/preferencias"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#7A0E8C"
+            android:text="hola2"
+            app:cornerRadius="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/mostrarLugares" />
+
+        <Button
+            android:id="@+id/acercaDe"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#7A0E8C"
+            android:text="hola3"
+            app:cornerRadius="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/preferencias" />
+
+        <Button
+            android:id="@+id/salir"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#CE1212"
+            android:text="hola4"
+            app:cornerRadius="0dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/acercaDe" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</LinearLayout>
