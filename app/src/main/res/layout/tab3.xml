@@ -11,17 +11,15 @@
         >
 
         <Button
-            android:id="@+id/mostrarLugares"
+            android:id="@+id/salir"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="160dp"
-            android:backgroundTint="#2DEB17"
-            android:text="hola quevedo"
+            android:backgroundTint="#CE1212"
+            android:text="hola pablo"
             app:cornerRadius="0dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            tools:layout_editor_absoluteY="144dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
