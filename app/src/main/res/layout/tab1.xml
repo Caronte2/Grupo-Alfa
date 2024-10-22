@@ -5,24 +5,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
-        <Button
-            android:id="@+id/mostrarLugares"
-            android:layout_width="0dp"
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="160dp"
-            android:backgroundTint="#2DEB17"
-            android:text="hola quevedo"
-            app:cornerRadius="0dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
+            android:text="TextView"
+            tools:layout_editor_absoluteX="167dp"
+            tools:layout_editor_absoluteY="272dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </LinearLayout>

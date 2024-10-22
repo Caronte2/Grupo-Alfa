@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "9519272491",
+    "project_id": "zapstation-e9447",
+    "storage_bucket": "zapstation-e9447.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9519272491:android:45668fc7244a91110cd06e",
+        "android_client_info": {
+          "package_name": "com.example.zapstation"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9519272491-ceuamtbrtpthsah5f6liev2im4cghac1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zapstation",
+            "certificate_hash": "799fa37b2247715c69a8f88442d450d4439122b7"
+          }
+        },
+        {
+          "client_id": "9519272491-iihsvg4a8cv368p75f53gth44m9v35s6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnyBKhyjtinZw6GrjbsUXKBpUqdXJyZEM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9519272491-iihsvg4a8cv368p75f53gth44m9v35s6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
