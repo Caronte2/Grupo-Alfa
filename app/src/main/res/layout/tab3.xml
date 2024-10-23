@@ -11,13 +11,66 @@
 
         <Button
             android:id="@+id/loginButton"
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#F9E104"
             android:text="Iniciar sesión"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:cornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/texto2" />
+
+        <Button
+            android:id="@+id/registrarButton"
+            android:layout_width="150dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:backgroundTint="#F9E104"
+            android:text="Registrate"
+            android:textColor="#000000"
+            android:textStyle="bold"
+            app:cornerRadius="10dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.501"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/texto1" />
+
+        <ImageView
+            android:id="@+id/imageView3"
+            android:layout_width="249dp"
+            android:layout_height="179dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/punto_carga" />
+
+        <TextView
+            android:id="@+id/texto1"
+            android:layout_width="250dp"
+            android:layout_height="109dp"
+            android:text="Somos tu mejor altenativa si deseas encontrar un punto de carga para tu coche eléctrico.  Puntos para obtener descuentos y mucho más si te registras ya!"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView3" />
+
+        <TextView
+            android:id="@+id/texto2"
+            android:layout_width="191dp"
+            android:layout_height="62dp"
+            android:layout_marginTop="14dp"
+            android:text="¿Ya tienes cuenta?¡Inicia sesión y no pierdas  tus ventajas!"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/registrarButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

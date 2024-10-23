@@ -10,8 +10,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
-import com.firebase.ui.auth.ErrorCodes;
-import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,9 +50,17 @@ public class LoginActivity extends AppCompatActivity {
 
     private void verificarCorreo(FirebaseUser usuario) {
         if (usuario.isEmailVerified()) {
-            iniciarMainActivity();
+            iniciarMainActivity(); // El correo ha sido verificado, continuar con la app
         } else {
-            enviarCorreoVerificacion(usuario);
+            enviarCorreoVerificacion(usuario); // El correo no ha sido verificado, enviar verificación
+            Toast.makeText(LoginActivity.this,
+                    "Verifica tu correo electrónico para continuar.",
+                    Toast.LENGTH_LONG).show();
+
+            // Volver a la pantalla de login hasta que el correo sea verificado
+            FirebaseAuth.getInstance().signOut();
+            startActivity(new Intent(LoginActivity.this, LoginActivity.class));
+            finish(); // Finaliza la actividad actual
         }
     }
 
@@ -68,7 +74,6 @@ public class LoginActivity extends AppCompatActivity {
                                     "Correo de verificación enviado a: " + usuario.getEmail(),
                                     Toast.LENGTH_LONG).show();
                         } else {
-                            // Mostrar el mensaje de error
                             Toast.makeText(LoginActivity.this,
                                     "Error al enviar el correo de verificación: " + task.getException().getMessage(),
                                     Toast.LENGTH_LONG).show();
@@ -83,12 +88,11 @@ public class LoginActivity extends AppCompatActivity {
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
                 FirebaseUser currentUser = firebaseAuth.getCurrentUser();
                 if (currentUser != null) {
-                    // Verificamos el estado del correo
                     verificarCorreo(currentUser);
                 }
             }
         };
-        mAuth.addAuthStateListener(authStateListener); // Añadir el listener
+        mAuth.addAuthStateListener(authStateListener);
     }
 
     private void iniciarMainActivity() {
@@ -98,14 +102,14 @@ public class LoginActivity extends AppCompatActivity {
                 | Intent.FLAG_ACTIVITY_NEW_TASK
                 | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
-        finish(); // Finaliza esta actividad para que no quede en el back stack
+        finish();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         if (authStateListener != null) {
-            mAuth.removeAuthStateListener(authStateListener); // Elimina el listener para evitar memory leaks
+            mAuth.removeAuthStateListener(authStateListener);
         }
     }
 }
