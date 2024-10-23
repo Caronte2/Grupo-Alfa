@@ -20,6 +20,7 @@
             android:orientation="vertical">
 
             <!-- Añade tus elementos aquí -->
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -51,8 +52,8 @@
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                android:layout_height="687dp"
+                app:srcCompat="@drawable/ic_launcher_background" />
 
             <!-- Más vistas como EditText, ImageView, etc. -->
 

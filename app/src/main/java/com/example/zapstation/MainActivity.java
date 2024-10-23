@@ -1,24 +1,13 @@
 package com.example.zapstation;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
-import android.os.Bundle;
-import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
-
-import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 import androidx.viewpager2.adapter.FragmentStateAdapter;
@@ -28,6 +17,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
 
 public class MainActivity extends AppCompatActivity {
     // Nombres de las pestañas
@@ -83,13 +73,13 @@ public class MainActivity extends AppCompatActivity {
                             // Mostrar el nuevo orden para 3 tabs: [Nuevo icono, Home, Map]
                             switch (position) {
                                 case 0:
-                                    tab.setIcon(R.drawable.info_help); // Reemplaza con tu nuevo ícono
+                                    tab.setIcon(R.drawable.map_pin); // Map a la izq
                                     break;
                                 case 1:
                                     tab.setIcon(R.drawable.home); // Home en el centro
                                     break;
                                 case 2:
-                                    tab.setIcon(R.drawable.map_pin); // Map a la derecha
+                                    tab.setIcon(R.drawable.info_help); // Info a la derecha
                                     break;
                             }
                         }
@@ -131,13 +121,13 @@ public class MainActivity extends AppCompatActivity {
                 }
             } else {
                 switch (position) {
-                    //Aqui van los nuevos tabs
+                    // Aquí van los nuevos tabs
                     case 0:
-                        return new Tab1(); // Info
+                        return new Tab2(); // Map
                     case 1:
                         return new Tab3(); // Home
                     case 2:
-                        return new Tab2(); // Map
+                        return new TabInfo(); // Info
                 }
             }
             return null;
