@@ -3,6 +3,23 @@
     <style name="Base.Theme.ZapStation" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+
+    </style>
+
+    //Custom firebase ui
+    <style name="FirebaseUITema" parent="FirebaseUI">
+        <item name="windowNoTitle">false</item>
+        <item name="windowActionBar">true</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="colorPrimary">#083ECC</item>
+        <item name="colorPrimaryDark">#388E3C</item>
+        <item name="colorAccent">#AA00FF</item>
+        <item name="colorControlNormal">#083ECC</item>
+        <item name="colorControlActivated">#AEEA00</item>
+        <item name="colorControlHighlight">#69F0AE</item>
+        <item name="android:windowBackground">@drawable/background_semi_transparente</item>
+
     </style>
 
     <style name="Theme.ZapStation" parent="Base.Theme.ZapStation" />

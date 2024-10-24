@@ -11,17 +11,38 @@
         >
 
         <Button
-            android:id="@+id/acercaDe"
-            android:layout_width="0dp"
+            android:id="@+id/reservar"
+            android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:backgroundTint="#7A0E8C"
-            android:text="hola tendraseka"
-            app:cornerRadius="0dp"
+            android:backgroundTint="#F9E104"
+            android:text="Reservar"
+            android:textColor="#000000"
+            app:cornerRadius="10dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="160dp" />
+            app:layout_constraintTop_toBottomOf="@+id/imageView7"
+            app:layout_constraintVertical_bias="0.383" />
 
+        <ImageView
+            android:id="@+id/imageView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/ejemplo1" />
+
+        <ImageView
+            android:id="@+id/imageView7"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="40dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imageView6"
+            app:srcCompat="@drawable/ejemplo2" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>
