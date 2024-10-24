@@ -21,13 +21,16 @@
 
     <TextView
         android:id="@+id/uid"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
         android:text="TextView"
         android:textColor="#03A9F4"
+        android:ellipsize="end"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imageView5"
         app:layout_constraintTop_toTopOf="@+id/imageView5" />
+
 
     <TextView
         android:id="@+id/nombre"

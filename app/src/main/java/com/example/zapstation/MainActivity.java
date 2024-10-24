@@ -18,7 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 public class MainActivity extends AppCompatActivity {
     // Nombres de las pestañas
     private String[] nombres;
-    private boolean usuarioAutenticado;
+    // Variables para almacenar el estado de autenticación y verificación de correo del usuario
+    private boolean usuarioAutentificado;
     private boolean correoVerificado;
 
     @Override
@@ -29,35 +30,40 @@ public class MainActivity extends AppCompatActivity {
         // Obtener la instancia actual del usuario en Firebase
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Comprobar si el usuario está autenticado
+        // Comprobar si el usuario está autentificado
         if (usuario != null) {
-            usuarioAutenticado = true;
+            // Si el usuario está autenticado, se comprueba si su correo está verificado
+            usuarioAutentificado = true;
             correoVerificado = usuario.isEmailVerified();
 
-            // Comprobar si el correo está verificado
+            // Mostrar un aviso si el correo no está verificado
             if (!correoVerificado) {
                 Toast.makeText(this, "Por favor, verifica tu correo electrónico para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
             }
         } else {
-            // Si no está autenticado
-            usuarioAutenticado = false;
+            // Si no está autentificado, se inicializan las variables a false
+            usuarioAutentificado = false;
             correoVerificado = false;
             Toast.makeText(this, "Inicia sesión para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
         }
 
-        // Configurar las pestañas para usuarios autenticados y no autenticados
-        nombres = usuarioAutenticado && correoVerificado
+        // Configurar los nombres de las pestañas según el estado del usuario (autenticado y con correo verificado o no)
+        nombres = usuarioAutentificado && correoVerificado
                 ? new String[]{"", "", "", "", ""}
                 : new String[]{"", "", ""};
 
+        // Configurar el ViewPager2 para deslizar entre fragmentos (pestañas)
         ViewPager2 viewPager = findViewById(R.id.viewpager);
-        viewPager.setAdapter(new MiPagerAdapter(this, usuarioAutenticado, correoVerificado));
+        viewPager.setAdapter(new MiPagerAdapter(this, usuarioAutentificado, correoVerificado));
 
+        // Configurar el TabLayout (barra de pestañas) y asociarlo con el ViewPager2
         TabLayout tabs = findViewById(R.id.tabs);
         new TabLayoutMediator(tabs, viewPager,
                 (tab, position) -> {
+                    // Asignar el texto y los iconos de las pestañas según la posición y el estado del usuario
                     tab.setText(nombres[position]);
                     if (correoVerificado) {
+                        // Si el correo está verificado, muestra estas 5 pestañas con iconos
                         switch (position) {
                             case 0: tab.setIcon(R.drawable.star); break;
                             case 1: tab.setIcon(R.drawable.map_pin); break;
@@ -66,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
                             case 4: tab.setIcon(R.drawable.user); break;
                         }
                     } else {
-                        // Configurar solo los 3 tabs si no está verificado
+                        // Si no está verificado, muestra solo 3 pestañas con estos iconos
                         switch (position) {
                             case 0: tab.setIcon(R.drawable.map_pin); break;
                             case 1: tab.setIcon(R.drawable.home); break;
@@ -75,29 +81,34 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }).attach();
 
-        // Establecer la pestaña de Home como la activa
+        // Establecer la pestaña de Home como la activa por defecto (posición 2 si está verificado, posición 1 si no)
         viewPager.setCurrentItem(correoVerificado ? 2 : 1, false);
     }
 
+    // Adaptador personalizado para gestionar los fragmentos asociados a las pestañas
     public static class MiPagerAdapter extends FragmentStateAdapter {
-        private boolean usuarioAutenticado;
+        private boolean usuarioAutentificado;
         private boolean correoVerificado;
 
+        // Constructor que recibe la actividad y el estado del usuario
         public MiPagerAdapter(FragmentActivity activity, boolean usuarioAutenticado, boolean correoVerificado) {
             super(activity);
-            this.usuarioAutenticado = usuarioAutenticado;
+            this.usuarioAutentificado = usuarioAutenticado;
             this.correoVerificado = correoVerificado;
         }
 
+        // Definir cuántas pestañas mostrar según el estado del usuario
         @Override
         public int getItemCount() {
-            return (usuarioAutenticado && correoVerificado) ? 5 : 3;
+            return (usuarioAutentificado && correoVerificado) ? 5 : 3;
         }
 
+        // Crear los fragmentos asociados a cada pestaña según la posición y el estado del usuario
         @Override
         @NonNull
         public Fragment createFragment(int position) {
-            if (usuarioAutenticado && correoVerificado) {
+            if (usuarioAutentificado && correoVerificado) {
+                // Si el usuario está autentificado y el correo verificado, muestra estos 5 fragmentos
                 switch (position) {
                     case 0:
                         return new Tab1();
@@ -111,6 +122,7 @@ public class MainActivity extends AppCompatActivity {
                         return new Tab5();
                 }
             } else {
+                // Si no está verificado, muestra solo estos 3 fragmentos
                 switch (position) {
                     case 0:
                         return new Tab2(); // Map

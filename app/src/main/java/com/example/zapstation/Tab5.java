@@ -50,7 +50,7 @@ public class Tab5 extends Fragment {
         TextView correo = view.findViewById(R.id.correo);
         TextView uid = view.findViewById(R.id.uid);
         NetworkImageView foto = view.findViewById(R.id.imagen);
-        ImageView btnCerrarSesion = view.findViewById(R.id.btn_cerrar_sesion); // Asegúrate de tener este ID en tu layout
+        ImageView btnCerrarSesion = view.findViewById(R.id.btn_cerrar_sesion);
 
         // Establecer OnClickListener para la ImageView de cerrar sesión
         btnCerrarSesion.setOnClickListener(new View.OnClickListener() {
@@ -58,8 +58,6 @@ public class Tab5 extends Fragment {
             public void onClick(View v) {
                 FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
                 if (usuario != null) {
-                    // Cambia el mensaje o elimina el Toast si no es necesario aquí
-                    Toast.makeText(getActivity(), "Cerrando sesión", Toast.LENGTH_SHORT).show();
                     mostrarDialogoRegistro();
                 } else {
                     // Muestra el diálogo si el usuario no está autenticado

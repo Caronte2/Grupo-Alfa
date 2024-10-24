@@ -1,26 +1,23 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Base.Theme.ZapStation" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Customize your light theme here. -->
-        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
-
+        <!-- Personaliza los colores aquí -->
+        <item name="colorPrimary">#083ECC</item> <!-- Usa el color que definiste -->
+        <item name="colorPrimaryDark">#083ECC</item>
     </style>
 
-    //Custom firebase ui
+    <!-- Custom firebase UI -->
     <style name="FirebaseUITema" parent="FirebaseUI">
         <item name="windowNoTitle">false</item>
         <item name="windowActionBar">true</item>
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
-        <item name="colorPrimary">#083ECC</item>
+        <item name="colorPrimary">#083ECC</item> <!-- Color personalizado para Firebase UI -->
         <item name="colorPrimaryDark">#388E3C</item>
-        <item name="colorAccent">#AA00FF</item>
-        <item name="colorControlNormal">#083ECC</item>
-        <item name="colorControlActivated">#AEEA00</item>
-        <item name="colorControlHighlight">#69F0AE</item>
+        <item name="colorControlNormal">#000000</item>
+        <item name="colorControlActivated">#000000</item>
         <item name="android:windowBackground">@drawable/background_semi_transparente</item>
-
     </style>
 
-    <style name="Theme.ZapStation" parent="Base.Theme.ZapStation" />
+    <style name="Theme.ZapStation" parent="Base.Theme.ZapStation"/>
 </resources>

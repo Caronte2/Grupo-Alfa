@@ -8,9 +8,9 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/logo_zap"
+        android:icon="@mipmap/ic_zap_logo_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/logo_zap"
+        android:roundIcon="@mipmap/ic_zap_logo_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ZapStation"
         tools:targetApi="31">

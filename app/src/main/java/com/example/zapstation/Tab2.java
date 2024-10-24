@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -29,8 +30,10 @@ public class Tab2 extends Fragment {
 
         // Obtener el botón de Reservar
         Button reservarButton = view.findViewById(R.id.reservar);
+        ImageView like = view.findViewById(R.id.like);
+        ImageView dislike = view.findViewById(R.id.dislike);
 
-        // Configurar el comportamiento del botón
+        // Configurar el comportamiento del botón de Reservar
         reservarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -45,6 +48,36 @@ public class Tab2 extends Fragment {
             }
         });
 
+        // Configurar el comportamiento del like
+        like.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
+                if (usuario != null) {
+                    // Si el usuario está autenticado, mostrar un mensaje de like
+                    Toast.makeText(getActivity(), "Valoración positiva", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Si el usuario no está autenticado, mostrar el AlertDialog
+                    mostrarDialogoRegistro();
+                }
+            }
+        });
+
+        // Configurar el comportamiento del dislike
+        dislike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
+                if (usuario != null) {
+                    // Si el usuario está autenticado, mostrar un mensaje de dislike
+                    Toast.makeText(getActivity(), "Valoración negativa", Toast.LENGTH_SHORT).show();
+                } else {
+                    // Si el usuario no está autenticado, mostrar el AlertDialog
+                    mostrarDialogoRegistro();
+                }
+            }
+        });
+
         return view;
     }
 
@@ -52,8 +85,8 @@ public class Tab2 extends Fragment {
     private void mostrarDialogoRegistro() {
         // Crear el AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle("Registro necesario");
-        builder.setMessage("Para reservar necesitas registrarte. ¿Deseas hacerlo ahora?");
+        builder.setTitle("Acción de sesión necesaria");
+        builder.setMessage("Para continuar necesitas tener una sesión iniciada. ¿Deseas hacerlo ahora?");
 
         // Botón para ir a registrarse
         builder.setPositiveButton("Registrar", new DialogInterface.OnClickListener() {
@@ -79,4 +112,3 @@ public class Tab2 extends Fragment {
         dialog.show();
     }
 }
-
