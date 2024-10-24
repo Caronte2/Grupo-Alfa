@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.firebase.ui.auth.AuthUI;
+import com.firebase.ui.auth.IdpResponse;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
@@ -38,7 +39,9 @@ public class LoginActivity extends AppCompatActivity {
         } else {
             List<AuthUI.IdpConfig> providers = Arrays.asList(
                     new AuthUI.IdpConfig.EmailBuilder().build(),
-                    new AuthUI.IdpConfig.GoogleBuilder().build());
+                    new AuthUI.IdpConfig.GoogleBuilder().build(),
+                    new AuthUI.IdpConfig.TwitterBuilder().build() // Agregar Twitter como proveedor
+            );
             startActivityForResult(
                     AuthUI.getInstance().createSignInIntentBuilder()
                             .setAvailableProviders(providers)
@@ -110,6 +113,24 @@ public class LoginActivity extends AppCompatActivity {
         super.onDestroy();
         if (authStateListener != null) {
             mAuth.removeAuthStateListener(authStateListener);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_SIGN_IN) {
+            IdpResponse response = IdpResponse.fromResultIntent(data);
+
+            if (resultCode == RESULT_OK) {
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                verificarCorreo(user);
+            } else {
+                // Manejar el error si el inicio de sesión falla
+                if (response != null) {
+                    Toast.makeText(this, "Error de autenticación: " + response.getError(), Toast.LENGTH_LONG).show();
+                }
+            }
         }
     }
 }
