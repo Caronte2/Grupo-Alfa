@@ -5,24 +5,44 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <TextView
+        android:id="@+id/textView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sobre nosotros:"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toTopOf="@+id/scrollView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="45dp"
+        android:layout_marginEnd="10dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
+
 
         <TextView
             android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Somos una empresa joven y visionaria, comprometida con el desarrollo de soluciones sostenibles para el futuro de la movilidad eléctrica. Nuestra misión es facilitar el acceso a la infraestructura de carga para coches eléctricos, ofreciendo a los usuarios una plataforma eficiente y fácil de usar.\n \nCon nuestra app, puedes ubicar en tiempo real los puntos de carga más cercanos, reservar puestos con anticipación para evitar esperas, y gestionar tus recargas de manera cómoda y segura. Además, hemos creado un sistema de recompensas donde acumulas puntos con cada recarga que realices, los cuales podrás canjear por descuentos en futuras recargas.\n \nNos dedicamos a promover un futuro más verde, brindando a los conductores de vehículos eléctricos las herramientas necesarias para moverse con confianza y comodidad. ¡Bienvenidos a la nueva era de la movilidad eléctrica!"
-            android:textAlignment="center"
-            android:textSize="20dp" />
+            android:textAlignment="textStart"
+            android:textSize="18sp" />
+
     </ScrollView>
+
+
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
