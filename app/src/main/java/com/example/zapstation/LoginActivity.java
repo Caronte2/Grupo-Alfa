@@ -44,6 +44,8 @@ public class LoginActivity extends AppCompatActivity {
             );
             startActivityForResult(
                     AuthUI.getInstance().createSignInIntentBuilder()
+                            .setLogo(R.mipmap.logo_zap)
+                            .setTheme(R.style.FirebaseUITema)
                             .setAvailableProviders(providers)
                             .setIsSmartLockEnabled(false)
                             .build(),

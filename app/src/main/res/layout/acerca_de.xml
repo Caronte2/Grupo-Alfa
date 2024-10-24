@@ -9,55 +9,20 @@
         android:id="@+id/scrollView"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0">
 
-        <LinearLayout
+        <TextView
+            android:id="@+id/textView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
-
-            <!-- Añade tus elementos aquí -->
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Texto largo que ocupará mucho espacio"
-                android:textSize="18sp"
-                android:padding="16dp" />
-
-            <!-- Añade más vistas para crear contenido desplazable -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Otro texto largo"
-                android:textSize="18sp"
-                android:padding="16dp" />
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                style="@style/Widget.AppCompat.SeekBar.Discrete"
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:max="10"
-                android:progress="3" />
-
-            <RatingBar
-                android:id="@+id/ratingBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <ImageView
-                android:id="@+id/imageView"
-                android:layout_width="match_parent"
-                android:layout_height="687dp"
-                app:srcCompat="@drawable/ic_launcher_background" />
-
-            <!-- Más vistas como EditText, ImageView, etc. -->
-
-        </LinearLayout>
+            android:text="Somos una empresa joven y visionaria, comprometida con el desarrollo de soluciones sostenibles para el futuro de la movilidad eléctrica. Nuestra misión es facilitar el acceso a la infraestructura de carga para coches eléctricos, ofreciendo a los usuarios una plataforma eficiente y fácil de usar.\n \nCon nuestra app, puedes ubicar en tiempo real los puntos de carga más cercanos, reservar puestos con anticipación para evitar esperas, y gestionar tus recargas de manera cómoda y segura. Además, hemos creado un sistema de recompensas donde acumulas puntos con cada recarga que realices, los cuales podrás canjear por descuentos en futuras recargas.\n \nNos dedicamos a promover un futuro más verde, brindando a los conductores de vehículos eléctricos las herramientas necesarias para moverse con confianza y comodidad. ¡Bienvenidos a la nueva era de la movilidad eléctrica!"
+            android:textAlignment="center"
+            android:textSize="20dp" />
     </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

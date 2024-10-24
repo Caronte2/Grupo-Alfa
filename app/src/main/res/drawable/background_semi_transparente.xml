@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Fondo blanco sólido -->
+    <item>
+        <shape>
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <!-- Capa amarilla semitransparente -->
+    <item>
+        <shape>
+            <solid android:color="#59F9E104" />
+        </shape>
+    </item>
+</layer-list>
