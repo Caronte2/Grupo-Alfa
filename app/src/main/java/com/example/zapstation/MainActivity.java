@@ -1,13 +1,9 @@
 package com.example.zapstation;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
@@ -18,7 +14,6 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-
 
 public class MainActivity extends AppCompatActivity {
     // Nombres de las pestañas
@@ -34,14 +29,20 @@ public class MainActivity extends AppCompatActivity {
         // Obtener la instancia actual del usuario en Firebase
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
 
-        // Comprobar si el usuario está autenticado y si el correo está verificado
+        // Comprobar si el usuario está autenticado
         if (usuario != null) {
             usuarioAutenticado = true;
             correoVerificado = usuario.isEmailVerified();
+
+            // Comprobar si el correo está verificado
+            if (!correoVerificado) {
+                Toast.makeText(this, "Por favor, verifica tu correo electrónico para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
+            }
         } else {
+            // Si no está autenticado
             usuarioAutenticado = false;
             correoVerificado = false;
-            Toast.makeText(this, "Inicia sesión para acceder a todas las funciones", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Inicia sesión para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
         }
 
         // Configurar las pestañas para usuarios autenticados y no autenticados
@@ -62,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
                             case 1: tab.setIcon(R.drawable.map_pin); break;
                             case 2: tab.setIcon(R.drawable.home); break;
                             case 3: tab.setIcon(R.drawable.battery_charging); break;
-                            case 4: tab.setIcon(R.drawable.settings); break;
+                            case 4: tab.setIcon(R.drawable.user); break;
                         }
                     } else {
                         // Configurar solo los 3 tabs si no está verificado
@@ -77,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
         // Establecer la pestaña de Home como la activa
         viewPager.setCurrentItem(correoVerificado ? 2 : 1, false);
     }
-
-
 
     public static class MiPagerAdapter extends FragmentStateAdapter {
         private boolean usuarioAutenticado;
