@@ -58,10 +58,10 @@ public class Tab5 extends Fragment {
             public void onClick(View v) {
                 FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
                 if (usuario != null) {
-                    mostrarDialogoRegistro();
+                    mostrarDialogoCerrarSesion();
                 } else {
                     // Muestra el diálogo si el usuario no está autenticado
-                    mostrarDialogoRegistro();
+                    mostrarDialogoCerrarSesion();
                 }
             }
         });
@@ -97,7 +97,7 @@ public class Tab5 extends Fragment {
     }
 
     // Método para mostrar el popup para confirmar si desea cerrar sesión
-    private void mostrarDialogoRegistro() {
+    private void mostrarDialogoCerrarSesion() {
         // Crear el AlertDialog
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("Cerrar sesión");

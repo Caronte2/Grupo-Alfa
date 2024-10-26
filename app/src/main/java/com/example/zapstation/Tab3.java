@@ -53,12 +53,12 @@ public class Tab3 extends Fragment {
 
             //Llamada LoginAcitivy para usar firebase en el inicio de seión
             loginButton.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                Intent intent = new Intent(getActivity(), CustomLoginActivity.class); //CustomLogin o Login para cambiar la logica de inicio de sesion
                 startActivity(intent);
             });
 
             registrarButton.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                Intent intent = new Intent(getActivity(), CustomLoginActivity.class);
                 startActivity(intent);
             });
         } else {
