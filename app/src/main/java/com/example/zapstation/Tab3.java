@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -14,6 +15,7 @@ import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Tab3 extends Fragment {
     @Override
@@ -27,7 +29,6 @@ public class Tab3 extends Fragment {
         View view = inflater.inflate(R.layout.tab3, container, false);
 
         Button loginButton = view.findViewById(R.id.loginButton);
-        //TODO Que registre se diferencie de inicar sesión
         Button registrarButton = view.findViewById(R.id.registrarButton);
         TextView texto1 = view.findViewById(R.id.texto1);
         TextView texto2 = view.findViewById(R.id.texto2);
@@ -38,6 +39,17 @@ public class Tab3 extends Fragment {
 
         TextView textBienvenido = view.findViewById(R.id.textBienvenido);
 
+        if (usuario != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("usuarios").document(usuario.getUid()).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String nombreCompleto = documentSnapshot.getString("nombreCompleto");
+                            textBienvenido.setText(nombreCompleto != null ? "Bienvenido, " + nombreCompleto : "Bienvenido, Nombre no disponible");
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Error al cargar el nombre", Toast.LENGTH_SHORT).show());
+        }
 
         if (usuario == null) {
             loginButton.setVisibility(View.VISIBLE);
@@ -58,7 +70,7 @@ public class Tab3 extends Fragment {
             });
 
             registrarButton.setOnClickListener(v -> {
-                Intent intent = new Intent(getActivity(), CustomLoginActivity.class);
+                Intent intent = new Intent(getActivity(), CustomRegisterActivity.class);
                 startActivity(intent);
             });
         } else {

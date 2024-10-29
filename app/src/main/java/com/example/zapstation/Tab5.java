@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Tab5 extends Fragment {
     private FirebaseUser usuario;
@@ -66,6 +67,17 @@ public class Tab5 extends Fragment {
             }
         });
 
+        if (usuario != null) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("usuarios").document(usuario.getUid()).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            String nombreCompleto = documentSnapshot.getString("nombreCompleto");
+                            nombre.setText(nombreCompleto != null ? nombreCompleto : "Nombre no disponible");
+                        }
+                    })
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), "Error al cargar el nombre", Toast.LENGTH_SHORT).show());
+        }
 
         // Mostrar la información del usuario en los TextViews
         if (usuario != null) {

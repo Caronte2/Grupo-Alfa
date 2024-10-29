@@ -18,7 +18,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -32,14 +31,12 @@ public class CustomLoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private ViewGroup contenedor;
+    private Button btnRegistro;
     private EditText etCorreo, etContraseña;
     private TextInputLayout tilCorreo, tilContraseña;
     private ProgressDialog dialogo;
-    //Google
     private GoogleSignInClient googleSignInClient;
     private static final int RC_GOOGLE_SIGN_IN = 123;
-
-    //Twitter
     ImageView btnTwitter;
 
     @Override
@@ -48,78 +45,57 @@ public class CustomLoginActivity extends AppCompatActivity {
         setContentView(R.layout.custom_login);
 
         auth = FirebaseAuth.getInstance();
+        initUIComponents();
+        setupGoogleSignIn();
+        verificaSiUsuarioValidado();
+    }
+
+    private void initUIComponents() {
         etCorreo = findViewById(R.id.correo);
         etContraseña = findViewById(R.id.contraseña);
         tilCorreo = findViewById(R.id.til_correo);
         tilContraseña = findViewById(R.id.til_contraseña);
         contenedor = findViewById(R.id.contenedor);
         btnTwitter = findViewById(R.id.twitter);
+        btnRegistro = findViewById(R.id.registroLogin);
         dialogo = new ProgressDialog(this);
         dialogo.setTitle("Verificando usuario");
         dialogo.setMessage("Por favor espere...");
 
-        verificaSiUsuarioValidado();  // Verifica al iniciar si ya está logeado
+        // Botón para iniciar sesión con Google
+        Button googleLoginButton = findViewById(R.id.googleLogin);
+        googleLoginButton.setOnClickListener(this::autentificarGoogle);
 
+        // Botón para iniciar sesión con Twitter
+        btnTwitter.setOnClickListener(v -> {
+            Intent intent = new Intent(CustomLoginActivity.this, TwitterActivity.class);
+            startActivity(intent);
+        });
+
+        btnRegistro.setOnClickListener(v -> {
+            Intent intent = new Intent(CustomLoginActivity.this, CustomRegisterActivity.class);
+            startActivity(intent);
+        });
+
+        // Botón para iniciar sesión con correo y contraseña
+        Button loginButton = findViewById(R.id.inicio_sesion);
+        loginButton.setOnClickListener(this::inicioSesionCorreo);
+    }
+
+    private void setupGoogleSignIn() {
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.default_web_client_id))
                 .requestEmail()
                 .build();
         googleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        Button googleLoginButton = findViewById(R.id.googleLogin);
-
-        // Asigna el listener al botón
-        googleLoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                autentificarGoogle(v);
-            }
-        });
-
-        btnTwitter.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(CustomLoginActivity.this, TwitterActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                startActivity(intent);
-            }
-        });
     }
 
-    private void verificarCorreo(FirebaseUser user) {
-        if (user.isEmailVerified()) {
+    private void verificaSiUsuarioValidado() {
+        currentUser = auth.getCurrentUser();
+        if (currentUser != null && currentUser.isEmailVerified()) {
             iniciarMainActivity();
-        } else {
-            boolean emailSent = getSharedPreferences("ZapStationPrefs", MODE_PRIVATE)
-                    .getBoolean("verificationEmailSent", false);
-            if (!emailSent) {
-                enviarCorreoVerificacion(user); // Solo envía si no se envió anteriormente
-                FirebaseAuth.getInstance().signOut();
-                Toast.makeText(this, "Verifica tu correo para continuar.", Toast.LENGTH_LONG).show();
-            } else {
-                Toast.makeText(this, "Ya se ha enviado un correo de verificación. Revisa tu bandeja de entrada.", Toast.LENGTH_LONG).show();
-            }
         }
     }
-
-
-
-    private void enviarCorreoVerificacion(FirebaseUser user) {
-        user.sendEmailVerification()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        Toast.makeText(this, "Correo de verificación enviado a: " + user.getEmail(), Toast.LENGTH_LONG).show();
-                        // Almacena en SharedPreferences que se ha enviado el correo
-                        getSharedPreferences("ZapStationPrefs", MODE_PRIVATE)
-                                .edit()
-                                .putBoolean("verificationEmailSent", true)
-                                .apply();
-                    } else {
-                        Toast.makeText(this, "Error al enviar el correo: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-    }
-
 
     public void inicioSesionCorreo(View v) {
         if (verificaCampos()) {
@@ -137,20 +113,23 @@ public class CustomLoginActivity extends AppCompatActivity {
         }
     }
 
-    public void registroCorreo(View v) {
-        if (verificaCampos()) {
-            dialogo.show();
-            auth.createUserWithEmailAndPassword(etCorreo.getText().toString(), etContraseña.getText().toString())
-                    .addOnCompleteListener(task -> {
-                        dialogo.dismiss();
-                        if (task.isSuccessful()) {
-                            currentUser = auth.getCurrentUser();
-                            if (currentUser != null) enviarCorreoVerificacion(currentUser);
-                        } else {
-                            mensaje(task.getException().getLocalizedMessage());
-                        }
-                    });
+    private void verificarCorreo(FirebaseUser user) {
+        if (user.isEmailVerified()) {
+            iniciarMainActivity();
+        } else {
+            enviarCorreoVerificacion(user);
+            Toast.makeText(this, "Verifica tu correo para continuar.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void enviarCorreoVerificacion(FirebaseUser user) {
+        user.sendEmailVerification().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                Toast.makeText(this, "Correo de verificación enviado a: " + user.getEmail(), Toast.LENGTH_LONG).show();
+            } else {
+                mensaje("Error al enviar el correo de verificación");
+            }
+        });
     }
 
     public void autentificarGoogle(View v) {
@@ -174,61 +153,24 @@ public class CustomLoginActivity extends AppCompatActivity {
 
     private void googleAuth(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
-        // Usamos currentUser definido en la clase
-        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (currentUser != null) {
-            // Si ya hay un usuario autenticado, intenta vincular la cuenta
-            currentUser.linkWithCredential(credential)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            // Actualizamos currentUser con el nuevo estado
-                            this.currentUser = FirebaseAuth.getInstance().getCurrentUser();
-                            verificarCorreo(this.currentUser);
-                        } else {
-                            mensaje(task.getException().getLocalizedMessage());
-                        }
-                    });
-        } else {
-            // Si no hay usuario autenticado, inicia sesión normalmente
-            auth.signInWithCredential(credential)
-                    .addOnCompleteListener(task -> {
-                        if (task.isSuccessful()) {
-                            // Actualizamos currentUser con el nuevo estado
-                            this.currentUser = auth.getCurrentUser();
-                            if (this.currentUser != null) verificarCorreo(this.currentUser);
-                        } else {
-                            mensaje(task.getException().getLocalizedMessage());
-                        }
-                    });
-        }
-    }
-
-
-    private void verificaSiUsuarioValidado() {
-        currentUser = auth.getCurrentUser();
-        if (currentUser != null && currentUser.isEmailVerified()) {
-            iniciarMainActivity();
-        } else if (currentUser != null) {
-            enviarCorreoVerificacion(currentUser);
-            FirebaseAuth.getInstance().signOut();
-            Toast.makeText(this, "Verifica tu correo para continuar.", Toast.LENGTH_LONG).show();
-        }
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        currentUser = auth.getCurrentUser();
+                        if (currentUser != null) verificarCorreo(currentUser);
+                    } else {
+                        mensaje(task.getException().getLocalizedMessage());
+                    }
+                });
     }
 
     private void iniciarMainActivity() {
         Toast.makeText(this, "Iniciando sesión...", Toast.LENGTH_SHORT).show();
-        // Reiniciar el estado de envío de correo al iniciar la actividad principal
-        getSharedPreferences("ZapStationPrefs", MODE_PRIVATE)
-                .edit()
-                .putBoolean("verificationEmailSent", false)
-                .apply();
         Intent i = new Intent(this, MainActivity.class);
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(i);
         finish();
     }
-
 
     private boolean verificaCampos() {
         String correo = etCorreo.getText().toString();
@@ -251,4 +193,3 @@ public class CustomLoginActivity extends AppCompatActivity {
         Snackbar.make(contenedor, mensaje, Snackbar.LENGTH_LONG).show();
     }
 }
-

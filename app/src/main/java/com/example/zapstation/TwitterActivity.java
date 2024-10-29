@@ -19,7 +19,7 @@ public class TwitterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_twitter); // Asegúrate de que tienes este layout
+        setContentView(R.layout.activity_twitter); // Asegúrate de tener este layout
 
         firebaseAuth = FirebaseAuth.getInstance();
 
@@ -32,17 +32,10 @@ public class TwitterActivity extends AppCompatActivity {
         } else {
             // Procesar el resultado pendiente
             pendingResultTask
-                    .addOnSuccessListener(authResult -> {
-                        // El usuario está autenticado
-                        FirebaseUser user = firebaseAuth.getCurrentUser();
-                        if (user != null) {
-                            handleUser(user); // Manejar el usuario autenticado
-                        }
-                    })
-                    .addOnFailureListener(e -> {
-                        // Manejar el error
-                        Toast.makeText(TwitterActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                    });
+                    .addOnSuccessListener(authResult -> handleUser(firebaseAuth.getCurrentUser()))
+                    .addOnFailureListener(e ->
+                            Toast.makeText(TwitterActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                    );
         }
     }
 
@@ -51,34 +44,19 @@ public class TwitterActivity extends AppCompatActivity {
         provider.addCustomParameter("lang", "fr");
 
         firebaseAuth.startActivityForSignInWithProvider(this, provider.build())
-                .addOnSuccessListener(authResult -> {
-                    FirebaseUser user = firebaseAuth.getCurrentUser();
-                    if (user != null) {
-                        handleUser(user); // Manejar el usuario autenticado
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(TwitterActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnSuccessListener(authResult -> handleUser(firebaseAuth.getCurrentUser()))
+                .addOnFailureListener(e ->
+                        Toast.makeText(TwitterActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
+                );
     }
 
     private void handleUser(FirebaseUser user) {
-        // Verifica si el usuario tiene un correo electrónico
-        if (user.getEmail() != null) {
-            if (!user.isEmailVerified()) {
-                // Verifica si se ha enviado un correo de verificación
-                boolean emailSent = getSharedPreferences("ZapStationPrefs", MODE_PRIVATE)
-                        .getBoolean("verificationEmailSent", false);
-                if (!emailSent) {
-                    enviarCorreoVerificacion(user); // Enviar correo de verificación
-                }
-            } else {
-                // Si el correo está verificado, iniciar MainActivity
-                iniciarMainActivity();
-            }
-        } else {
-            // Si no hay correo electrónico, iniciar MainActivity
+        if (user == null) return;
+
+        if (user.isEmailVerified() || user.getEmail() == null) {
             iniciarMainActivity();
+        } else {
+            enviarCorreoVerificacion(user);
         }
     }
 
@@ -100,5 +78,4 @@ public class TwitterActivity extends AppCompatActivity {
                     }
                 });
     }
-
 }
