@@ -1,5 +1,7 @@
 package com.example.zapstation;
 
+import static android.app.PendingIntent.getActivity;
+
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,14 +9,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 
@@ -27,6 +38,10 @@ public class CustomRegisterActivity extends AppCompatActivity {
     private TextInputLayout tilNombre, tilCorreo, tilContraseña;
     private ProgressDialog dialogo;
 
+    //Google
+    private GoogleSignInClient googleSignInClient;
+    private static final int RC_GOOGLE_SIGN_IN = 123;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,6 +49,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
         initUIComponents();
+        setupGoogleSignIn();
     }
 
     private void initUIComponents() {
@@ -50,6 +66,73 @@ public class CustomRegisterActivity extends AppCompatActivity {
 
         Button registerButton = findViewById(R.id.registro);
         registerButton.setOnClickListener(this::registroCorreo);
+
+        Button volver_atrasButton = findViewById(R.id.volver_atras);
+        volver_atrasButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+
+        // Botón(imageview) para registrarse con Google
+        ImageView googleRegisterImageView = findViewById(R.id.googleRegisterImageView);
+        googleRegisterImageView.setOnClickListener(this::autentificarGoogle);
+    }
+
+    public void autentificarGoogle(View v) {
+        Intent i = googleSignInClient.getSignInIntent();
+        startActivityForResult(i, RC_GOOGLE_SIGN_IN);
+    }
+
+    private void setupGoogleSignIn() {
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this, gso);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == RC_GOOGLE_SIGN_IN) {
+            Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
+            try {
+                GoogleSignInAccount account = task.getResult(ApiException.class);
+                if (account != null) googleAuth(account.getIdToken());
+            } catch (ApiException e) {
+                mensaje("Error de autentificación con Google");
+            }
+        }
+    }
+
+    private void googleAuth(String idToken) {
+        AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
+        auth.signInWithCredential(credential)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        currentUser = auth.getCurrentUser();
+                        if (currentUser != null) verificarCorreo(currentUser);
+                    } else {
+                        mensaje(task.getException().getLocalizedMessage());
+                    }
+                });
+    }
+
+    private void verificarCorreo(FirebaseUser user) {
+        if (user.isEmailVerified()) {
+            iniciarMainActivity();
+        } else {
+            enviarCorreoVerificacion(user);
+            Toast.makeText(this, "Verifica tu correo para continuar.", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void iniciarMainActivity() {
+        Toast.makeText(this, "Iniciando sesión...", Toast.LENGTH_SHORT).show();
+        Intent i = new Intent(this, MainActivity.class);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(i);
+        finish();
     }
 
     public void registroCorreo(View v) {

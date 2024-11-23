@@ -1,5 +1,6 @@
 package com.example.zapstation;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.Toast;
 
@@ -30,21 +31,35 @@ public class MainActivity extends AppCompatActivity {
         // Obtener la instancia actual del usuario en Firebase
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
 
+        // Obtener SharedPreferences para guardar el estado del Toast
+        SharedPreferences prefs = getSharedPreferences("user_prefs", MODE_PRIVATE);
+        boolean isToastShown = prefs.getBoolean("isToastShown", false);
+
         // Comprobar si el usuario está autentificado
         if (usuario != null) {
-            // Si el usuario está autenticado, se comprueba si su correo está verificado
-            usuarioAutentificado = true;
-            correoVerificado = usuario.isEmailVerified();
+            try {
+                // Si el usuario está autenticado, se comprueba si su correo está verificado
+                usuarioAutentificado = true;
+                correoVerificado = usuario.isEmailVerified();
 
-            // Mostrar un aviso si el correo no está verificado
-            if (!correoVerificado) {
-                Toast.makeText(this, "Por favor, verifica tu correo electrónico para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
+                // Mostrar un aviso si el correo no está verificado
+                if (!correoVerificado) {
+                    Toast.makeText(this, "Por favor, verifica tu correo electrónico para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
             }
         } else {
             // Si no está autentificado, se inicializan las variables a false
             usuarioAutentificado = false;
             correoVerificado = false;
-            Toast.makeText(this, "Inicia sesión para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
+            if (!isToastShown) {
+                Toast.makeText(this, "Inicia sesión para acceder a todas las funciones.", Toast.LENGTH_SHORT).show();
+
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putBoolean("isToastShown", true);
+                editor.apply();
+            }
         }
 
         // Configurar los nombres de las pestañas según el estado del usuario (autenticado y con correo verificado o no)

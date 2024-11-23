@@ -16,17 +16,19 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_nombre"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintTop_toBottomOf="@id/textView4"
-                app:layout_constraintStart_toStartOf="parent"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
+                android:layout_marginTop="10dp"
+                android:background="#BD083ECC"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="10dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/textView4">
 
                 <EditText
                     android:id="@+id/etNombreCompleto"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
+                    android:backgroundTint="#000000"
                     android:hint="Nombre completo"
                     android:inputType="textPersonName"
                     android:textSize="14sp" />
@@ -35,18 +37,20 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_contraseña_registro_repetir"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_marginTop="8dp"
+                android:background="#BD083ECC"
                 android:minHeight="?android:attr/actionBarSize"
                 android:transitionGroup="true"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView12">
 
                 <EditText
                     android:id="@+id/contraseñaRegistroRepetir"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
                     android:hint="Repetir Contraseña"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
@@ -68,18 +72,20 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_correo"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="10dp"
+                android:background="#BD083ECC"
                 android:minHeight="?android:attr/actionBarSize"
                 android:transitionGroup="true"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView10">
 
                 <EditText
                     android:id="@+id/correo"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
                     android:hint="Correo electrónico"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
@@ -88,21 +94,26 @@
 
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/til_contraseña"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="50dp"
                 android:layout_marginTop="10dp"
+                android:background="#BD083ECC"
                 android:minHeight="?android:attr/actionBarSize"
                 android:transitionGroup="true"
-                app:layout_constraintLeft_toLeftOf="parent"
+                app:hintTextColor="@null"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView11">
 
                 <EditText
                     android:id="@+id/contraseña"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_width="300dp"
+                    android:layout_height="50dp"
                     android:hint="Contraseña"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
+                    android:textColor="@null"
+                    android:textColorHint="@null"
                     android:textSize="14sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -110,8 +121,11 @@
                 android:id="@+id/inicio_sesion"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:backgroundTint="#F9E104"
                 android:onClick="inicioSesionCorreo"
                 android:text="Iniciar Sesión"
+                android:textColor="#000000"
+                app:cornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -122,8 +136,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:backgroundTint="#F9E104"
                 android:onClick="registroCorreo"
                 android:text="Registro"
+                android:textColor="#000000"
+                app:cornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_contraseña_registro_repetir" />
@@ -140,16 +157,6 @@
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/inicio_sesion" />
 
-            <Button
-                android:id="@+id/googleLogin"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Google"
-                app:layout_constraintEnd_toStartOf="@+id/twitter"
-                app:layout_constraintHorizontal_bias="0.314"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/registro" />
-
             <ImageView
                 android:id="@+id/twitter"
                 android:layout_width="38dp"
@@ -165,7 +172,10 @@
                 android:id="@+id/volver_atras"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginTop="5dp"
                 android:text="Volver"
+                app:cornerRadius="10dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -212,13 +222,23 @@
                 android:id="@+id/textView13"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="50dp"
                 android:text="Ya tiene una cuenta?  Inicie sesión aquí"
                 android:textAlignment="center"
                 android:textColor="#000000"
                 android:textSize="20sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/googleLogin" />
+                app:layout_constraintTop_toBottomOf="@+id/registro" />
+
+            <ImageView
+                android:id="@+id/googleRegisterImageView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="80dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/registro"
+                app:srcCompat="@drawable/google_icon" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

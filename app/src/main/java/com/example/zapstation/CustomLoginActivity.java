@@ -10,7 +10,6 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -22,7 +21,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
@@ -62,9 +60,15 @@ public class CustomLoginActivity extends AppCompatActivity {
         dialogo.setTitle("Verificando usuario");
         dialogo.setMessage("Por favor espere...");
 
+        Button volver_atrasButton = findViewById(R.id.volver_atras);
+        volver_atrasButton.setOnClickListener(v -> {
+            Intent intent = new Intent(this, MainActivity.class);
+            startActivity(intent);
+        });
+
         // Botón para iniciar sesión con Google
-        Button googleLoginButton = findViewById(R.id.googleLogin);
-        googleLoginButton.setOnClickListener(this::autentificarGoogle);
+        ImageView googleLoginImageView = findViewById(R.id.googleLoginImageView);
+        googleLoginImageView.setOnClickListener(this::autentificarGoogle);
 
         // Botón para iniciar sesión con Twitter
         btnTwitter.setOnClickListener(v -> {
@@ -151,13 +155,33 @@ public class CustomLoginActivity extends AppCompatActivity {
         }
     }
 
+    private void sugerirRegistro() {
+        Snackbar.make(contenedor, "No se encontró una cuenta de Google. ¿Deseas registrarte?", Snackbar.LENGTH_LONG)
+                .setAction("Registrar", v -> {
+                    Intent intent = new Intent(CustomLoginActivity.this, CustomRegisterActivity.class);
+                    startActivity(intent);
+                }).show();
+    }
+
     private void googleAuth(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         currentUser = auth.getCurrentUser();
-                        if (currentUser != null) verificarCorreo(currentUser);
+                        if (currentUser != null) {
+                            // Comprueba si la cuenta sigue activa
+                            auth.getCurrentUser().reload().addOnCompleteListener(reloadTask -> {
+                                if (reloadTask.isSuccessful() && currentUser.getUid() != null) {
+                                    verificarCorreo(currentUser);
+                                } else {
+                                    // La cuenta no existe en Firebase
+                                    auth.signOut();
+                                    googleSignInClient.signOut();
+                                    mensaje("Esta cuenta fue eliminada. Por favor, regístrate nuevamente.");
+                                }
+                            });
+                        }
                     } else {
                         mensaje(task.getException().getLocalizedMessage());
                     }
