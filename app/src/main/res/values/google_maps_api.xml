@@ -2,6 +2,6 @@
 <resources>
 <string name="google_maps_key" templateMergeStrategy="preserve"
     translatable="false">
-AIzaSyDzBKVlRRUNo1g2Z-Rwueb24MvoUm7mwmk
+//Api borrada por seguridad
 </string>
 </resources>
