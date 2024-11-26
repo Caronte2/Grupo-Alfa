@@ -13,7 +13,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentContainerView;
 
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -24,14 +29,34 @@ public class Tab2 extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab2, container, false);
 
         // Obtener el botón de Reservar
         Button reservarButton = view.findViewById(R.id.reservar);
         ImageView like = view.findViewById(R.id.like);
         ImageView dislike = view.findViewById(R.id.dislike);
+
+        // Mapa de Google pequeño
+        FloatingActionButton openMapButton = view.findViewById(R.id.openMapButton);
+        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaPequeño);
+
+        // Configurar el mapa pequeño
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(new OnMapReadyCallback() {
+                @Override
+                public void onMapReady(GoogleMap googleMap) {
+                    googleMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+                }
+            });
+        }
+        // Configurar el botón para abrir el mapa grande
+        openMapButton.setOnClickListener(v -> {
+            // Iniciar la actividad de mapa grande
+            Intent intent = new Intent(getActivity(), MapaActivity.class);
+            startActivity(intent);
+        });
 
         // Configurar el comportamiento del botón de Reservar
         reservarButton.setOnClickListener(new View.OnClickListener() {

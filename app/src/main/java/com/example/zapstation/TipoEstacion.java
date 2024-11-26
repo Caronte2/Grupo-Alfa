@@ -1,0 +1,35 @@
+package com.example.zapstation;
+
+public enum TipoEstacion {
+    OTROS ("Otros", R.drawable.otros),
+    RESTAURANTE ("Restaurante", R.drawable.restaurante),
+    BAR ("Bar", R.drawable.bar),
+    COPAS ("Copas", R.drawable.copas),
+    ESPECTACULO ("Espectáculo", R.drawable.espectaculos),
+    HOTEL ("Hotel", R.drawable.hotel),
+    COMPRAS ("Compras", R.drawable.compras),
+    EDUCACION ("Educación", R.drawable.educacion),
+    DEPORTE ("Deporte", R.drawable.deporte),
+    NATURALEZA ("Naturaleza", R.drawable.naturaleza),
+    GASOLINERA ("Gasolinera", R.drawable.gasolinera);
+
+    private final String texto;
+    private final int recurso;
+
+    TipoEstacion(String texto, int recurso) {
+        this.texto = texto;
+        this.recurso = recurso;
+    }
+
+    public String getTexto() { return texto; }
+    public int getRecurso() { return recurso; }
+
+    public static String[] getNombres() {
+        String[] resultado = new String[TipoEstacion.values().length];
+        for (TipoEstacion tipo : TipoEstacion.values()) {
+            resultado[tipo.ordinal()] = tipo.texto;
+        }
+        return resultado;
+    }
+
+}
