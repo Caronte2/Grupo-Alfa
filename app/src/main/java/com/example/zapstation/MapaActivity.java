@@ -31,21 +31,19 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
                 getSupportFragmentManager().findFragmentById(R.id.mapa);
         mapFragment.getMapAsync(this);
     }
-    @Override public void onMapReady(GoogleMap googleMap) {
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
         mapa = googleMap;
         mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-        if (ActivityCompat.checkSelfPermission(this,
-                ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mapa.setMyLocationEnabled(true);
             mapa.getUiSettings().setZoomControlsEnabled(true);
             mapa.getUiSettings().setCompassEnabled(true);
         }
-        if (estaciones.tamaño() > 0) {
-            GeoPunto p = estaciones.elemento(0).getPosicion();
-            mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(p.getLatitud(), p.getLongitud()), 10));
-        }
-        for (int n=0; n<estaciones.tamaño(); n++) {
+
+        // Agregar los marcadores en el mapa
+        for (int n = 0; n < estaciones.tamaño(); n++) {
             Estacion estacion = estaciones.elemento(n);
             GeoPunto p = estacion.getPosicion();
             if (p != null && p.getLatitud() != 0) {
@@ -59,5 +57,30 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
                         .icon(BitmapDescriptorFactory.fromBitmap(icono)));
             }
         }
+
+        // Agregar un listener para cuando se haga clic en un marcador
+        mapa.setOnMarkerClickListener(marker -> {
+            // Obtener la estación asociada al marcador
+            String estacionNombre = marker.getTitle();
+            String estacionDireccion = marker.getSnippet();
+
+            // Crear el Fragmento para mostrar la información de la estación
+            Tab2 tab2Fragment = new Tab2();
+
+            // Pasar la información de la estación a Tab2
+            Bundle args = new Bundle();
+            args.putString("estacion_nombre", estacionNombre);
+            args.putString("estacion_direccion", estacionDireccion);
+            tab2Fragment.setArguments(args);
+
+            // Reemplazar el fragmento actual por Tab2
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.mapa, tab2Fragment) // Asegúrate de que el contenedor sea el adecuado
+                    .addToBackStack(null)
+                    .commit();
+
+            return true;
+        });
     }
+
 }
