@@ -37,6 +37,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
     private EditText etNombreCompleto, etCorreo, etContraseña;
     private TextInputLayout tilNombre, tilCorreo, tilContraseña;
     private ProgressDialog dialogo;
+    ImageView btnTwitter;
 
     //Google
     private GoogleSignInClient googleSignInClient;
@@ -59,6 +60,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
         tilNombre = findViewById(R.id.til_nombre);
         tilCorreo = findViewById(R.id.til_correo);
         tilContraseña = findViewById(R.id.til_contraseña);
+        btnTwitter = findViewById(R.id.twitter);
         contenedor = findViewById(R.id.contenedor);
         dialogo = new ProgressDialog(this);
         dialogo.setTitle("Creando cuenta");
@@ -76,6 +78,13 @@ public class CustomRegisterActivity extends AppCompatActivity {
         // Botón(imageview) para registrarse con Google
         ImageView googleRegisterImageView = findViewById(R.id.googleRegisterImageView);
         googleRegisterImageView.setOnClickListener(this::autentificarGoogle);
+
+        //Twitter
+        // Botón para iniciar sesión con Twitter
+        btnTwitter.setOnClickListener(v -> {
+            Intent intent = new Intent(CustomRegisterActivity.this, TwitterActivity.class);
+            startActivity(intent);
+        });
     }
 
     public void autentificarGoogle(View v) {

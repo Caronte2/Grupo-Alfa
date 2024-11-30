@@ -2,12 +2,14 @@ package com.example.zapstation;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.AuthResult;
@@ -19,18 +21,15 @@ public class TwitterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_twitter); // Asegúrate de tener este layout
+        setContentView(R.layout.activity_twitter);
 
         firebaseAuth = FirebaseAuth.getInstance();
 
-        // Intenta obtener un resultado pendiente de autenticación
         Task<AuthResult> pendingResultTask = firebaseAuth.getPendingAuthResult();
 
-        // Si no hay un resultado pendiente, inicia el flujo de autenticación
         if (pendingResultTask == null) {
             startSignInWithTwitter();
         } else {
-            // Procesar el resultado pendiente
             pendingResultTask
                     .addOnSuccessListener(authResult -> handleUser(firebaseAuth.getCurrentUser()))
                     .addOnFailureListener(e ->
@@ -41,19 +40,29 @@ public class TwitterActivity extends AppCompatActivity {
 
     private void startSignInWithTwitter() {
         OAuthProvider.Builder provider = OAuthProvider.newBuilder("twitter.com");
-        provider.addCustomParameter("lang", "fr");
+        provider.addCustomParameter("lang", "es");
 
         firebaseAuth.startActivityForSignInWithProvider(this, provider.build())
                 .addOnSuccessListener(authResult -> handleUser(firebaseAuth.getCurrentUser()))
-                .addOnFailureListener(e ->
-                        Toast.makeText(TwitterActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
+                .addOnFailureListener(e -> {
+                    if (e instanceof FirebaseAuthUserCollisionException) {
+                        FirebaseAuthUserCollisionException collisionException = (FirebaseAuthUserCollisionException) e;
+                        String existingEmail = collisionException.getEmail();
+                        Log.e("TwitterActivity", "Colisión de cuentas: " + existingEmail, e);
+                        Toast.makeText(this, "Ya existe una cuenta con este correo. Inicie sesión con su otra cuenta.", Toast.LENGTH_LONG).show();
+                    } else {
+                        Toast.makeText(TwitterActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                        Log.e("TwitterActivity", "Error de autenticación", e);
+                    }
+                });
     }
 
     private void handleUser(FirebaseUser user) {
         if (user == null) return;
 
-        if (user.isEmailVerified() || user.getEmail() == null) {
+        Log.d("TwitterActivity", "Usuario autenticado: " + user.getUid() + ", Proveedores: " + user.getProviderData());
+
+        if (user.getEmail() == null || user.isEmailVerified()) {
             iniciarMainActivity();
         } else {
             enviarCorreoVerificacion(user);

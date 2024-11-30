@@ -41,6 +41,7 @@ dependencies {
     implementation ("com.google.firebase:firebase-firestore:24.2.0")
     implementation("com.google.android.gms:play-services-maps:19.0.0")
     implementation ("androidx.fragment:fragment:1.5.5")
+    implementation ("com.google.android.gms:play-services-location:18.0.0")
 
 
     implementation(libs.appcompat)
