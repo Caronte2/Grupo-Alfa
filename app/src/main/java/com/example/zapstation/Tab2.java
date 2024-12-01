@@ -1,12 +1,7 @@
 package com.example.zapstation;
 
-import static android.Manifest.permission.ACCESS_FINE_LOCATION;
-
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,19 +10,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentContainerView;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,43 +41,7 @@ public class Tab2 extends Fragment {
 
         // Mapa de Google pequeño
         FloatingActionButton openMapButton = view.findViewById(R.id.openMapButton);
-        SupportMapFragment mapFragment = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.mapaPequeño);
 
-        // Configurar el mapa pequeño
-        if (mapFragment != null) {
-            mapFragment.getMapAsync(new OnMapReadyCallback() {
-                @Override
-                public void onMapReady(GoogleMap googleMap) {
-                    mapa = googleMap;
-                    mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
-                    if (ActivityCompat.checkSelfPermission(getActivity(), ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                        mapa.setMyLocationEnabled(true);
-                        mapa.getUiSettings().setZoomControlsEnabled(true);
-                        mapa.getUiSettings().setCompassEnabled(true);
-                    }
-                    if (estaciones.tamaño() > 0) {
-                        GeoPunto p = estaciones.elemento(0).getPosicion();
-                        mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                                new LatLng(p.getLatitud(), p.getLongitud()), 10));
-                    }
-                    for (int n=0; n<estaciones.tamaño(); n++) {
-                        Estacion estacion = estaciones.elemento(n);
-                        GeoPunto p = estacion.getPosicion();
-                        if (p != null && p.getLatitud() != 0) {
-                            Bitmap iGrande = BitmapFactory.decodeResource(
-                                    getResources(), estacion.getTipo().getRecurso());
-                            Bitmap icono = Bitmap.createScaledBitmap(iGrande,
-                                    iGrande.getWidth() / 7, iGrande.getHeight() / 7, false);
-                            mapa.addMarker(new MarkerOptions()
-                                    .position(new LatLng(p.getLatitud(), p.getLongitud()))
-                                    .title(estacion.getNombre()).snippet(estacion.getDireccion())
-                                    .icon(BitmapDescriptorFactory.fromBitmap(icono)));
-                        }
-                    }
-
-                }
-            });
-        }
         // Configurar el botón para abrir el mapa grande
         openMapButton.setOnClickListener(v -> {
             // Iniciar la actividad de mapa grande

@@ -13,83 +13,79 @@
             android:id="@+id/reservar"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="200dp"
+            android:layout_marginTop="100dp"
             android:backgroundTint="#F9E104"
             android:text="Reservar"
             android:textColor="#000000"
             app:cornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mapaPequeño" />
+            app:layout_constraintTop_toBottomOf="@+id/nombreEstacion" />
 
-
-        <fragment
-            android:id="@+id/mapaPequeño"
-            android:name="com.google.android.gms.maps.SupportMapFragment"
-            android:layout_width="400dp"
-            android:layout_height="300dp"
-            android:layout_marginTop="10dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:context=".Tab2" />
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/openMapButton"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
+            android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="16dp"
-            android:layout_marginTop="5dp"
+            android:contextClickable="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/mapaPequeño"
+            app:layout_constraintTop_toBottomOf="@+id/textView15"
             app:srcCompat="@android:drawable/ic_menu_mylocation" />
 
         <ImageView
-            android:id="@+id/imageView7"
-            android:layout_width="80dp"
-            android:layout_height="150dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="248dp"
+            android:id="@+id/imagenEstacion"
+            android:layout_width="272dp"
+            android:layout_height="218dp"
+            android:layout_marginTop="10dp"
             android:scaleType="centerCrop"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/mapaFalso"
-            app:layout_constraintTop_toBottomOf="@+id/mapaPequeño"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             app:srcCompat="@drawable/ejemplo2" />
 
         <ImageView
             android:id="@+id/dislike"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="52dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginEnd="128dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.759"
-            app:layout_constraintStart_toEndOf="@+id/imageView7"
-            app:layout_constraintTop_toBottomOf="@+id/mapaPequeño"
+            app:layout_constraintTop_toBottomOf="@+id/nombreEstacion"
             app:srcCompat="@drawable/thumbs_down" />
 
         <ImageView
             android:id="@+id/like"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            app:layout_constraintEnd_toStartOf="@+id/dislike"
-            app:layout_constraintHorizontal_bias="0.629"
-            app:layout_constraintStart_toEndOf="@+id/imageView7"
-            app:layout_constraintTop_toBottomOf="@+id/textView2"
+            android:layout_marginStart="128dp"
+            android:layout_marginTop="30dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/nombreEstacion"
             app:srcCompat="@drawable/thumbs_up" />
 
         <TextView
-            android:id="@+id/textView2"
+            android:id="@+id/nombreEstacion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="10dp"
             android:text="Zap Station UPV Gandia"
-            app:layout_constraintStart_toEndOf="@+id/imageView7"
-            app:layout_constraintTop_toBottomOf="@+id/mapaPequeño" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/openMapButton" />
+
+        <TextView
+            android:id="@+id/textView15"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="Abrir mapa"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/imagenEstacion" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

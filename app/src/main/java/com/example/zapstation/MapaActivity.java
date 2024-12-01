@@ -3,6 +3,7 @@ package com.example.zapstation;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -10,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.widget.Button;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -39,6 +41,13 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
                 getSupportFragmentManager().findFragmentById(R.id.mapa);
         mapFragment.getMapAsync(this);
 
+        Button volver_atrasButton = findViewById(R.id.volver_atras2);
+        volver_atrasButton.setOnClickListener(v -> {
+            Intent intent = new Intent(MapaActivity.this, MainActivity.class);
+            intent.putExtra("tab_index", 1); // Cambiar al Tab2 (índice 1)
+            startActivity(intent);
+        });
+
         // Inicializar el LocationManager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
@@ -65,6 +74,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onProviderDisabled(String provider) {}
+
         };
 
         // Verificar permisos y solicitar ubicación

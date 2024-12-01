@@ -96,8 +96,9 @@
                         }
                     }).attach();
 
-            // Establecer la pestaña de Home como la activa por defecto (posición 2 si está verificado, posición 1 si no)
-            viewPager.setCurrentItem(correoVerificado ? 2 : 1, false);
+            // Obtener el índice del tab desde el Intent (predeterminado al tab inicial)
+            int tabIndex = getIntent().getIntExtra("tab_index", correoVerificado ? 2 : 1);
+            viewPager.setCurrentItem(tabIndex, false); // Cambiar al tab especificado
         }
 
         // Adaptador personalizado para gestionar los fragmentos asociados a las pestañas
