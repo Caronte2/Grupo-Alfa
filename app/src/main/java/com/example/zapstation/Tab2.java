@@ -2,12 +2,15 @@ package com.example.zapstation;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -44,9 +47,8 @@ public class Tab2 extends Fragment {
 
         // Configurar el botón para abrir el mapa grande
         openMapButton.setOnClickListener(v -> {
-            // Iniciar la actividad de mapa grande
             Intent intent = new Intent(getActivity(), MapaActivity.class);
-            startActivity(intent);
+            startActivityForResult(intent, 1); // Código de solicitud 1
         });
 
         // Configurar el comportamiento del botón de Reservar
@@ -126,5 +128,32 @@ public class Tab2 extends Fragment {
         // Mostrar el diálogo
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    // Manejar el resultado al regresar de MapaActivity
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && resultCode == getActivity().RESULT_OK && data != null) {
+            // Recuperar los datos de la estación seleccionada
+            String nombreEstacion = data.getStringExtra("nombreEstacion");
+            String direccionEstacion = data.getStringExtra("direccionEstacion");
+            String imagenEstacion = data.getStringExtra("imagenEstacion");
+
+            // Actualizar la interfaz del fragmento con los datos recibidos
+            mostrarDatosEstacion(nombreEstacion, direccionEstacion, imagenEstacion);
+        }
+    }
+
+    // Método para actualizar la interfaz
+    private void mostrarDatosEstacion(String nombre, String direccion, String imagen) {
+        TextView nombreTextView = getView().findViewById(R.id.nombreEstacion);
+        ImageView imagenImageView = getView().findViewById(R.id.imagenEstacion);
+
+        nombreTextView.setText(nombre);
+
+        Bitmap bitmap = BitmapFactory.decodeFile(imagen);
+        imagenImageView.setImageBitmap(bitmap);
     }
 }

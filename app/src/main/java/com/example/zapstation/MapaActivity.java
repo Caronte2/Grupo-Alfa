@@ -11,7 +11,9 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
@@ -30,6 +32,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
     private LocationManager locationManager;
     private LocationListener locationListener;
     private RepositorioEstaciones estaciones;
+    private Estacion estacionSeleccionada; // Variable para guardar la estación seleccionada
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -41,6 +44,23 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
                 getSupportFragmentManager().findFragmentById(R.id.mapa);
         mapFragment.getMapAsync(this);
 
+        // Botón "Ver Estación"
+        Button verEstacionButton = findViewById(R.id.verEstacion);
+        verEstacionButton.setOnClickListener(v -> {
+            if (estacionSeleccionada != null) {
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra("nombreEstacion", estacionSeleccionada.getNombre());
+                resultIntent.putExtra("imagenEstacion", estacionSeleccionada.getFoto());
+
+                // Enviar resultado y cerrar MapaActivity
+                setResult(RESULT_OK, resultIntent);
+                finish();
+            } else {
+                // Mostrar un mensaje si no se ha seleccionado ninguna estación
+                Toast.makeText(MapaActivity.this, "Por favor, selecciona una estación primero.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         Button volver_atrasButton = findViewById(R.id.volver_atras2);
         volver_atrasButton.setOnClickListener(v -> {
             Intent intent = new Intent(MapaActivity.this, MainActivity.class);
@@ -51,16 +71,12 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         // Inicializar el LocationManager
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        // Crear un LocationListener para obtener la ubicación
         locationListener = new LocationListener() {
             @Override
             public void onLocationChanged(Location location) {
                 if (mapa != null) {
-                    // Obtenemos la latitud y longitud
                     double latitude = location.getLatitude();
                     double longitude = location.getLongitude();
-
-                    // Mover la cámara a la ubicación actual del usuario
                     LatLng currentLocation = new LatLng(latitude, longitude);
                     mapa.moveCamera(CameraUpdateFactory.newLatLngZoom(currentLocation, 15));
                 }
@@ -74,14 +90,11 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
 
             @Override
             public void onProviderDisabled(String provider) {}
-
         };
 
-        // Verificar permisos y solicitar ubicación
         if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
         } else {
-            // Solicitar permiso al usuario si no se tiene
             ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
         }
     }
@@ -94,11 +107,9 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
 
         if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mapa.setMyLocationEnabled(true);
-            mapa.getUiSettings().setZoomControlsEnabled(true);
-            mapa.getUiSettings().setCompassEnabled(true);
         }
 
-        // Agregar los marcadores en el mapa (Estaciones)
+        // Agregar los marcadores en el mapa
         for (int n = 0; n < estaciones.tamaño(); n++) {
             Estacion estacion = estaciones.elemento(n);
             GeoPunto p = estacion.getPosicion();
@@ -109,27 +120,43 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
                         iGrande.getWidth() / 7, iGrande.getHeight() / 7, false);
                 mapa.addMarker(new MarkerOptions()
                         .position(new LatLng(p.getLatitud(), p.getLongitud()))
-                        .title(estacion.getNombre()).snippet(estacion.getDireccion())
+                        .title(estacion.getNombre())
+                        .snippet(estacion.getDireccion())
                         .icon(BitmapDescriptorFactory.fromBitmap(icono)));
             }
         }
+
+        // Configurar el listener de los marcadores
+        mapa.setOnMarkerClickListener(marker -> {
+            String estacionNombre = marker.getTitle();
+
+            // Buscar la estación correspondiente al marcador seleccionado
+            for (int i = 0; i < estaciones.tamaño(); i++) {
+                Estacion estacion = estaciones.elemento(i);
+                if (estacion.getNombre().equals(estacionNombre)) {
+                    estacionSeleccionada = estacion; // Guardar la estación seleccionada
+                    break;
+                }
+            }
+
+            // Mostrar un mensaje o realizar alguna acción
+            Toast.makeText(this, "Has seleccionado: " + estacionNombre, Toast.LENGTH_SHORT).show();
+            return true; // Indicar que el evento fue manejado
+        });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        // Dejar de recibir actualizaciones de ubicación cuando la actividad esté en pausa
         if (locationManager != null) {
             locationManager.removeUpdates(locationListener);
         }
     }
 
-    // Método para manejar la respuesta de los permisos
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == 1 && grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-            // Permiso concedido, iniciar el proceso de ubicación
             if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
             }
