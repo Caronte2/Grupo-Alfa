@@ -1,9 +1,11 @@
 package com.example.zapstation;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,8 +22,12 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import android.content.SharedPreferences;
 
 public class Tab2 extends Fragment {
+
+    private MediaPlayer mediaPlayer;
+    private float currentSongPosition = 0.0f;
 
     private GoogleMap mapa;
     private RepositorioEstaciones estaciones;
@@ -36,14 +42,15 @@ public class Tab2 extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.tab2, container, false);
 
-
         // Obtener el botón de Reservar
         Button reservarButton = view.findViewById(R.id.reservar);
-        ImageView like = view.findViewById(R.id.like);
-        ImageView dislike = view.findViewById(R.id.dislike);
 
         // Mapa de Google pequeño
         FloatingActionButton openMapButton = view.findViewById(R.id.openMapButton);
+
+        mediaPlayer = MediaPlayer.create(getActivity(), R.raw.bossa_velha);
+        mediaPlayer.setVolume(0.2f, 0.2f);
+        mediaPlayer.start();
 
         // Configurar el botón para abrir el mapa grande
         openMapButton.setOnClickListener(v -> {
@@ -66,33 +73,27 @@ public class Tab2 extends Fragment {
             }
         });
 
-        // Configurar el comportamiento del like
-        like.setOnClickListener(new View.OnClickListener() {
+        // Compartir estación
+        Button compartirEstacion = view.findViewById(R.id.compartirEstacion);
+        compartirEstacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
-                if (usuario != null) {
-                    // Si el usuario está autenticado, mostrar un mensaje de like
-                    Toast.makeText(getActivity(), "Valoración positiva", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Si el usuario no está autenticado, mostrar el AlertDialog
-                    mostrarDialogoRegistro();
-                }
-            }
-        });
+                TextView nombreTextView = view.findViewById(R.id.nombreEstacion);
+                TextView direccionTextView = view.findViewById(R.id.direccionEstacion);
 
-        // Configurar el comportamiento del dislike
-        dislike.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
-                if (usuario != null) {
-                    // Si el usuario está autenticado, mostrar un mensaje de dislike
-                    Toast.makeText(getActivity(), "Valoración negativa", Toast.LENGTH_SHORT).show();
-                } else {
-                    // Si el usuario no está autenticado, mostrar el AlertDialog
-                    mostrarDialogoRegistro();
-                }
+                String nombreEstacion = nombreTextView.getText().toString();
+                String direccionEstacion = direccionTextView != null ? direccionTextView.getText().toString() : "";
+
+                Intent compartir = new Intent(Intent.ACTION_SEND);
+                compartir.setType("text/plain");
+
+                String mensaje = "Estación de carga:\n" +
+                        "Nombre: " + nombreEstacion + "\n" +
+                        "Dirección: " + direccionEstacion + "\n" +
+                        "¡Carga tú coche en esta maravillosa estación!";
+                compartir.putExtra(Intent.EXTRA_TEXT, mensaje);
+
+                startActivity(Intent.createChooser(compartir, "Compartir estación"));
             }
         });
 
@@ -139,21 +140,63 @@ public class Tab2 extends Fragment {
             // Recuperar los datos de la estación seleccionada
             String nombreEstacion = data.getStringExtra("nombreEstacion");
             String direccionEstacion = data.getStringExtra("direccionEstacion");
-            String imagenEstacion = data.getStringExtra("imagenEstacion");
+            int fotoEstacion = data.getIntExtra("imagenEstacion", R.drawable.educacion); // Usa un valor por defecto
 
             // Actualizar la interfaz del fragmento con los datos recibidos
-            mostrarDatosEstacion(nombreEstacion, direccionEstacion, imagenEstacion);
+            mostrarDatosEstacion(nombreEstacion, direccionEstacion, fotoEstacion);
         }
     }
 
     // Método para actualizar la interfaz
-    private void mostrarDatosEstacion(String nombre, String direccion, String imagen) {
-        TextView nombreTextView = getView().findViewById(R.id.nombreEstacion);
+    private void mostrarDatosEstacion(String nombre, String direccion, int imagenResId) {
+        TextView nombreEstacion = getView().findViewById(R.id.nombreEstacion);
+        TextView direccionEstacion = getView().findViewById(R.id.direccionEstacion);
         ImageView imagenImageView = getView().findViewById(R.id.imagenEstacion);
 
-        nombreTextView.setText(nombre);
+        nombreEstacion.setText(nombre);
+        direccionEstacion.setText(direccion);
 
-        Bitmap bitmap = BitmapFactory.decodeFile(imagen);
-        imagenImageView.setImageBitmap(bitmap);
+        imagenImageView.setImageResource(imagenResId);
+
     }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Guardar la posición de la canción en SharedPreferences
+        currentSongPosition = mediaPlayer.getCurrentPosition() / 1000f; // Convertir a segundos
+        SharedPreferences preferences = getActivity().getSharedPreferences("MiAppPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putFloat("song_position", currentSongPosition);
+        editor.apply();
+
+        // Pausar la canción cuando el fragmento está en pausa
+        mediaPlayer.pause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        // Recuperar la posición de la canción guardada en SharedPreferences
+        SharedPreferences preferences = getActivity().getSharedPreferences("MiAppPrefs", Context.MODE_PRIVATE);
+        currentSongPosition = preferences.getFloat("song_position", 0.0f); // Valor por defecto es 0
+
+        // Reanudar la canción desde la posición guardada (convertir a milisegundos)
+        mediaPlayer.seekTo((int) (currentSongPosition * 1000)); // Convertir a milisegundos
+        mediaPlayer.start();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        // Liberar el MediaPlayer cuando el fragmento se destruya
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
+        }
+    }
+
 }

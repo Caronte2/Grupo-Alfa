@@ -50,7 +50,11 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
             if (estacionSeleccionada != null) {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("nombreEstacion", estacionSeleccionada.getNombre());
-                resultIntent.putExtra("imagenEstacion", estacionSeleccionada.getFoto());
+
+                int imagenResId = estacionSeleccionada.getFoto();
+                resultIntent.putExtra("imagenEstacion", imagenResId);
+
+                resultIntent.putExtra("direccionEstacion", estacionSeleccionada.getDireccion());
 
                 // Enviar resultado y cerrar MapaActivity
                 setResult(RESULT_OK, resultIntent);

@@ -5,7 +5,7 @@ public class Estacion {
     private String direccion;
     private com.example.zapstation.GeoPunto posicion;
     private com.example.zapstation.TipoEstacion tipo;
-    private String foto;
+    private int foto;
     private int telefono;
     private String url;
     private String comentario;
@@ -14,7 +14,7 @@ public class Estacion {
 
     public Estacion(String nombre, String direccion, double longitud,
                  double latitud, com.example.zapstation.TipoEstacion tipo, int telefono, String url, String comentario,
-                 int valoracion) {
+                 int valoracion, int foto) {
         fecha = System.currentTimeMillis();
         posicion = new com.example.zapstation.GeoPunto(longitud, latitud);
         this.nombre = nombre;
@@ -24,12 +24,14 @@ public class Estacion {
         this.url = url;
         this.comentario = comentario;
         this.valoracion = valoracion;
+        this.foto = foto;
     }
 
     public Estacion() {
         fecha = System.currentTimeMillis();
         posicion = new com.example.zapstation.GeoPunto(0.0,0.0);
         tipo = com.example.zapstation.TipoEstacion.OTROS;
+        this.foto = R.drawable.ejemplo2;
     }
 
     public String getNombre() {
@@ -56,13 +58,9 @@ public class Estacion {
         this.posicion = posicion;
     }
 
-    public String getFoto() {
-        return foto;
-    }
+    public int getFoto() {return foto;}
 
-    public void setFoto(String foto) {
-        this.foto = foto;
-    }
+    public void setFoto(int foto) {this.foto = foto;}
 
     public int getTelefono() {
         return telefono;
