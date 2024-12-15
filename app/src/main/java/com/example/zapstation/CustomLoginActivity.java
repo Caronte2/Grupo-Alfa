@@ -1,6 +1,7 @@
 package com.example.zapstation;
 
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -8,8 +9,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -17,6 +21,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.textfield.TextInputLayout;
@@ -36,6 +42,7 @@ public class CustomLoginActivity extends AppCompatActivity {
     private GoogleSignInClient googleSignInClient;
     private static final int RC_GOOGLE_SIGN_IN = 123;
     ImageView btnTwitter;
+    TextView contrasenyaOlvidada;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +53,50 @@ public class CustomLoginActivity extends AppCompatActivity {
         initUIComponents();
         setupGoogleSignIn();
         verificaSiUsuarioValidado();
+
+        contrasenyaOlvidada = findViewById(R.id.contrasenyaOlvidada);
+        contrasenyaOlvidada.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cambiarContrasenya();
+            }
+        });
+
+    }
+
+    public void cambiarContrasenya(){
+        EditText resetMail = new EditText(CustomLoginActivity.this);
+        AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(CustomLoginActivity.this);
+        passwordResetDialog.setTitle("¿Quieres cambiar la contraseña?");
+        passwordResetDialog.setMessage("Escribe tu correo para recibir el link");
+        passwordResetDialog.setView(resetMail);
+
+        passwordResetDialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String mail= resetMail.getText().toString();
+                auth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(CustomLoginActivity.this, "Se ha enviado un link para cambiar la contraseña a tú correo.", Toast.LENGTH_SHORT).show();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(CustomLoginActivity.this, "Error, no se ha enviado el mensaje" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        passwordResetDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        passwordResetDialog.create().show();
     }
 
     private void initUIComponents() {
@@ -207,7 +258,7 @@ public class CustomLoginActivity extends AppCompatActivity {
         else if (contraseña.isEmpty()) tilContraseña.setError("Introduce una contraseña");
         else if (contraseña.length() < 6) tilContraseña.setError("Debe contener al menos 6 caracteres");
         else if (!contraseña.matches(".*[0-9].*")) tilContraseña.setError("Debe contener un número");
-        else if (!contraseña.matches(".*[A-Z].*")) tilContraseña.setError("Debe contener una letra mayúscula");
+        //else if (!contraseña.matches(".*[A-Z].*")) tilContraseña.setError("Debe contener una letra mayúscula");
         else return true;
 
         return false;

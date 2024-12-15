@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,8 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.Volley;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -33,6 +36,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Tab5 extends Fragment {
     private FirebaseUser usuario;
+    Button acercaDe, cambiarContrasenya;
+    private FirebaseAuth auth;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -46,6 +51,7 @@ public class Tab5 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflar el layout para este fragmento
         View view = inflater.inflate(R.layout.tab5, container, false);
+        auth = FirebaseAuth.getInstance();
 
         // Inicializar los TextViews
         TextView nombre = view.findViewById(R.id.nombre);
@@ -54,12 +60,20 @@ public class Tab5 extends Fragment {
         NetworkImageView foto = view.findViewById(R.id.imagen);
         ImageView btnCerrarSesion = view.findViewById(R.id.btn_cerrar_sesion);
 
-        Button acercaDe = view.findViewById(R.id.acercaDe);
+        acercaDe = view.findViewById(R.id.acercaDe);
         acercaDe.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AcercaDeActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        cambiarContrasenya = view.findViewById(R.id.cambiarContrasenya);
+        cambiarContrasenya.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                cambiarContrasenya();
             }
         });
 
@@ -116,6 +130,45 @@ public class Tab5 extends Fragment {
         }
 
         return view;
+    }
+
+    public void cambiarContrasenya(){
+        EditText resetMail = new EditText(getActivity());
+        AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(getActivity());
+        passwordResetDialog.setTitle("¿Quieres cambiar la contraseña?");
+        passwordResetDialog.setMessage("Escribe tu correo para recibir el link");
+        passwordResetDialog.setView(resetMail);
+
+        passwordResetDialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String mail= resetMail.getText().toString();
+                auth.sendPasswordResetEmail(mail).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Toast.makeText(getActivity(), "Se ha enviado un link para cambiar la contraseña a tú correo.", Toast.LENGTH_SHORT).show();
+                        FirebaseAuth.getInstance().signOut();
+                        Intent intent = new Intent(getActivity(), MainActivity.class);
+                        startActivity(intent);
+                        getActivity().finish();
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Toast.makeText(getActivity(), "Error, no se ha enviado el mensaje" + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
+
+        passwordResetDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+            }
+        });
+
+        passwordResetDialog.create().show();
     }
 
     // Método para mostrar el popup para confirmar si desea cerrar sesión

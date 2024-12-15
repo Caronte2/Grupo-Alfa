@@ -50,6 +50,8 @@ public class TwitterActivity extends AppCompatActivity {
                         String existingEmail = collisionException.getEmail();
                         Log.e("TwitterActivity", "Colisión de cuentas: " + existingEmail, e);
                         Toast.makeText(this, "Ya existe una cuenta con este correo. Inicie sesión con su otra cuenta.", Toast.LENGTH_LONG).show();
+                        Intent abrirLogin = new Intent(TwitterActivity.this, CustomLoginActivity.class);
+                        startActivity(abrirLogin);
                     } else {
                         Toast.makeText(TwitterActivity.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                         Log.e("TwitterActivity", "Error de autenticación", e);

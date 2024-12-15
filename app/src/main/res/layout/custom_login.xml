@@ -75,7 +75,7 @@
                 app:cornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView14" />
+                app:layout_constraintTop_toBottomOf="@+id/contrasenyaOlvidada" />
 
             <Button
                 android:id="@+id/firebase_ui"
@@ -170,13 +170,14 @@
                 app:layout_constraintTop_toBottomOf="@+id/inicio_sesion" />
 
             <TextView
-                android:id="@+id/textView14"
+                android:id="@+id/contrasenyaOlvidada"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:text="He olvidado mi contraseña"
                 android:textColor="#000000"
                 android:textSize="16sp"
+                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/til_contraseña" />
@@ -201,6 +202,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/textView8"
                 app:srcCompat="@drawable/google_icon" />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
