@@ -56,11 +56,11 @@
                 <EditText
                     android:id="@+id/contraseña"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="50dp"
                     android:hint="Contraseña"
                     android:imeOptions="actionDone"
                     android:inputType="textPassword"
-                    android:textSize="14sp" />
+                    android:textSize="10sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
@@ -142,7 +142,7 @@
                     android:hint="Correo electrónico"
                     android:imeOptions="actionNext"
                     android:inputType="textEmailAddress"
-                    android:textSize="14sp" />
+                    android:textSize="10sp" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <TextView
