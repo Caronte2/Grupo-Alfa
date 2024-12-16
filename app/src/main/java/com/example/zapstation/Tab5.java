@@ -32,12 +32,15 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserInfo;
 import com.google.android.material.button.MaterialButton;
+import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class Tab5 extends Fragment {
+
     private FirebaseUser usuario;
     Button acercaDe, cambiarContrasenya;
     private FirebaseAuth auth;
+    TextView nombre, correo, uid;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -54,11 +57,14 @@ public class Tab5 extends Fragment {
         auth = FirebaseAuth.getInstance();
 
         // Inicializar los TextViews
-        TextView nombre = view.findViewById(R.id.nombre);
-        TextView correo = view.findViewById(R.id.correo);
-        TextView uid = view.findViewById(R.id.uid);
+        nombre = view.findViewById(R.id.nombre);
+        correo = view.findViewById(R.id.correo);
+        uid = view.findViewById(R.id.uid);
         NetworkImageView foto = view.findViewById(R.id.imagen);
         ImageView btnCerrarSesion = view.findViewById(R.id.btn_cerrar_sesion);
+
+        Button btnEditarPerfil = view.findViewById(R.id.btnEditarPerfil);
+        btnEditarPerfil.setOnClickListener(v -> cambiarNombreCorreo());
 
         acercaDe = view.findViewById(R.id.acercaDe);
         acercaDe.setOnClickListener(new View.OnClickListener() {
@@ -127,9 +133,121 @@ public class Tab5 extends Fragment {
                 // Cargar imagen de usuario
                 foto.setImageUrl(urlImagen.toString(), lectorImagenes);
             }
+            else {
+                // Establecer imagen predeterminada
+                foto.setDefaultImageResId(R.drawable.foto_perfil_desconocido);
+            }
         }
 
         return view;
+    }
+
+    public void cambiarNombreCorreo() {
+        // Crear el layout para el diálogo
+        View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_editar_perfil, null);
+
+        // Inicializar campos del diálogo
+        EditText inputNombre = dialogView.findViewById(R.id.inputNombre);
+        EditText inputCorreo = dialogView.findViewById(R.id.inputCorreo);
+
+        // Mostrar datos actuales del usuario
+        if (usuario != null) {
+            inputNombre.setText(usuario.getDisplayName());
+            inputCorreo.setText(usuario.getEmail());
+        }
+
+        // Crear el diálogo
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("Editar Perfil")
+                .setView(dialogView)
+                .setPositiveButton("Guardar", null)
+                .setNegativeButton("Cancelar", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+
+        // Sobrescribir el botón positivo para validación
+        dialog.setOnShowListener(d -> {
+            Button btnGuardar = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            btnGuardar.setOnClickListener(v -> {
+                String nuevoNombre = inputNombre.getText().toString().trim();
+                String nuevoCorreo = inputCorreo.getText().toString().trim();
+
+                if (nuevoNombre.isEmpty() || nuevoCorreo.isEmpty()) {
+                    Toast.makeText(getActivity(), "Todos los campos son obligatorios", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // Comparar si el correo ha cambiado
+                String correoActual = usuario.getEmail();
+                boolean correoCambiado = !correoActual.equals(nuevoCorreo);
+
+                // Actualizar perfil de usuario
+                UserProfileChangeRequest perfil = new UserProfileChangeRequest.Builder()
+                        .setDisplayName(nuevoNombre)
+                        .build();
+
+                usuario.updateProfile(perfil)
+                        .addOnCompleteListener(task -> {
+                            if (task.isSuccessful()) {
+                                // Si el correo ha cambiado, actualizamos el correo
+                                if (correoCambiado) {
+                                    usuario.updateEmail(nuevoCorreo)
+                                            .addOnCompleteListener(emailTask -> {
+                                                if (emailTask.isSuccessful()) {
+                                                    // Actualizar Firestore
+                                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                                    db.collection("usuarios").document(usuario.getUid())
+                                                            .update("nombreCompleto", nuevoNombre)
+                                                            .addOnCompleteListener(firestoreTask -> {
+                                                                if (firestoreTask.isSuccessful()) {
+                                                                    // Cerrar sesión y redirigir al login si el correo ha cambiado
+                                                                    FirebaseAuth.getInstance().signOut();
+                                                                    Intent intent = new Intent(getActivity(), CustomLoginActivity.class);
+                                                                    startActivity(intent);
+                                                                    getActivity().finish();
+                                                                } else {
+                                                                    // Mostrar el error específico de Firestore
+                                                                    Toast.makeText(getActivity(), "Error al actualizar Firestore: " + firestoreTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                } else {
+                                                    // Mostrar el error específico de la actualización de correo
+                                                    Toast.makeText(getActivity(), "Error al actualizar el correo: " + emailTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(getActivity(), "Vuelva a iniciar sesión antes de cambiar de correo." + emailTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                } else {
+                                    // Si solo se cambió el nombre, solo actualizamos Firestore
+                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                    db.collection("usuarios").document(usuario.getUid())
+                                            .update("nombreCompleto", nuevoNombre)
+                                            .addOnCompleteListener(firestoreTask -> {
+                                                if (firestoreTask.isSuccessful()) {
+                                                    // Actualizamos la interfaz de usuario
+                                                    usuario.reload().addOnCompleteListener(reloadTask -> {
+                                                        if (reloadTask.isSuccessful()) {
+                                                            nombre.setText(usuario.getDisplayName());
+                                                            correo.setText(usuario.getEmail());
+                                                            Toast.makeText(getActivity(), "Perfil actualizado con éxito", Toast.LENGTH_SHORT).show();
+                                                            dialog.dismiss();
+                                                        } else {
+                                                            Toast.makeText(getActivity(), "Error al recargar los datos del usuario", Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                } else {
+                                                    // Mostrar el error específico de Firestore
+                                                    Toast.makeText(getActivity(), "Error al actualizar Firestore: " + firestoreTask.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                }
+                            } else {
+                                Toast.makeText(getActivity(), "Error al actualizar el nombre.", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            });
+        });
+
+        dialog.show();
     }
 
     public void cambiarContrasenya(){

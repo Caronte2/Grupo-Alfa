@@ -20,15 +20,15 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.snackbar.Snackbar;
-import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
-import java.util.HashMap;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 
+import java.util.HashMap;
 
 public class CustomRegisterActivity extends AppCompatActivity {
     private FirebaseAuth auth;
@@ -38,6 +38,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
     private TextInputLayout tilNombre, tilCorreo, tilContraseña;
     private ProgressDialog dialogo;
     ImageView btnTwitter;
+    Button iniciarSesion;
 
     //Google
     private GoogleSignInClient googleSignInClient;
@@ -65,6 +66,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
         dialogo = new ProgressDialog(this);
         dialogo.setTitle("Creando cuenta");
         dialogo.setMessage("Por favor espere...");
+        iniciarSesion = findViewById(R.id.inicio_sesion);
 
         Button registerButton = findViewById(R.id.registro);
         registerButton.setOnClickListener(this::registroCorreo);
@@ -73,6 +75,11 @@ public class CustomRegisterActivity extends AppCompatActivity {
         volver_atrasButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
+        });
+
+        iniciarSesion.setOnClickListener(v -> {
+            Intent login = new Intent(CustomRegisterActivity.this, CustomLoginActivity.class);
+            startActivity(login);
         });
 
         // Botón(imageview) para registrarse con Google
@@ -120,7 +127,10 @@ public class CustomRegisterActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         currentUser = auth.getCurrentUser();
-                        if (currentUser != null) verificarCorreo(currentUser);
+                        if (currentUser != null) {
+                            guardarUsuarioEnFirestore(currentUser, currentUser.getDisplayName()); // Guardar en Firestore
+                            verificarCorreo(currentUser);
+                        }
                     } else {
                         mensaje(task.getException().getLocalizedMessage());
                     }
@@ -154,7 +164,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
                             currentUser = auth.getCurrentUser();
                             if (currentUser != null) {
                                 enviarCorreoVerificacion(currentUser);
-                                guardarNombreEnFirestore(currentUser.getUid(), etNombreCompleto.getText().toString());
+                                guardarUsuarioEnFirestore(currentUser, etNombreCompleto.getText().toString()); // Guardar en Firestore
                             }
                         } else {
                             mensaje(task.getException().getLocalizedMessage());
@@ -163,14 +173,17 @@ public class CustomRegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void guardarNombreEnFirestore(String uid, String nombreCompleto) {
+    private void guardarUsuarioEnFirestore(FirebaseUser user, String nombreCompleto) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         HashMap<String, Object> usuario = new HashMap<>();
+        usuario.put("uid", user.getUid());
         usuario.put("nombreCompleto", nombreCompleto);
+        usuario.put("correo", user.getEmail()); // Guardar correo del usuario
+        usuario.put("metodoAutenticacion", user.getProviderId()); // Método de autenticación (email, google, twitter, etc.)
 
-        db.collection("usuarios").document(uid).set(usuario)
-                .addOnSuccessListener(aVoid -> mensaje("Nombre guardado correctamente"))
-                .addOnFailureListener(e -> mensaje("Error al guardar el nombre: " + e.getMessage()));
+        db.collection("usuarios").document(user.getUid()).set(usuario)
+                .addOnSuccessListener(aVoid -> mensaje("Usuario registrado correctamente en Firestore"))
+                .addOnFailureListener(e -> mensaje("Error al guardar el usuario: " + e.getMessage()));
     }
 
     private void enviarCorreoVerificacion(FirebaseUser user) {
