@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -30,6 +31,7 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class CustomLoginActivity extends AppCompatActivity {
     private FirebaseAuth auth;
@@ -43,12 +45,14 @@ public class CustomLoginActivity extends AppCompatActivity {
     private static final int RC_GOOGLE_SIGN_IN = 123;
     ImageView btnTwitter;
     TextView contrasenyaOlvidada;
+    private FirebaseFirestore firestore;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_login);
 
+        firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         initUIComponents();
         setupGoogleSignIn();
@@ -170,11 +174,21 @@ public class CustomLoginActivity extends AppCompatActivity {
 
     private void verificarCorreo(FirebaseUser user) {
         if (user.isEmailVerified()) {
-            iniciarMainActivity();
+            cargarDatosUsuario(user.getUid());
         } else {
             enviarCorreoVerificacion(user);
             Toast.makeText(this, "Verifica tu correo para continuar.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    private void cargarDatosUsuario(String uid) {
+        firestore.collection("users").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    iniciarMainActivity();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al cargar datos del usuario: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                });
     }
 
     private void enviarCorreoVerificacion(FirebaseUser user) {

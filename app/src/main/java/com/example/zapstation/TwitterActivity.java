@@ -13,6 +13,9 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.OAuthProvider;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
 
 public class TwitterActivity extends AppCompatActivity {
 
@@ -43,7 +46,13 @@ public class TwitterActivity extends AppCompatActivity {
         provider.addCustomParameter("lang", "es");
 
         firebaseAuth.startActivityForSignInWithProvider(this, provider.build())
-                .addOnSuccessListener(authResult -> handleUser(firebaseAuth.getCurrentUser()))
+                .addOnSuccessListener(authResult -> {
+                    FirebaseUser user = firebaseAuth.getCurrentUser();
+                    if (user != null) {
+                        handleUser(user);
+                        guardarUsuarioEnFirestore(user, user.getDisplayName()); // Guardar en Firestore
+                    }
+                })
                 .addOnFailureListener(e -> {
                     if (e instanceof FirebaseAuthUserCollisionException) {
                         FirebaseAuthUserCollisionException collisionException = (FirebaseAuthUserCollisionException) e;
@@ -58,6 +67,20 @@ public class TwitterActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    private void guardarUsuarioEnFirestore(FirebaseUser user, String nombreCompleto) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        HashMap<String, Object> usuario = new HashMap<>();
+        usuario.put("uid", user.getUid());
+        usuario.put("nombreCompleto", nombreCompleto != null ? nombreCompleto : "Nombre no disponible"); // Nombre o algo por defecto
+        usuario.put("correo", user.getEmail()); // Guardar correo del usuario
+        usuario.put("metodoAutenticacion", user.getProviderId()); // Método de autenticación (email, google, twitter, etc.)
+
+        db.collection("usuarios").document(user.getUid()).set(usuario)
+                .addOnSuccessListener(aVoid -> Toast.makeText(TwitterActivity.this, "Usuario registrado correctamente en Firestore", Toast.LENGTH_LONG).show())
+                .addOnFailureListener(e -> Toast.makeText(TwitterActivity.this, "Error al guardar el usuario: " + e.getMessage(), Toast.LENGTH_LONG).show());
+    }
+
 
     private void handleUser(FirebaseUser user) {
         if (user == null) return;
@@ -84,6 +107,9 @@ public class TwitterActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Toast.makeText(this, "Correo de verificación enviado a: " + user.getEmail(), Toast.LENGTH_LONG).show();
+                        // Y lo enviamos al login
+                        Intent abrirLogin = new Intent(TwitterActivity.this, CustomLoginActivity.class);
+                        startActivity(abrirLogin);
                     } else {
                         Toast.makeText(this, "Error al enviar el correo: " + task.getException().getMessage(), Toast.LENGTH_LONG).show();
                     }
