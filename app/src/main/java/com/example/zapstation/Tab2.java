@@ -3,8 +3,6 @@ package com.example.zapstation;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -12,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -31,6 +30,8 @@ public class Tab2 extends Fragment {
 
     private GoogleMap mapa;
     private RepositorioEstaciones estaciones;
+
+    String comentarioEstacion;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,7 +91,7 @@ public class Tab2 extends Fragment {
                 String mensaje = "Estación de carga:\n" +
                         "Nombre: " + nombreEstacion + "\n" +
                         "Dirección: " + direccionEstacion + "\n" +
-                        "¡Carga tú coche en esta maravillosa estación!";
+                        "Comentario: " + comentarioEstacion;
                 compartir.putExtra(Intent.EXTRA_TEXT, mensaje);
 
                 startActivity(Intent.createChooser(compartir, "Compartir estación"));
@@ -140,22 +141,26 @@ public class Tab2 extends Fragment {
             // Recuperar los datos de la estación seleccionada
             String nombreEstacion = data.getStringExtra("nombreEstacion");
             String direccionEstacion = data.getStringExtra("direccionEstacion");
+            float valoracion = data.getFloatExtra("valoracion", 0.0f);
+            comentarioEstacion = data.getStringExtra("comentario");
+
             int fotoEstacion = data.getIntExtra("imagenEstacion", R.drawable.educacion); // Usa un valor por defecto
 
             // Actualizar la interfaz del fragmento con los datos recibidos
-            mostrarDatosEstacion(nombreEstacion, direccionEstacion, fotoEstacion);
+            mostrarDatosEstacion(nombreEstacion, direccionEstacion, fotoEstacion, valoracion);
         }
     }
 
     // Método para actualizar la interfaz
-    private void mostrarDatosEstacion(String nombre, String direccion, int imagenResId) {
+    private void mostrarDatosEstacion(String nombre, String direccion, int imagenResId, float estrellas) {
         TextView nombreEstacion = getView().findViewById(R.id.nombreEstacion);
         TextView direccionEstacion = getView().findViewById(R.id.direccionEstacion);
         ImageView imagenImageView = getView().findViewById(R.id.imagenEstacion);
+        RatingBar valoracion = getView().findViewById(R.id.valoracion);
 
         nombreEstacion.setText(nombre);
         direccionEstacion.setText(direccion);
-
+        valoracion.setRating(estrellas);
         imagenImageView.setImageResource(imagenResId);
 
     }

@@ -40,18 +40,18 @@ public class EstacionesLista implements RepositorioEstaciones {
     public void añadeEjemplos() {
         añade(new com.example.zapstation.Estacion("Ajuntament de Sueca",
                 "Plaça de l'Ajuntament, 10, 46410 Sueca, València",
-                -0.310510, 39.202553, com.example.zapstation.TipoEstacion.HOTEL, 644306085, "https://www.sueca.es/",
-                "Mal lloc pa carregar el coche.", 3, R.drawable.foto_epsg));
+                -0.310510, 39.202553, com.example.zapstation.TipoEstacion.HOTEL, 644307085, "https://www.sueca.es/",
+                "Mal lloc pa carregar el coche.", 1, R.drawable.foto_epsg));
 
         añade(new com.example.zapstation.Estacion("Plaça de l'estació",
                 "Parque de la estación, 46410 Sueca, Valencia",
-                -0.308471, 39.205706, com.example.zapstation.TipoEstacion.HOTEL, 644306085, "https://www.sueca.es/",
+                -0.308471, 39.205706, com.example.zapstation.TipoEstacion.HOTEL, 644306095, "https://www.sueca.es/",
                 "Ñenfe Cercanias.", 4, R.drawable.punto_carga));
 
         añade(new com.example.zapstation.Estacion("Escuela Politécnica Superior de Gandía",
                 "C/ Paranimf, 1 46730 Gandia (SPAIN)",
-                -0.166093, 38.995656, com.example.zapstation.TipoEstacion.HOTEL, 644306085, "https://www.sueca.es/",
-                "Ñenfe Cercanias.", 4, R.drawable.punto_carga));
+                -0.166093, 38.995656, com.example.zapstation.TipoEstacion.HOTEL, 962849300, "http://www.epsg.upv.es",
+                "Uno de los mejores lugares para formarse.", 5, R.drawable.cochecargando));
     }
 
         /*public static List<Lugar> añadeEjemplos2() {

@@ -10,7 +10,7 @@ public class Estacion {
     private String url;
     private String comentario;
     private long fecha;
-    private float valoracion;
+    private int valoracion;
 
     public Estacion(String nombre, String direccion, double longitud,
                  double latitud, com.example.zapstation.TipoEstacion tipo, int telefono, String url, String comentario,
@@ -98,7 +98,7 @@ public class Estacion {
         return valoracion;
     }
 
-    public void setValoracion(float valoracion) {
+    public void setValoracion(int valoracion) {
         this.valoracion = valoracion;
     }
 

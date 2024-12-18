@@ -11,6 +11,7 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -50,11 +51,12 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
             if (estacionSeleccionada != null) {
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra("nombreEstacion", estacionSeleccionada.getNombre());
+                resultIntent.putExtra("direccionEstacion", estacionSeleccionada.getDireccion());
+                resultIntent.putExtra("valoracion", estacionSeleccionada.getValoracion());
+                resultIntent.putExtra("comentario", estacionSeleccionada.getComentario());
 
                 int imagenResId = estacionSeleccionada.getFoto();
                 resultIntent.putExtra("imagenEstacion", imagenResId);
-
-                resultIntent.putExtra("direccionEstacion", estacionSeleccionada.getDireccion());
 
                 // Enviar resultado y cerrar MapaActivity
                 setResult(RESULT_OK, resultIntent);
