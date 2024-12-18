@@ -89,6 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:text="Compartir Estación"
+                    app:cornerRadius="10dp"
                     app:icon="@drawable/compartir"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

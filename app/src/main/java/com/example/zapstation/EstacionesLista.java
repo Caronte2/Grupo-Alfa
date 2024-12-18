@@ -47,6 +47,11 @@ public class EstacionesLista implements RepositorioEstaciones {
                 "Parque de la estación, 46410 Sueca, Valencia",
                 -0.308471, 39.205706, com.example.zapstation.TipoEstacion.HOTEL, 644306085, "https://www.sueca.es/",
                 "Ñenfe Cercanias.", 4, R.drawable.punto_carga));
+
+        añade(new com.example.zapstation.Estacion("Escuela Politécnica Superior de Gandía",
+                "C/ Paranimf, 1 46730 Gandia (SPAIN)",
+                -0.166093, 38.995656, com.example.zapstation.TipoEstacion.HOTEL, 644306085, "https://www.sueca.es/",
+                "Ñenfe Cercanias.", 4, R.drawable.punto_carga));
     }
 
         /*public static List<Lugar> añadeEjemplos2() {
