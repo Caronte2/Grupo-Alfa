@@ -1,5 +1,8 @@
 package com.example.zapstation;
 
+import android.Manifest;
+import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -9,9 +12,12 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 public class Tab4 extends Fragment {
+
     private boolean isCargaDetenida = false; // Variable para rastrear si se pulsó "Detener carga"
     private boolean isCargaIniciada = false; // Variable para rastrear si se pulsó "Iniciar carga"
     private TextView tiempoCargaActual;
@@ -46,11 +52,53 @@ public class Tab4 extends Fragment {
 
                 // Continuar la actualización periódica hasta que la carga esté completa
                 if (tiempoActual < 100 && porcentajeCarga < 100) {
-                    handler.postDelayed(this, 60000); // Actualización cada minuto
+                    handler.postDelayed(this, 5000); // Actualización cada minuto
                 }
             }
         }
     };
+
+    private static final int PERMISSION_REQUEST_CODE = 1;
+
+    // Método para verificar y solicitar permiso de notificaciones
+    private void verificarPermisoNotificaciones() {
+        // Verificamos si el permiso de notificaciones está concedido
+        if (ContextCompat.checkSelfPermission(getActivity(), Manifest.permission.POST_NOTIFICATIONS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Si no tiene el permiso, lo solicitamos
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.POST_NOTIFICATIONS},
+                    PERMISSION_REQUEST_CODE);
+        } else {
+            // Si ya tiene el permiso, podemos proceder a iniciar el servicio
+            iniciarServicioCargaCoche();
+        }
+    }
+
+    private void iniciarServicioCargaCoche() {
+        // Iniciar el servicio de carga del coche en primer plano
+        Intent servicioCargaIntent = new Intent(getActivity(), ServicioCargaCoche.class);
+        ContextCompat.startForegroundService(getActivity(), servicioCargaIntent);
+        Toast.makeText(getActivity(), "Servicio de carga iniciado", Toast.LENGTH_SHORT).show();
+
+        // Se inicia la actualización periódica
+        handler.postDelayed(actualizarTiemposRunnable, 500); // Comienza la actualización cada 500ms
+    }
+
+    // Manejo del resultado de la solicitud de permisos
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Si el permiso fue concedido, podemos iniciar el servicio
+                iniciarServicioCargaCoche();
+            } else {
+                // Si el permiso no fue concedido, muestra un mensaje
+                Toast.makeText(getActivity(), "Permiso para notificaciones denegado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,10 +121,8 @@ public class Tab4 extends Fragment {
         botonIniciarCarga.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                isCargaIniciada = true; // Iniciar la carga
-                Toast.makeText(getActivity(), "Carga iniciada", Toast.LENGTH_SHORT).show();
-                // Se inicia la actualización periódica
-                handler.postDelayed(actualizarTiemposRunnable, 500); // Comienza la actualización cada 500ms
+                verificarPermisoNotificaciones();
+                isCargaIniciada = true;
             }
         });
 
@@ -86,6 +132,9 @@ public class Tab4 extends Fragment {
             public void onClick(View v) {
                 isCargaDetenida = true; // Marcar que se ha detenido la carga
                 Toast.makeText(getActivity(), "Carga detenida correctamente", Toast.LENGTH_SHORT).show();
+
+                Intent servicioCargaIntent = new Intent(getActivity(), ServicioCargaCoche.class);
+                getActivity().stopService(servicioCargaIntent);
             }
         });
 
