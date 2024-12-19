@@ -15,29 +15,31 @@
 
             <Button
                 android:id="@+id/preciosLuz"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:layout_marginBottom="20dp"
                 android:backgroundTint="#F9E104"
                 android:text="Precios luz"
                 android:textColor="#000000"
+                app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/textView18"
-                app:layout_constraintStart_toStartOf="@+id/textView18"
+                app:layout_constraintEnd_toEndOf="@+id/botonPagar"
+                app:layout_constraintStart_toStartOf="@+id/botonPagar"
                 app:layout_constraintTop_toBottomOf="@+id/textView18" />
 
             <Button
                 android:id="@+id/botonPagar"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
                 android:backgroundTint="#F9E104"
                 android:text="Pagar"
                 android:textColor="#000000"
-                app:layout_constraintEnd_toEndOf="parent"
+                app:cornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/detenerCarga"
                 app:layout_constraintHorizontal_bias="0.501"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/detenerCarga"
                 app:layout_constraintTop_toBottomOf="@+id/detenerCarga" />
 
             <ImageView
@@ -70,14 +72,15 @@
 
             <Button
                 android:id="@+id/iniciarCarga"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:backgroundTint="#F9E104"
                 android:text="Iniciar carga"
                 android:textColor="#000000"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:cornerRadius="10dp"
+                app:layout_constraintEnd_toEndOf="@+id/detenerCarga"
+                app:layout_constraintStart_toStartOf="@+id/detenerCarga"
                 app:layout_constraintTop_toBottomOf="@+id/porcentajebateria" />
 
             <ImageView
@@ -121,6 +124,7 @@
                 android:backgroundTint="#F9E104"
                 android:text="Detener carga"
                 android:textColor="#000000"
+                app:cornerRadius="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tiempoCargaEstimado" />

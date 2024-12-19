@@ -33,6 +33,11 @@ public class Tab2 extends Fragment {
 
     String comentarioEstacion;
 
+    private Button reservarButton;
+    private Button compartirEstacion;
+
+    private boolean estacionSeleccionada = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +49,7 @@ public class Tab2 extends Fragment {
         View view = inflater.inflate(R.layout.tab2, container, false);
 
         // Obtener el botón de Reservar
-        Button reservarButton = view.findViewById(R.id.reservar);
+        reservarButton = view.findViewById(R.id.reservar);
 
         // Mapa de Google pequeño
         FloatingActionButton openMapButton = view.findViewById(R.id.openMapButton);
@@ -63,10 +68,18 @@ public class Tab2 extends Fragment {
         reservarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!estacionSeleccionada) { // Verificar si no hay estación seleccionada
+                    Toast.makeText(getActivity(), "Por favor, selecciona una estación primero.", Toast.LENGTH_SHORT).show();
+                    return; // Salir de la acción
+                }
+
                 FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
                 if (usuario != null) {
                     // Si el usuario está autenticado, mostrar un Toast
                     Toast.makeText(getActivity(), "Reserva confirmada", Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    intent.putExtra("tab_index", 3); // Cambiar al Tab4 (índice 3)
+                    startActivity(intent);
                 } else {
                     // Si el usuario no está autenticado, mostrar el AlertDialog
                     mostrarDialogoRegistro();
@@ -75,10 +88,15 @@ public class Tab2 extends Fragment {
         });
 
         // Compartir estación
-        Button compartirEstacion = view.findViewById(R.id.compartirEstacion);
+        compartirEstacion = view.findViewById(R.id.compartirEstacion);
         compartirEstacion.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!estacionSeleccionada) { // Verificar si no hay estación seleccionada
+                    Toast.makeText(getActivity(), "Por favor, selecciona una estación primero.", Toast.LENGTH_SHORT).show();
+                    return; // Salir de la acción
+                }
+
                 TextView nombreTextView = view.findViewById(R.id.nombreEstacion);
                 TextView direccionTextView = view.findViewById(R.id.direccionEstacion);
 
@@ -148,6 +166,8 @@ public class Tab2 extends Fragment {
 
             // Actualizar la interfaz del fragmento con los datos recibidos
             mostrarDatosEstacion(nombreEstacion, direccionEstacion, fotoEstacion, valoracion);
+
+            estacionSeleccionada = true;
         }
     }
 
