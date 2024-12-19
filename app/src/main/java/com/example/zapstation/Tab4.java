@@ -127,7 +127,6 @@ public class Tab4 extends Fragment {
         tiempoCargaActual = rootView.findViewById(R.id.tiempoCarga);
         tiempoCargaEstimado = rootView.findViewById(R.id.tiempoCargaEstimado);
         porcentajeBateria = rootView.findViewById(R.id.porcentajebateria);
-        // Obtener referencias a los botones y TextView
         recyclerViewPreciosLuz = rootView.findViewById(R.id.recyclerViewPreciosLuz);
 
         // Inicializar tiempos aleatorios y porcentaje al cargar la vista
