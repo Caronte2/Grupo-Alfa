@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
 
+    //Esto solo sirve para mostrar el splash screen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -18,10 +19,12 @@ public class SplashActivity extends AppCompatActivity {
 
         ImageView splashLogo = findViewById(R.id.splashLogo);
 
+        //Animación que se parece a la del Unity
         Animation scaleUp = AnimationUtils.loadAnimation(this, R.anim.intro_logo);
 
         splashLogo.startAnimation(scaleUp);
 
+        //Tiempo de espera antes de iniciar el MainActivity
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {

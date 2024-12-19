@@ -68,6 +68,7 @@ public class Tab5 extends Fragment {
         Button btnEditarPerfil = view.findViewById(R.id.btnEditarPerfil);
         btnEditarPerfil.setOnClickListener(v -> cambiarNombreCorreo());
 
+        //Abrir Acerca de
         acercaDe = view.findViewById(R.id.acercaDe);
         acercaDe.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -77,6 +78,7 @@ public class Tab5 extends Fragment {
             }
         });
 
+        //Boton para cambiar contraseña
         cambiarContrasenya = view.findViewById(R.id.cambiarContrasenya);
         cambiarContrasenya.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -99,6 +101,7 @@ public class Tab5 extends Fragment {
             }
         });
 
+        //Consultar el nombre del usuario en firestore
         if (usuario != null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             db.collection("usuarios").document(usuario.getUid()).get()
@@ -144,6 +147,7 @@ public class Tab5 extends Fragment {
         return view;
     }
 
+    //Metodo para cambiar el nombre o correo del usuario
     public void cambiarNombreCorreo() {
         // Crear el layout para el diálogo
         View dialogView = LayoutInflater.from(getActivity()).inflate(R.layout.dialog_editar_perfil, null);
@@ -252,6 +256,7 @@ public class Tab5 extends Fragment {
         dialog.show();
     }
 
+    //Metodo para cambiar la contraseña
     public void cambiarContrasenya(){
         EditText resetMail = new EditText(getActivity());
         AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(getActivity());
@@ -259,6 +264,7 @@ public class Tab5 extends Fragment {
         passwordResetDialog.setMessage("Escribe tu correo para recibir el link");
         passwordResetDialog.setView(resetMail);
 
+        //Sobrescribir el botón positivo para validación
         passwordResetDialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -281,6 +287,7 @@ public class Tab5 extends Fragment {
             }
         });
 
+        //Boton negativo para cerrar el dialogo
         passwordResetDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -324,6 +331,7 @@ public class Tab5 extends Fragment {
         dialog.show();
     }
 
+    //Este metodo solo sirve para cargar la foto de nuevo para solucionar el problema de que desaparece a veces
     @Override
     public void onResume() {
         super.onResume();

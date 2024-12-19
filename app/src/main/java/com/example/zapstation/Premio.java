@@ -1,6 +1,8 @@
 package com.example.zapstation;
 
 public class Premio {
+
+    //Clase POJO de los premios
     private String nombre;
     private int puntos;
     private int recursoImagen;

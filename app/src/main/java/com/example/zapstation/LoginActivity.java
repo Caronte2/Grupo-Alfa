@@ -27,6 +27,10 @@ import com.google.firebase.auth.FirebaseUser;
 import java.util.Arrays;
 import java.util.List;
 
+
+
+//ESTA YA NO SE USA PORQUE TENEMOS LA CUSTOMIZADA
+
 public class LoginActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 123;
     private FirebaseAuth mAuth;

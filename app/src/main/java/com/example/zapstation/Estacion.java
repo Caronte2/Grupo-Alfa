@@ -1,6 +1,8 @@
 package com.example.zapstation;
 
 public class Estacion {
+
+    //Clase Estación TODO: Hacerlo en Firestore
     private String nombre;
     private String direccion;
     private com.example.zapstation.GeoPunto posicion;

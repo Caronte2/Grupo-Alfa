@@ -12,9 +12,9 @@ import java.util.List;
 
 public class PrecioLuzAdapter extends RecyclerView.Adapter<PrecioLuzAdapter.PrecioLuzViewHolder> {
 
+    //Adaptador del precio de la luz
     private final List<PrecioLuz> precios;
 
-    // Constructor
     public PrecioLuzAdapter(List<PrecioLuz> precios) {
         this.precios = precios;
     }

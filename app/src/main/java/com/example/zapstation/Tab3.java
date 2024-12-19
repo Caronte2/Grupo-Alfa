@@ -34,8 +34,11 @@ public class Tab3 extends Fragment {
     @NonNull
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
+        //Inflar la vista del layout
         View view = inflater.inflate(R.layout.tab3, container, false);
 
+        //Inicialización del xml y obtener referencias
         Button loginButton = view.findViewById(R.id.loginButton);
         Button registrarButton = view.findViewById(R.id.registrarButton);
         TextView texto1 = view.findViewById(R.id.texto1);
@@ -45,15 +48,17 @@ public class Tab3 extends Fragment {
         ImageView mobil = view.findViewById(R.id.mobil);
         ImageView imagenRegistrado = view.findViewById(R.id.imagenRegistrado);
 
+        //Obtener usuario de Firebase
         FirebaseUser usuario = FirebaseAuth.getInstance().getCurrentUser();
 
         TextView textBienvenido = view.findViewById(R.id.textBienvenido);
 
+        //Comprobación de que el usuario tiene sus datos en Firestore para cargarlos
         if (usuario != null) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference docRef = db.collection("usuarios").document(usuario.getUid());
 
-            // Agregar SnapshotListener
+            // Agregar SnapshotListener por si hay cambios en tiempo real
             listenerRegistration = docRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
                 @Override
                 public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e) {
@@ -70,6 +75,7 @@ public class Tab3 extends Fragment {
             });
         }
 
+        //Esto es basura, TODO: Crear dos xml dependiendo de si el usuario esta registrado o no en vez de manejarlo en uno
         if (usuario == null) {
             loginButton.setVisibility(View.VISIBLE);
             registrarButton.setVisibility(View.VISIBLE);
@@ -83,12 +89,13 @@ public class Tab3 extends Fragment {
             texto4.setVisibility(View.GONE);
             imagenRegistrado.setVisibility(View.GONE);
 
-            //Llamada LoginAcitivy para usar firebase en el inicio de seión
+            //Llamada a CustomLoginActivity para usar firebase en el inicio de sesión
             loginButton.setOnClickListener(v -> {
                 Intent intent = new Intent(getActivity(), CustomLoginActivity.class); //CustomLogin o Login para cambiar la logica de inicio de sesion
                 startActivity(intent);
             });
 
+            //LLamada a CustomRegisterActivity para usar firebase en el registro
             registrarButton.setOnClickListener(v -> {
                 Intent intent = new Intent(getActivity(), CustomRegisterActivity.class);
                 startActivity(intent);
@@ -111,10 +118,10 @@ public class Tab3 extends Fragment {
         return view;
     }
 
+    // Eliminar el listener cuando la vista se destruya para evitar fugas de memoria
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Eliminar el listener cuando la vista se destruya para evitar fugas de memoria
         if (listenerRegistration != null) {
             listenerRegistration.remove();
         }

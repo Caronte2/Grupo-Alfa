@@ -37,6 +37,7 @@ public class EstacionesLista implements RepositorioEstaciones {
         listaEstaciones.set(id, estacion);
     }
 
+    //Lista de estaciones, TODO: Hacerlo en Firestore
     public void añadeEjemplos() {
         añade(new com.example.zapstation.Estacion("Ajuntament de Sueca",
                 "Plaça de l'Ajuntament, 10, 46410 Sueca, València",

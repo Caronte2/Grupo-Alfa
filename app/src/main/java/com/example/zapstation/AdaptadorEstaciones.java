@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class AdaptadorEstaciones extends RecyclerView.Adapter<AdaptadorEstaciones.ViewHolder> {
 
+    //Adaptador de estaciones
     protected View.OnClickListener onClickListener;
 
     protected com.example.zapstation.RepositorioEstaciones estaciones; // Lista de estaciones a mostrar

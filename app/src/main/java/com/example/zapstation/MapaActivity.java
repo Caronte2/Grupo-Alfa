@@ -29,17 +29,19 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 public class MapaActivity extends FragmentActivity implements OnMapReadyCallback {
 
+    //Variables globales
     private GoogleMap mapa;
     private LocationManager locationManager;
     private LocationListener locationListener;
     private RepositorioEstaciones estaciones;
-    private Estacion estacionSeleccionada; // Variable para guardar la estación seleccionada
+    private Estacion estacionSeleccionada;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapa);
 
+        //Para cojer las estaciones
         estaciones = ((Aplicacion) getApplication()).estaciones;
         SupportMapFragment mapFragment = (SupportMapFragment)
                 getSupportFragmentManager().findFragmentById(R.id.mapa);
@@ -67,6 +69,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
 
+        //Botón  para volver al tab2
         Button volver_atrasButton = findViewById(R.id.volver_atras2);
         volver_atrasButton.setOnClickListener(v -> {
             Intent intent = new Intent(MapaActivity.this, MainActivity.class);
@@ -98,6 +101,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
             public void onProviderDisabled(String provider) {}
         };
 
+        //Para pedir permisos
         if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
         } else {
@@ -105,12 +109,14 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //Metodo que devuelve el mapa de Google una vez cargado
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mapa = googleMap;
         mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mapa.getUiSettings().setZoomControlsEnabled(true);
 
+        //Comprueba si tiene permisos
         if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             mapa.setMyLocationEnabled(true);
         }
@@ -151,6 +157,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         });
     }
 
+    //Quitar los listeners
     @Override
     protected void onPause() {
         super.onPause();
@@ -159,6 +166,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    //Para los permisos
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

@@ -14,6 +14,7 @@ import java.util.List;
 
 public class PremioAdapter extends RecyclerView.Adapter<PremioAdapter.PremioViewHolder> {
 
+    //Adaptador de premios
     private final List<Premio> premios;
     private final OnPremioCanjearListener listener;
 

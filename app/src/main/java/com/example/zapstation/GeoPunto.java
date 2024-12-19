@@ -4,6 +4,8 @@ import java.util.Objects;
 
 public class GeoPunto {
 
+    //Para obtener la posición
+
     private double longitud, latitud;
 
     static public GeoPunto SIN_POSICION = new GeoPunto(0.0,0.0);

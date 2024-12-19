@@ -25,6 +25,7 @@ public class Tab1 extends Fragment {
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        //Inflar el layout
         View view = inflater.inflate(R.layout.tab1, container, false);
 
         // Configurar TextView de puntos
@@ -57,12 +58,13 @@ public class Tab1 extends Fragment {
             }
         });
 
+        //Adaptador
         recyclerView.setAdapter(adapter);
 
         return view;
     }
 
-    // Método para generar una lista de premios
+    // Lista de premios falsa, TODO: Que las coja de Firestore
     private List<Premio> obtenerListaPremios() {
         List<Premio> premios = new ArrayList<>();
         premios.add(new Premio("Café gratis", 20, R.drawable.img));

@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 public class ServicioCargaCoche extends Service {
+
+    //Canal y notificación del servicio
     private static final String CHANNEL_ID = "carga_coche_channel";
     private static final int NOTIFICACION_ID = 1;
 
@@ -26,6 +28,7 @@ public class ServicioCargaCoche extends Service {
     public void onCreate() {
         super.onCreate();
 
+        //Para diferentes versiones de Android
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(
                     CHANNEL_ID,
@@ -39,6 +42,7 @@ public class ServicioCargaCoche extends Service {
         }
     }
 
+    //Metodo para poner en primer plano
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Notification notification = crearNotificacion();
@@ -48,11 +52,13 @@ public class ServicioCargaCoche extends Service {
         return START_STICKY;
     }
 
+    //Para destruir
     @Override
     public void onDestroy() {
         super.onDestroy();
     }
 
+    //Metodo para crear la notificación
     private Notification crearNotificacion() {
         Intent intent = new Intent(this, MainActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);

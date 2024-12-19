@@ -55,6 +55,7 @@ public class Tab2 extends Fragment {
         // Mapa de Google pequeño
         FloatingActionButton openMapButton = view.findViewById(R.id.openMapButton);
 
+        //Canción y volumen bajo para no molestar
         mediaPlayer = MediaPlayer.create(getActivity(), R.raw.bossa_velha);
         mediaPlayer.setVolume(0.2f, 0.2f);
 
@@ -94,9 +95,10 @@ public class Tab2 extends Fragment {
             public void onClick(View v) {
                 if (!estacionSeleccionada) { // Verificar si no hay estación seleccionada
                     Toast.makeText(getActivity(), "Por favor, selecciona una estación primero.", Toast.LENGTH_SHORT).show();
-                    return; // Salir de la acción
+                    return;
                 }
 
+                //Obtener las referencias
                 TextView nombreTextView = view.findViewById(R.id.nombreEstacion);
                 TextView direccionTextView = view.findViewById(R.id.direccionEstacion);
 
@@ -112,6 +114,7 @@ public class Tab2 extends Fragment {
                         "Comentario: " + comentarioEstacion;
                 compartir.putExtra(Intent.EXTRA_TEXT, mensaje);
 
+                //Compartirla
                 startActivity(Intent.createChooser(compartir, "Compartir estación"));
             }
         });
@@ -119,6 +122,7 @@ public class Tab2 extends Fragment {
         return view;
     }
 
+    //Para arreglar el bug de que al pasar la pestaña por ecncima suena la música
     @Override
     public void setUserVisibleHint(boolean esVisibleElTab) {
         super.setUserVisibleHint(esVisibleElTab);
@@ -207,39 +211,31 @@ public class Tab2 extends Fragment {
     public void onPause() {
         super.onPause();
 
-        // Guardar la posición de la canción en SharedPreferences
-        currentSongPosition = mediaPlayer.getCurrentPosition() / 1000f; // Convertir a segundos
-        SharedPreferences preferences = getActivity().getSharedPreferences("MiAppPrefs", Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putFloat("song_position", currentSongPosition);
-        editor.apply();
-
-        // Pausar la canción cuando el fragmento está en pausa
-        mediaPlayer.pause();
+        // Guardar la posición de la canción en la variable estática
+        if (mediaPlayer != null && mediaPlayer.isPlaying()) {
+            currentSongPosition = mediaPlayer.getCurrentPosition() / 1000f;
+            mediaPlayer.pause();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
 
-        // Recuperar la posición de la canción guardada en SharedPreferences
-        SharedPreferences preferences = getActivity().getSharedPreferences("MiAppPrefs", Context.MODE_PRIVATE);
-        currentSongPosition = preferences.getFloat("song_position", 0.0f); // Valor por defecto es 0
-
-        // Reanudar la canción desde la posición guardada (convertir a milisegundos)
-        mediaPlayer.seekTo((int) (currentSongPosition * 1000)); // Convertir a milisegundos
-        mediaPlayer.start();
+        if (mediaPlayer != null) {
+            // Reanudar la canción desde la posición guardada
+            mediaPlayer.seekTo((int) (currentSongPosition * 1000));
+            mediaPlayer.start();
+        }
     }
 
+    // Liberar el MediaPlayer cuando el fragmento se destruya para evitar fugas de memorias o bugs
     @Override
     public void onDestroy() {
         super.onDestroy();
-
-        // Liberar el MediaPlayer cuando el fragmento se destruya
         if (mediaPlayer != null) {
             mediaPlayer.release();
             mediaPlayer = null;
         }
     }
-
 }

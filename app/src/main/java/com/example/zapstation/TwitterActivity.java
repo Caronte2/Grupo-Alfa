@@ -68,6 +68,7 @@ public class TwitterActivity extends AppCompatActivity {
                 });
     }
 
+    //Guardar usuario en firestore
     private void guardarUsuarioEnFirestore(FirebaseUser user, String nombreCompleto) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         HashMap<String, Object> usuario = new HashMap<>();
@@ -81,7 +82,7 @@ public class TwitterActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> Toast.makeText(TwitterActivity.this, "Error al guardar el usuario: " + e.getMessage(), Toast.LENGTH_LONG).show());
     }
 
-
+    // Comprobación tipo usuario
     private void handleUser(FirebaseUser user) {
         if (user == null) return;
 
@@ -94,6 +95,7 @@ public class TwitterActivity extends AppCompatActivity {
         }
     }
 
+    //Iniciar el mainActivity
     private void iniciarMainActivity() {
         Toast.makeText(this, "Iniciando sesión...", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(this, MainActivity.class);
@@ -102,6 +104,7 @@ public class TwitterActivity extends AppCompatActivity {
         finish();
     }
 
+    //Enviar correo para verificar a un usuario
     private void enviarCorreoVerificacion(FirebaseUser user) {
         user.sendEmailVerification()
                 .addOnCompleteListener(task -> {

@@ -70,8 +70,8 @@ public class Tab4 extends Fragment {
             }
         }
     };
-    ;
 
+    //Permisos
     private static final int PERMISSION_REQUEST_CODE = 1;
 
     // Método para verificar y solicitar permiso de notificaciones
@@ -89,6 +89,7 @@ public class Tab4 extends Fragment {
         }
     }
 
+    //Metodo para iniciar la lógica de carga
     private void iniciarServicioCargaCoche() {
         // Iniciar el servicio de carga del coche en primer plano
         Intent servicioCargaIntent = new Intent(getActivity(), ServicioCargaCoche.class);
@@ -206,8 +207,9 @@ public class Tab4 extends Fragment {
         tiempoCargaEstimado.setText("Tiempo de carga estimado: " + tiempoEstimado + " minutos");
         porcentajeBateria.setText("Batería al " + porcentajeCarga + "%");
 
-        // No se inicia la carga automáticamente
     }
+
+    //Lista mock para los precios de la luz, estaria bien usar la API de Iberdrola
     private List<PrecioLuz> generarListaPreciosLuz() {
         List<PrecioLuz> lista = new ArrayList<>();
         lista.add(new PrecioLuz(0.1507, "00:00 - 12:00", "Lunes"));
@@ -226,7 +228,9 @@ public class Tab4 extends Fragment {
         lista.add(new PrecioLuz(0.2490, "12:00 - 00:00", "Domingo"));
         return lista;
     }
-    @Override
+
+    //Destruir para no dejar fugas de memoria
+   @Override
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacks(actualizarTiemposRunnable);

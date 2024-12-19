@@ -34,6 +34,8 @@ import com.google.firebase.auth.GoogleAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class CustomLoginActivity extends AppCompatActivity {
+
+    //Variables globales
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private ViewGroup contenedor;
@@ -52,12 +54,14 @@ public class CustomLoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.custom_login);
 
+        //Obtener instancias de Firebase y FiresStore
         firestore = FirebaseFirestore.getInstance();
         auth = FirebaseAuth.getInstance();
         initUIComponents();
         setupGoogleSignIn();
         verificaSiUsuarioValidado();
 
+        //Botón para cambiar contraseña olvidada
         contrasenyaOlvidada = findViewById(R.id.contrasenyaOlvidada);
         contrasenyaOlvidada.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,13 +72,17 @@ public class CustomLoginActivity extends AppCompatActivity {
 
     }
 
+    //Metodo para cambiar contraseña olvidada
     public void cambiarContrasenya(){
+
+        //Crear un dialogo a base de un xml
         EditText resetMail = new EditText(CustomLoginActivity.this);
         AlertDialog.Builder passwordResetDialog = new AlertDialog.Builder(CustomLoginActivity.this);
         passwordResetDialog.setTitle("¿Quieres cambiar la contraseña?");
         passwordResetDialog.setMessage("Escribe tu correo para recibir el link");
         passwordResetDialog.setView(resetMail);
 
+        //Botón positivo
         passwordResetDialog.setPositiveButton("Si", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -93,6 +101,7 @@ public class CustomLoginActivity extends AppCompatActivity {
             }
         });
 
+        //Botón negativo para cerrarlo
         passwordResetDialog.setNegativeButton("No", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -103,6 +112,7 @@ public class CustomLoginActivity extends AppCompatActivity {
         passwordResetDialog.create().show();
     }
 
+    //Metodo para inicializar todos los componentes
     private void initUIComponents() {
         etCorreo = findViewById(R.id.correo);
         etContraseña = findViewById(R.id.contraseña);
@@ -172,6 +182,7 @@ public class CustomLoginActivity extends AppCompatActivity {
         }
     }
 
+    //Metodo para verificar correo
     private void verificarCorreo(FirebaseUser user) {
         if (user.isEmailVerified()) {
             cargarDatosUsuario(user.getUid());
@@ -181,6 +192,7 @@ public class CustomLoginActivity extends AppCompatActivity {
         }
     }
 
+    //Metodo para cargar los datos del usuario desde FireStore
     private void cargarDatosUsuario(String uid) {
         firestore.collection("users").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
@@ -191,6 +203,7 @@ public class CustomLoginActivity extends AppCompatActivity {
                 });
     }
 
+    //Para enivar el correo de verificación
     private void enviarCorreoVerificacion(FirebaseUser user) {
         user.sendEmailVerification().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -201,6 +214,7 @@ public class CustomLoginActivity extends AppCompatActivity {
         });
     }
 
+    //Metodo para autentificar con Google + lo de abajo
     public void autentificarGoogle(View v) {
         Intent i = googleSignInClient.getSignInIntent();
         startActivityForResult(i, RC_GOOGLE_SIGN_IN);
@@ -220,6 +234,8 @@ public class CustomLoginActivity extends AppCompatActivity {
         }
     }
 
+    //EEEE no lo voy a borrar por si hiciera algo porque esto es de lo más antiguo
+    //pero para el proximo Sprint si que lo borraré y lo probaré
     private void sugerirRegistro() {
         Snackbar.make(contenedor, "No se encontró una cuenta de Google. ¿Deseas registrarte?", Snackbar.LENGTH_LONG)
                 .setAction("Registrar", v -> {
@@ -228,6 +244,7 @@ public class CustomLoginActivity extends AppCompatActivity {
                 }).show();
     }
 
+    //Metodo para autentificar con Google + lo de abajo
     private void googleAuth(String idToken) {
         AuthCredential credential = GoogleAuthProvider.getCredential(idToken, null);
         auth.signInWithCredential(credential)
@@ -253,6 +270,7 @@ public class CustomLoginActivity extends AppCompatActivity {
                 });
     }
 
+    //Para iniciar el MainActivity
     private void iniciarMainActivity() {
         Toast.makeText(this, "Iniciando sesión...", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(this, MainActivity.class);
@@ -261,6 +279,7 @@ public class CustomLoginActivity extends AppCompatActivity {
         finish();
     }
 
+    //Para verificar los campos
     private boolean verificaCampos() {
         String correo = etCorreo.getText().toString();
         String contraseña = etContraseña.getText().toString();
@@ -273,6 +292,7 @@ public class CustomLoginActivity extends AppCompatActivity {
         else if (contraseña.length() < 6) tilContraseña.setError("Debe contener al menos 6 caracteres");
         else if (!contraseña.matches(".*[0-9].*")) tilContraseña.setError("Debe contener un número");
         //else if (!contraseña.matches(".*[A-Z].*")) tilContraseña.setError("Debe contener una letra mayúscula");
+        //Comentado porque luego hay problemas si cambio la contraseña
         else return true;
 
         return false;

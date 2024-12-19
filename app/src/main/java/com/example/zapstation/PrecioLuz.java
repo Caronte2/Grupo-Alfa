@@ -1,6 +1,8 @@
 package com.example.zapstation;
 
 public class PrecioLuz {
+
+    //Clase POJO del precio de la luz
     private double precioKWh;
     private String horario;
     private String diaSemana; // Nuevo campo

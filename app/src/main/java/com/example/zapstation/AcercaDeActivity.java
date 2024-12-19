@@ -8,11 +8,13 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AcercaDeActivity extends AppCompatActivity {
 
+    //Para mostrar la información de Acerca de
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acerca_de);
 
+        //Botón para volver atrás
         Button volver_atrasButton = findViewById(R.id.volver_atras);
         volver_atrasButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);

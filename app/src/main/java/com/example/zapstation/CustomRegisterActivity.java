@@ -31,6 +31,8 @@ import com.google.android.material.textfield.TextInputLayout;
 import java.util.HashMap;
 
 public class CustomRegisterActivity extends AppCompatActivity {
+
+    //Variables globales
     private FirebaseAuth auth;
     private FirebaseUser currentUser;
     private ViewGroup contenedor;
@@ -49,11 +51,13 @@ public class CustomRegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_custom_register);
 
+        //Obtener instancia de Firebase
         auth = FirebaseAuth.getInstance();
         initUIComponents();
         setupGoogleSignIn();
     }
 
+    //Metodo para inicializar todos los componentes
     private void initUIComponents() {
         etNombreCompleto = findViewById(R.id.etNombreCompleto); // Campo de nombre completo
         etCorreo = findViewById(R.id.correo);
@@ -71,12 +75,14 @@ public class CustomRegisterActivity extends AppCompatActivity {
         Button registerButton = findViewById(R.id.registro);
         registerButton.setOnClickListener(this::registroCorreo);
 
+        //Botón volver atras
         Button volver_atrasButton = findViewById(R.id.volver_atras);
         volver_atrasButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
             startActivity(intent);
         });
 
+        //Botón para iniciar sesión
         iniciarSesion.setOnClickListener(v -> {
             Intent login = new Intent(CustomRegisterActivity.this, CustomLoginActivity.class);
             startActivity(login);
@@ -94,6 +100,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
         });
     }
 
+    //Metodo para autentificar con Google + lo de abajo
     public void autentificarGoogle(View v) {
         Intent i = googleSignInClient.getSignInIntent();
         startActivityForResult(i, RC_GOOGLE_SIGN_IN);
@@ -137,6 +144,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
                 });
     }
 
+    //Metodo para verificar correo
     private void verificarCorreo(FirebaseUser user) {
         if (user.isEmailVerified()) {
             iniciarMainActivity();
@@ -146,6 +154,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
         }
     }
 
+    //Para iniciar el MainActivity
     private void iniciarMainActivity() {
         Toast.makeText(this, "Iniciando sesión...", Toast.LENGTH_SHORT).show();
         Intent i = new Intent(this, MainActivity.class);
@@ -154,6 +163,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
         finish();
     }
 
+    //Verifica el correo y agrega al usuario a Firebase
     public void registroCorreo(View v) {
         if (verificaCampos()) {
             dialogo.show();
@@ -173,6 +183,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
         }
     }
 
+    //Este si que es el que agrega al usuario a FireStore
     private void guardarUsuarioEnFirestore(FirebaseUser user, String nombreCompleto) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         HashMap<String, Object> usuario = new HashMap<>();
@@ -186,6 +197,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> mensaje("Error al guardar el usuario: " + e.getMessage()));
     }
 
+    //Para enivar el correo de verificación
     private void enviarCorreoVerificacion(FirebaseUser user) {
         user.sendEmailVerification().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -197,6 +209,7 @@ public class CustomRegisterActivity extends AppCompatActivity {
         });
     }
 
+    //Para verificar los campos
     private boolean verificaCampos() {
         String nombreCompleto = etNombreCompleto.getText().toString();
         String correo = etCorreo.getText().toString();
