@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.LruCache;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +42,7 @@ public class Tab5 extends Fragment {
     Button acercaDe, cambiarContrasenya;
     private FirebaseAuth auth;
     TextView nombre, correo, uid;
+    NetworkImageView foto;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -50,8 +52,8 @@ public class Tab5 extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         // Inflar el layout para este fragmento
         View view = inflater.inflate(R.layout.tab5, container, false);
         auth = FirebaseAuth.getInstance();
@@ -60,7 +62,7 @@ public class Tab5 extends Fragment {
         nombre = view.findViewById(R.id.nombre);
         correo = view.findViewById(R.id.correo);
         uid = view.findViewById(R.id.uid);
-        NetworkImageView foto = view.findViewById(R.id.imagen);
+        foto = view.findViewById(R.id.imagen);
         ImageView btnCerrarSesion = view.findViewById(R.id.btn_cerrar_sesion);
 
         Button btnEditarPerfil = view.findViewById(R.id.btnEditarPerfil);
@@ -320,6 +322,32 @@ public class Tab5 extends Fragment {
         // Mostrar el diálogo
         AlertDialog dialog = builder.create();
         dialog.show();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        if (usuario != null) {
+            Uri urlImagen = usuario.getPhotoUrl();
+            if (urlImagen != null) {
+                RequestQueue colaPeticiones = Volley.newRequestQueue(getContext());
+                ImageLoader lectorImagenes = new ImageLoader(colaPeticiones,
+                        new ImageLoader.ImageCache() {
+                            private final LruCache<String, Bitmap> cache = new LruCache<>(10);
+                            @Override
+                            public Bitmap getBitmap(String url) {
+                                return cache.get(url);
+                            }
+                            @Override
+                            public void putBitmap(String url, Bitmap bitmap) {
+                                cache.put(url, bitmap);
+                            }
+                        });
+
+                foto.setImageUrl(urlImagen.toString(), lectorImagenes);
+            }
+        }
     }
 
 }

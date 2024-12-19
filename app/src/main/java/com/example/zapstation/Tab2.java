@@ -37,6 +37,7 @@ public class Tab2 extends Fragment {
     private Button compartirEstacion;
 
     private boolean estacionSeleccionada = false;
+    private boolean esVisibleElTab = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -56,7 +57,6 @@ public class Tab2 extends Fragment {
 
         mediaPlayer = MediaPlayer.create(getActivity(), R.raw.bossa_velha);
         mediaPlayer.setVolume(0.2f, 0.2f);
-        mediaPlayer.start();
 
         // Configurar el botón para abrir el mapa grande
         openMapButton.setOnClickListener(v -> {
@@ -117,6 +117,24 @@ public class Tab2 extends Fragment {
         });
 
         return view;
+    }
+
+    @Override
+    public void setUserVisibleHint(boolean esVisibleElTab) {
+        super.setUserVisibleHint(esVisibleElTab);
+        this.esVisibleElTab = esVisibleElTab;
+
+        if (mediaPlayer != null) {
+            if (esVisibleElTab) {
+                // Reanudar la música cuando el tab sea visible
+                mediaPlayer.start();
+            } else {
+                // Pausar la música si el tab no está visible
+                if (mediaPlayer.isPlaying()) {
+                    mediaPlayer.pause();
+                }
+            }
+        }
     }
 
     // Mostrar el popup para confirmar si desea registrarse
