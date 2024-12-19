@@ -15,6 +15,11 @@ import android.widget.Toast;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class Tab4 extends Fragment {
 
@@ -27,6 +32,14 @@ public class Tab4 extends Fragment {
     private int tiempoActual; // Variable para tiempo de carga actual
     private int tiempoEstimado; // Variable para tiempo de carga estimado
     private int porcentajeCarga; // Variable para rastrear el porcentaje de carga
+
+    private Button preciosLuzButton;
+    private RecyclerView recyclerViewPreciosLuz;
+    private PrecioLuzAdapter adapter;
+    private Button botonPreciosLuz;
+    private boolean isRecyclerViewVisible = false; // Para alternar la visibilidad
+    private List<PrecioLuz> preciosLuzList;
+
 
     private final Handler handler = new Handler(); // Handler para actualizar periódicamente los tiempos
     private final Runnable actualizarTiemposRunnable = new Runnable() {
@@ -57,6 +70,7 @@ public class Tab4 extends Fragment {
             }
         }
     };
+    ;
 
     private static final int PERMISSION_REQUEST_CODE = 1;
 
@@ -105,16 +119,27 @@ public class Tab4 extends Fragment {
                              Bundle savedInstanceState) {
         // Inflar el layout del fragmento
         View rootView = inflater.inflate(R.layout.tab4, container, false);
-
         // Obtener referencias a los botones y TextView
         Button botonIniciarCarga = rootView.findViewById(R.id.iniciarCarga); // Referencia al botón "Iniciar carga"
         Button botonDetenerCarga = rootView.findViewById(R.id.detenerCarga);
         Button botonPagar = rootView.findViewById(R.id.botonPagar);
+        botonPreciosLuz = rootView.findViewById(R.id.preciosLuz); // Referencia al botón "Precios Luz"
         tiempoCargaActual = rootView.findViewById(R.id.tiempoCarga);
         tiempoCargaEstimado = rootView.findViewById(R.id.tiempoCargaEstimado);
         porcentajeBateria = rootView.findViewById(R.id.porcentajebateria);
+        // Obtener referencias a los botones y TextView
+        recyclerViewPreciosLuz = rootView.findViewById(R.id.recyclerViewPreciosLuz);
 
         // Inicializar tiempos aleatorios y porcentaje al cargar la vista
+        inicializarTiempos();
+
+        // Inicializar RecyclerView
+        recyclerViewPreciosLuz.setLayoutManager(new LinearLayoutManager(getContext()));
+        preciosLuzList = generarListaPreciosLuz(); // Genera datos de ejemplo
+        adapter = new PrecioLuzAdapter(preciosLuzList);
+        recyclerViewPreciosLuz.setAdapter(adapter);
+
+        recyclerViewPreciosLuz.setVisibility(View.GONE); // Inicialmente oculto
         inicializarTiempos();
 
         // Configurar listener para el botón "Iniciar carga"
@@ -151,6 +176,19 @@ public class Tab4 extends Fragment {
                 }
             }
         });
+        // Configurar listener para el botón "Precios Luz"
+        botonPreciosLuz.setOnClickListener(v -> {
+            // Verificar si el RecyclerView está visible y alternar su visibilidad
+            if (recyclerViewPreciosLuz.getVisibility() == View.VISIBLE) {
+                recyclerViewPreciosLuz.setVisibility(View.GONE);
+                Toast.makeText(getActivity(), "Ocultando precios de la luz", Toast.LENGTH_SHORT).show();
+            } else {
+                recyclerViewPreciosLuz.setVisibility(View.VISIBLE);
+                Toast.makeText(getActivity(), "Mostrando precios de la luz", Toast.LENGTH_SHORT).show();
+                // Notificar cambios en el adaptador (esto ahora debería funcionar)
+                adapter.notifyDataSetChanged();
+            }
+        });
 
         return rootView;
     }
@@ -171,11 +209,32 @@ public class Tab4 extends Fragment {
 
         // No se inicia la carga automáticamente
     }
-
+    private List<PrecioLuz> generarListaPreciosLuz() {
+        List<PrecioLuz> lista = new ArrayList<>();
+        lista.add(new PrecioLuz(0.1507, "00:00 - 12:00", "Lunes"));
+        lista.add(new PrecioLuz(0.2203, "12:00 - 00:00",  "Lunes"));
+        lista.add(new PrecioLuz(0.1423, "00:00 - 12:00", "Martes"));
+        lista.add(new PrecioLuz(0.2009, "12:00 - 00:00",  "Martes"));
+        lista.add(new PrecioLuz(0.1507, "00:00 - 12:00", "Miércoles"));
+        lista.add(new PrecioLuz(0.1485, "12:00 - 00:00",  "Miércoles"));
+        lista.add(new PrecioLuz(0.1423, "00:00 - 12:00", "Jueves"));
+        lista.add(new PrecioLuz(0.1489, "12:00 - 00:00",  "Jueves"));
+        lista.add(new PrecioLuz(0.0505, "00:00 - 12:00", "Viernes"));
+        lista.add(new PrecioLuz(0.2480, "12:00 - 00:00", "Viernes"));
+        lista.add(new PrecioLuz(0.1897, "00:00 - 12:00", "Sábado"));
+        lista.add(new PrecioLuz(0.2470, "12:00 - 00:00", "Sábado"));
+        lista.add(new PrecioLuz(0.1395, "00:00 - 12:00", "Domingo"));
+        lista.add(new PrecioLuz(0.2490, "12:00 - 00:00", "Domingo"));
+        return lista;
+    }
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        // Detener actualizaciones al destruir la vista
         handler.removeCallbacks(actualizarTiemposRunnable);
     }
 }
+
+
+
+
+
