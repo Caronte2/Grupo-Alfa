@@ -1,4 +1,4 @@
-package com.example.zapstation;
+package com.example.zapstation.data;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,12 +9,17 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zapstation.model.Aplicacion;
+import com.example.zapstation.model.Estacion;
+import com.example.zapstation.model.GeoPunto;
+import com.example.zapstation.R;
+
 public class AdaptadorEstaciones extends RecyclerView.Adapter<AdaptadorEstaciones.ViewHolder> {
 
     //Adaptador de estaciones
     protected View.OnClickListener onClickListener;
 
-    protected com.example.zapstation.RepositorioEstaciones estaciones; // Lista de estaciones a mostrar
+    protected RepositorioEstaciones estaciones; // Lista de estaciones a mostrar
     private int lugaresLimite = Integer.MAX_VALUE;
 
     public AdaptadorEstaciones(RepositorioEstaciones estaciones) {

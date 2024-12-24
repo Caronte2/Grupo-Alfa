@@ -1,6 +1,5 @@
-package com.example.zapstation;
+package com.example.zapstation.presentation;
 
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
@@ -17,11 +16,13 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.example.zapstation.R;
+import com.example.zapstation.data.RepositorioEstaciones;
+import com.example.zapstation.model.Aplicacion;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import android.content.SharedPreferences;
 
 public class Tab2 extends Fragment {
 

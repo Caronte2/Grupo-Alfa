@@ -1,4 +1,4 @@
-package com.example.zapstation;
+package com.example.zapstation.presentation;
 
 import android.app.Notification;
 import android.app.NotificationChannel;
@@ -11,6 +11,8 @@ import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+
+import com.example.zapstation.R;
 
 public class ServicioCargaCoche extends Service {
 

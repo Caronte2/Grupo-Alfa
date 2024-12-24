@@ -1,4 +1,4 @@
-package com.example.zapstation;
+package com.example.zapstation.model;
 
 public class Premio {
 

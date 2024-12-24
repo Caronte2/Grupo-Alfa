@@ -1,10 +1,12 @@
-package com.example.zapstation;
+package com.example.zapstation.presentation;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.zapstation.R;
 
 public class AcercaDeActivity extends AppCompatActivity {
 

@@ -1,4 +1,6 @@
-package com.example.zapstation;
+package com.example.zapstation.data;
+
+import com.example.zapstation.model.Estacion;
 
 public interface RepositorioEstaciones{
     Estacion elemento(int id); //Devuelve el elemento dado su id

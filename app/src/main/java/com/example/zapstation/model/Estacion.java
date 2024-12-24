@@ -1,12 +1,14 @@
-package com.example.zapstation;
+package com.example.zapstation.model;
+
+import com.example.zapstation.R;
 
 public class Estacion {
 
     //Clase Estación TODO: Hacerlo en Firestore
     private String nombre;
     private String direccion;
-    private com.example.zapstation.GeoPunto posicion;
-    private com.example.zapstation.TipoEstacion tipo;
+    private GeoPunto posicion;
+    private TipoEstacion tipo;
     private int foto;
     private int telefono;
     private String url;
@@ -15,10 +17,10 @@ public class Estacion {
     private int valoracion;
 
     public Estacion(String nombre, String direccion, double longitud,
-                 double latitud, com.example.zapstation.TipoEstacion tipo, int telefono, String url, String comentario,
-                 int valoracion, int foto) {
+                    double latitud, TipoEstacion tipo, int telefono, String url, String comentario,
+                    int valoracion, int foto) {
         fecha = System.currentTimeMillis();
-        posicion = new com.example.zapstation.GeoPunto(longitud, latitud);
+        posicion = new GeoPunto(longitud, latitud);
         this.nombre = nombre;
         this.direccion = direccion;
         this.tipo = tipo;
@@ -31,8 +33,8 @@ public class Estacion {
 
     public Estacion() {
         fecha = System.currentTimeMillis();
-        posicion = new com.example.zapstation.GeoPunto(0.0,0.0);
-        tipo = com.example.zapstation.TipoEstacion.OTROS;
+        posicion = new GeoPunto(0.0,0.0);
+        tipo = TipoEstacion.OTROS;
         this.foto = R.drawable.ejemplo2;
     }
 
@@ -52,7 +54,7 @@ public class Estacion {
         this.direccion = direccion;
     }
 
-    public com.example.zapstation.GeoPunto getPosicion() {
+    public GeoPunto getPosicion() {
         return posicion;
     }
 
@@ -104,7 +106,7 @@ public class Estacion {
         this.valoracion = valoracion;
     }
 
-    public com.example.zapstation.TipoEstacion getTipo() {
+    public TipoEstacion getTipo() {
         return tipo;
     }
 

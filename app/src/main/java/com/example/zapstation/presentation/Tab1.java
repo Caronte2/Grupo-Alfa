@@ -1,4 +1,4 @@
-package com.example.zapstation;
+package com.example.zapstation.presentation;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +10,10 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.zapstation.R;
+import com.example.zapstation.data.PremioAdapter;
+import com.example.zapstation.model.Premio;
 
 import java.util.ArrayList;
 import java.util.List;

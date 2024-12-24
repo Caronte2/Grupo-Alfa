@@ -1,4 +1,4 @@
-package com.example.zapstation;
+package com.example.zapstation.presentation;
 
 import static android.app.PendingIntent.getActivity;
 
@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.zapstation.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;

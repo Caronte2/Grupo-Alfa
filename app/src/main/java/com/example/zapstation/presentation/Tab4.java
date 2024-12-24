@@ -1,4 +1,4 @@
-package com.example.zapstation;
+package com.example.zapstation.presentation;
 
 import android.Manifest;
 import android.content.Intent;
@@ -17,6 +17,10 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.zapstation.R;
+import com.example.zapstation.data.PrecioLuzAdapter;
+import com.example.zapstation.model.PrecioLuz;
 
 import java.util.ArrayList;
 import java.util.List;

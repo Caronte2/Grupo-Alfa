@@ -1,4 +1,6 @@
-package com.example.zapstation;
+package com.example.zapstation.model;
+
+import com.example.zapstation.R;
 
 public enum TipoEstacion {
     OTROS ("Otros", R.drawable.otros),

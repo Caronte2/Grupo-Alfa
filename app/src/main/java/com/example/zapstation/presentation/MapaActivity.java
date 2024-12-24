@@ -1,4 +1,4 @@
-package com.example.zapstation;
+package com.example.zapstation.presentation;
 
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 
@@ -11,14 +11,17 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
+import com.example.zapstation.R;
+import com.example.zapstation.data.RepositorioEstaciones;
+import com.example.zapstation.model.Aplicacion;
+import com.example.zapstation.model.Estacion;
+import com.example.zapstation.model.GeoPunto;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
