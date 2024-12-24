@@ -4,6 +4,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,8 +18,6 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
 import com.example.zapstation.R;
-import com.example.zapstation.data.RepositorioEstaciones;
-import com.example.zapstation.model.Aplicacion;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -30,7 +29,6 @@ public class Tab2 extends Fragment {
     private float currentSongPosition = 0.0f;
 
     private GoogleMap mapa;
-    private RepositorioEstaciones estaciones;
 
     String comentarioEstacion;
 
@@ -43,7 +41,6 @@ public class Tab2 extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        estaciones = ((Aplicacion) getActivity().getApplication()).estaciones;
     }
 
     @Override
@@ -185,7 +182,7 @@ public class Tab2 extends Fragment {
             float valoracion = data.getFloatExtra("valoracion", 0.0f);
             comentarioEstacion = data.getStringExtra("comentario");
 
-            int fotoEstacion = data.getIntExtra("imagenEstacion", R.drawable.educacion); // Usa un valor por defecto
+            String fotoEstacion = data.getStringExtra("imagenEstacion");
 
             // Actualizar la interfaz del fragmento con los datos recibidos
             mostrarDatosEstacion(nombreEstacion, direccionEstacion, fotoEstacion, valoracion);
@@ -194,8 +191,7 @@ public class Tab2 extends Fragment {
         }
     }
 
-    // Método para actualizar la interfaz
-    private void mostrarDatosEstacion(String nombre, String direccion, int imagenResId, float estrellas) {
+    private void mostrarDatosEstacion(String nombre, String direccion, String imagenNombre, float estrellas) {
         TextView nombreEstacion = getView().findViewById(R.id.nombreEstacion);
         TextView direccionEstacion = getView().findViewById(R.id.direccionEstacion);
         ImageView imagenImageView = getView().findViewById(R.id.imagenEstacion);
@@ -204,8 +200,17 @@ public class Tab2 extends Fragment {
         nombreEstacion.setText(nombre);
         direccionEstacion.setText(direccion);
         valoracion.setRating(estrellas);
-        imagenImageView.setImageResource(imagenResId);
 
+        // Cargar la imagen desde los recursos usando el nombre de la imagen
+        int imagenResId = getResources().getIdentifier(imagenNombre, "drawable", getActivity().getPackageName());
+
+        if (imagenResId != 0) {
+            // Si la imagen se encuentra en los recursos, cargarla
+            imagenImageView.setImageResource(imagenResId);
+        } else {
+            // Si no se encuentra la imagen, puedes establecer una imagen por defecto
+            imagenImageView.setImageResource(R.drawable.ejemplo2);
+        }
     }
 
     @Override

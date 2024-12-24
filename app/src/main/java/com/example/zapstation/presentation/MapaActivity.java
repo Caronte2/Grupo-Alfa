@@ -11,17 +11,17 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import com.example.zapstation.R;
-import com.example.zapstation.data.RepositorioEstaciones;
-import com.example.zapstation.model.Aplicacion;
+import com.example.zapstation.data.EstacionesLista;
 import com.example.zapstation.model.Estacion;
-import com.example.zapstation.model.GeoPunto;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -29,50 +29,58 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MapaActivity extends FragmentActivity implements OnMapReadyCallback {
 
-    //Variables globales
     private GoogleMap mapa;
     private LocationManager locationManager;
     private LocationListener locationListener;
-    private RepositorioEstaciones estaciones;
     private Estacion estacionSeleccionada;
+
+    private FirebaseFirestore db;  // Firebase Firestore
+    private List<Estacion> estacionesList;  // Lista de estaciones cargadas
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapa);
 
-        //Para cojer las estaciones
-        estaciones = ((Aplicacion) getApplication()).estaciones;
-        SupportMapFragment mapFragment = (SupportMapFragment)
-                getSupportFragmentManager().findFragmentById(R.id.mapa);
-        mapFragment.getMapAsync(this);
+        //Solo se usa una vez pa subir a Firestore
+        //EstacionesLista estacionesLista = new EstacionesLista();
+        //estacionesLista.añadeEjemplos();
+
+        // Inicializar Firebase Firestore
+        db = FirebaseFirestore.getInstance();
+
+        // Inicializar la lista de estaciones
+        estacionesList = new ArrayList<>();
+
+        // Inicializar el mapa
+        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.mapa);
+        if (mapFragment != null) {
+            mapFragment.getMapAsync(this);  // Esto llamará a onMapReady cuando el mapa esté listo
+        }
 
         // Botón "Ver Estación"
         Button verEstacionButton = findViewById(R.id.verEstacion);
         verEstacionButton.setOnClickListener(v -> {
             if (estacionSeleccionada != null) {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra("nombreEstacion", estacionSeleccionada.getNombre());
-                resultIntent.putExtra("direccionEstacion", estacionSeleccionada.getDireccion());
-                resultIntent.putExtra("valoracion", estacionSeleccionada.getValoracion());
-                resultIntent.putExtra("comentario", estacionSeleccionada.getComentario());
-
-                int imagenResId = estacionSeleccionada.getFoto();
-                resultIntent.putExtra("imagenEstacion", imagenResId);
-
-                // Enviar resultado y cerrar MapaActivity
-                setResult(RESULT_OK, resultIntent);
-                finish();
+                // Cargar la información de la estación desde Firestore
+                cargarInformacionEstacion(estacionSeleccionada.getNombre());  // Buscar por el nombre de la estación
             } else {
                 // Mostrar un mensaje si no se ha seleccionado ninguna estación
                 Toast.makeText(MapaActivity.this, "Por favor, selecciona una estación primero.", Toast.LENGTH_SHORT).show();
             }
         });
 
-        //Botón  para volver al tab2
+        // Botón para volver al tab2
         Button volver_atrasButton = findViewById(R.id.volver_atras2);
         volver_atrasButton.setOnClickListener(v -> {
             Intent intent = new Intent(MapaActivity.this, MainActivity.class);
@@ -104,7 +112,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
             public void onProviderDisabled(String provider) {}
         };
 
-        //Para pedir permisos
+        // Para pedir permisos
         if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 10000, 10, locationListener);
         } else {
@@ -112,55 +120,103 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    //Metodo que devuelve el mapa de Google una vez cargado
+    // Método que devuelve el mapa de Google una vez cargado
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mapa = googleMap;
         mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mapa.getUiSettings().setZoomControlsEnabled(true);
 
-        //Comprueba si tiene permisos
-        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            mapa.setMyLocationEnabled(true);
-        }
+        // Ahora puedes agregar los marcadores, ya que el mapa está listo
+        cargarEstaciones();
 
-        // Agregar los marcadores en el mapa
-        for (int n = 0; n < estaciones.tamaño(); n++) {
-            Estacion estacion = estaciones.elemento(n);
-            GeoPunto p = estacion.getPosicion();
-            if (p != null && p.getLatitud() != 0) {
-                Bitmap iGrande = BitmapFactory.decodeResource(
-                        getResources(), estacion.getTipo().getRecurso());
-                Bitmap icono = Bitmap.createScaledBitmap(iGrande,
-                        iGrande.getWidth() / 7, iGrande.getHeight() / 7, false);
-                mapa.addMarker(new MarkerOptions()
-                        .position(new LatLng(p.getLatitud(), p.getLongitud()))
-                        .title(estacion.getNombre())
-                        .snippet(estacion.getDireccion())
-                        .icon(BitmapDescriptorFactory.fromBitmap(icono)));
-            }
-        }
-
-        // Configurar el listener de los marcadores
+        // Listener para cuando se hace clic en un marcador
         mapa.setOnMarkerClickListener(marker -> {
-            String estacionNombre = marker.getTitle();
-
-            // Buscar la estación correspondiente al marcador seleccionado
-            for (int i = 0; i < estaciones.tamaño(); i++) {
-                Estacion estacion = estaciones.elemento(i);
-                if (estacion.getNombre().equals(estacionNombre)) {
-                    estacionSeleccionada = estacion; // Guardar la estación seleccionada
+            // Solo se selecciona la estación correspondiente
+            for (Estacion estacion : estacionesList) {
+                if (marker.getTitle().equals(estacion.getNombre())) {
+                    estacionSeleccionada = estacion;
                     break;
                 }
             }
-
-            // Mostrar un mensaje o realizar alguna acción
-            Toast.makeText(this, "Has seleccionado: " + estacionNombre, Toast.LENGTH_SHORT).show();
-            return true; // Indicar que el evento fue manejado
+            // No abrir nada al hacer clic en el marcador
+            return false;  // Indica que el evento sigue siendo procesado
         });
     }
 
-    //Quitar los listeners
+    // Método para cargar estaciones desde Firestore
+    private void cargarEstaciones() {
+        db.collection("estaciones")  // Colección 'estaciones'
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Estacion estacion = document.toObject(Estacion.class);
+
+                            // Verificar si la estación tiene coordenadas válidas
+                            if (estacion != null && estacion.getPosicion() != null) {
+                                GeoPoint posicion = estacion.getPosicion();
+                                LatLng ubicacion = new LatLng(posicion.getLatitude(), posicion.getLongitude());
+
+                                // Agregar marcador al mapa
+                                agregarMarcador(estacion, ubicacion);
+
+                                // Agregar la estación a la lista
+                                estacionesList.add(estacion);
+                            }
+                        }
+                    } else {
+                        Toast.makeText(MapaActivity.this, "Error al cargar estaciones.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // Método para agregar marcador en el mapa
+    private void agregarMarcador(Estacion estacion, LatLng ubicacion) {
+        // Obtener el icono para el marcador
+        Bitmap iGrande = BitmapFactory.decodeResource(getResources(), R.drawable.hotel);
+        Bitmap icono = Bitmap.createScaledBitmap(iGrande, iGrande.getWidth() / 7, iGrande.getHeight() / 7, false);
+
+        // Agregar marcador al mapa
+        mapa.addMarker(new MarkerOptions()
+                .position(ubicacion)
+                .title(estacion.getNombre())
+                .snippet(estacion.getDireccion())
+                .icon(BitmapDescriptorFactory.fromBitmap(icono)));
+    }
+
+    // Método para cargar la información de la estación seleccionada desde Firestore
+    private void cargarInformacionEstacion(String estacionNombre) {
+        db.collection("estaciones")
+                .whereEqualTo("nombre", estacionNombre)  // Filtramos por nombre
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        for (QueryDocumentSnapshot document : task.getResult()) {
+                            Estacion estacion = document.toObject(Estacion.class);
+
+                            // Crear el Intent para pasar la información
+                            Intent resultIntent = new Intent();
+                            resultIntent.putExtra("nombreEstacion", estacion.getNombre());
+                            resultIntent.putExtra("direccionEstacion", estacion.getDireccion());
+                            resultIntent.putExtra("valoracion", (float) estacion.getValoracion());
+                            resultIntent.putExtra("comentario", estacion.getComentario());
+
+                            // Obtener la imagen (en este caso es un URL de imagen)
+                            resultIntent.putExtra("imagenEstacion", estacion.getFoto());
+                            //Log.d("IMAGEN-ESTACION", estacion.getFoto());
+
+                            // Enviar el resultado
+                            setResult(RESULT_OK, resultIntent);
+                            finish();
+                        }
+                    } else {
+                        Toast.makeText(MapaActivity.this, "No se encontró la información de la estación.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // Quitar los listeners
     @Override
     protected void onPause() {
         super.onPause();
@@ -169,7 +225,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    //Para los permisos
+    // Para los permisos
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);

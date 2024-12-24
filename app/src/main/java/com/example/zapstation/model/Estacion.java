@@ -1,43 +1,35 @@
 package com.example.zapstation.model;
 
-import com.example.zapstation.R;
+import com.google.firebase.firestore.GeoPoint;
 
 public class Estacion {
 
-    //Clase Estación TODO: Hacerlo en Firestore
     private String nombre;
     private String direccion;
-    private GeoPunto posicion;
-    private TipoEstacion tipo;
-    private int foto;
-    private int telefono;
-    private String url;
-    private String comentario;
-    private long fecha;
+    private GeoPoint posicion;  // Usamos GeoPoint para las coordenadas
+    private String tipo;
     private int valoracion;
+    private String comentario;  // Agregar comentario
+    private String foto;  // Puede ser URL de la imagen o el ID del recurso
+    private String paginaWeb;
+    private double telefono;
 
-    public Estacion(String nombre, String direccion, double longitud,
-                    double latitud, TipoEstacion tipo, int telefono, String url, String comentario,
-                    int valoracion, int foto) {
-        fecha = System.currentTimeMillis();
-        posicion = new GeoPunto(longitud, latitud);
+    // Constructor vacío para Firestore
+    public Estacion() {}
+
+    public Estacion(String nombre, String direccion, double latitud, double longitud, TipoEstacion tipo, double telefono, String paginaWeb, String comentario, int valoracion, String foto) {
         this.nombre = nombre;
         this.direccion = direccion;
-        this.tipo = tipo;
-        this.telefono = telefono;
-        this.url = url;
-        this.comentario = comentario;
+        this.posicion = new GeoPoint(longitud, latitud);  // Crear GeoPoint con latitud y longitud
+        this.tipo = tipo.name();  // Convertimos el tipo a String (si TipoEstacion es un enum)
         this.valoracion = valoracion;
+        this.comentario = comentario;
         this.foto = foto;
+        this.paginaWeb = paginaWeb;
+        this.telefono = telefono;
     }
 
-    public Estacion() {
-        fecha = System.currentTimeMillis();
-        posicion = new GeoPunto(0.0,0.0);
-        tipo = TipoEstacion.OTROS;
-        this.foto = R.drawable.ejemplo2;
-    }
-
+    // Getters y setters
     public String getNombre() {
         return nombre;
     }
@@ -54,51 +46,23 @@ public class Estacion {
         this.direccion = direccion;
     }
 
-    public GeoPunto getPosicion() {
+    public GeoPoint getPosicion() {
         return posicion;
     }
 
-    public void setPosicion(GeoPunto posicion) {
+    public void setPosicion(GeoPoint posicion) {
         this.posicion = posicion;
     }
 
-    public int getFoto() {return foto;}
-
-    public void setFoto(int foto) {this.foto = foto;}
-
-    public int getTelefono() {
-        return telefono;
+    public String getTipo() {
+        return tipo;
     }
 
-    public void setTelefono(int telefono) {
-        this.telefono = telefono;
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
     }
 
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getComentario() {
-        return comentario;
-    }
-
-    public void setComentario(String comentario) {
-        this.comentario = comentario;
-    }
-
-    public long getFecha() {
-        return fecha;
-    }
-
-    public void setFecha(long fecha) {
-        this.fecha = fecha;
-    }
-
-    public float getValoracion() {
+    public int getValoracion() {
         return valoracion;
     }
 
@@ -106,28 +70,34 @@ public class Estacion {
         this.valoracion = valoracion;
     }
 
-    public TipoEstacion getTipo() {
-        return tipo;
+    public String getComentario() {
+        return comentario;  // Método para obtener comentario
     }
 
-    public void setTipo(TipoEstacion tipo) {
-        this.tipo = tipo;
+    public void setComentario(String comentario) {
+        this.comentario = comentario;  // Método para establecer comentario
     }
+
+    public String getFoto() {
+        return foto;  // Método para obtener la foto
+    }
+
+    public void setFoto(String foto) {
+        this.foto = foto;  // Método para establecer la foto
+    }
+
+
 
     @Override
     public String toString() {
         return "Estacion{" +
                 "nombre='" + nombre + '\'' +
                 ", direccion='" + direccion + '\'' +
-                ", posicion=" + posicion +
-                ", tipo=" + tipo +
-                ", foto='" + foto + '\'' +
-                ", telefono=" + telefono +
-                ", url='" + url + '\'' +
-                ", comentario='" + comentario + '\'' +
-                ", fecha=" + fecha +
+                ", posicion=" + posicion.getLatitude() + ", " + posicion.getLongitude() +
+                ", tipo='" + tipo + '\'' +
                 ", valoracion=" + valoracion +
+                ", comentario='" + comentario + '\'' +
+                ", foto='" + foto + '\'' +
                 '}';
     }
-
 }
