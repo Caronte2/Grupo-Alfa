@@ -1,18 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
-
     <!-- Todos los permisos -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC"/>
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <application
-        android:name="Aplicacion"
+        android:name=".Aplicacion"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -22,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ZapStation"
         tools:targetApi="31">
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false" />
 
         <service
             android:name=".ServicioCargaCoche"
@@ -36,53 +38,40 @@
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".CustomRegisterActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".LoginActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
-
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".CustomLoginActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
-
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
         <activity
             android:name=".TwitterActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
+            android:screenOrientation="portrait"></activity>
 
-        </activity>
-
-        <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="@string/google_maps_key" />
-
-        <!--QUITAR EL COMENTARIO EN LA BUILDDDDD, ya esta-->
-        <activity android:name="MapaActivity"
-            android:screenOrientation="landscape">
-        </activity>
-
-        <activity android:name=".AcercaDeActivity"
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" /> <!-- QUITAR EL COMENTARIO EN LA BUILDDDDD, ya esta -->
+        <activity
+            android:name=".MapaActivity"
+            android:screenOrientation="landscape"></activity>
+        <activity
+            android:name=".AcercaDeActivity"
             android:exported="true"
-            android:screenOrientation="portrait">
-        </activity>
-
+            android:screenOrientation="portrait"></activity>
     </application>
 
 </manifest>

@@ -194,13 +194,43 @@ public class CustomLoginActivity extends AppCompatActivity {
 
     //Metodo para cargar los datos del usuario desde FireStore
     private void cargarDatosUsuario(String uid) {
-        firestore.collection("users").document(uid).get()
+        firestore.collection("usuarios").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
-                    iniciarMainActivity();
+                    // Verificar el rol del usuario
+                    verificarRol(uid);
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(this, "Error al cargar datos del usuario: " + e.getMessage(), Toast.LENGTH_LONG).show();
                 });
+    }
+
+    private void verificarRol(String uid) {
+        firestore.collection("usuarios").document(uid).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Verificar el rol del usuario
+                        String rol = documentSnapshot.getString("rol");
+                        if ("administrador".equals(rol)) {
+                            iniciarActividadAdmin();
+                        } else {
+                            // El usuario es un usuario normal, redirigir al MainActivity
+                            iniciarMainActivity();
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al verificar el rol: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    // Si hay un error en la consulta, también redirigir al MainActivity
+                    iniciarMainActivity();
+                });
+    }
+
+    private void iniciarActividadAdmin() {
+        Toast.makeText(this, "Bienvenido, administrador.", Toast.LENGTH_SHORT).show();
+        Intent adminIntent = new Intent(this, AdminActivity.class);
+        adminIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(adminIntent);
+        finish();
     }
 
     //Para enivar el correo de verificación

@@ -189,8 +189,9 @@ public class CustomRegisterActivity extends AppCompatActivity {
         HashMap<String, Object> usuario = new HashMap<>();
         usuario.put("uid", user.getUid());
         usuario.put("nombreCompleto", nombreCompleto);
-        usuario.put("correo", user.getEmail()); // Guardar correo del usuario
-        usuario.put("metodoAutenticacion", user.getProviderId()); // Método de autenticación (email, google, twitter, etc.)
+        usuario.put("correo", user.getEmail());
+        usuario.put("metodoAutenticacion", user.getProviderId());
+        usuario.put("rol", "usuario");
 
         db.collection("usuarios").document(user.getUid()).set(usuario)
                 .addOnSuccessListener(aVoid -> mensaje("Usuario registrado correctamente en Firestore"))
