@@ -70,7 +70,7 @@ public class Tab1 extends Fragment {
         return view;
     }
 
-    // Lista de premios falsa, TODO: Que las coja de Firestore
+    // Lista de premios falsa
     private List<Premio> obtenerListaPremios() {
         List<Premio> premios = new ArrayList<>();
         premios.add(new Premio("Café gratis", 100, R.drawable.img));
