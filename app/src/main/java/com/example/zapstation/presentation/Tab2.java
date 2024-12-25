@@ -78,6 +78,7 @@ public class Tab2 extends Fragment {
                     Toast.makeText(getActivity(), "Reserva confirmada", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     intent.putExtra("tab_index", 3); // Cambiar al Tab4 (índice 3)
+                    intent.putExtra("estacionSeleccionada", true);
                     startActivity(intent);
                 } else {
                     // Si el usuario no está autenticado, mostrar el AlertDialog

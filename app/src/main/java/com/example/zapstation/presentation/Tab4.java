@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,14 +22,21 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.zapstation.R;
 import com.example.zapstation.data.PrecioLuzAdapter;
 import com.example.zapstation.model.PrecioLuz;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class Tab4 extends Fragment {
 
     private boolean isCargaDetenida = false; // Variable para rastrear si se pulsó "Detener carga"
     private boolean isCargaIniciada = false; // Variable para rastrear si se pulsó "Iniciar carga"
+    private boolean estacionSelecionada;
     private TextView tiempoCargaActual;
     private TextView tiempoCargaEstimado;
     private TextView porcentajeBateria; // Nuevo TextView para mostrar el porcentaje de batería
@@ -49,13 +57,13 @@ public class Tab4 extends Fragment {
     private final Runnable actualizarTiemposRunnable = new Runnable() {
         @Override
         public void run() {
-            if (isCargaIniciada) {
+            if (isCargaIniciada && !isCargaDetenida) { // Asegurarse de no actualizar si se detuvo la carga
                 if (tiempoActual < tiempoEstimado) {
                     tiempoActual++; // Incrementar tiempo de carga actual
                 }
 
                 // Aumentar el porcentaje de carga basado en el tiempo actual
-                if (!isCargaDetenida && porcentajeCarga < 100) {
+                if (porcentajeCarga < 100) {
                     porcentajeCarga = Math.min(100, porcentajeCarga + 1); // Incrementa y asegura que no pase de 100%
                     porcentajeBateria.setText("Batería al " + porcentajeCarga + "%");
 
@@ -137,6 +145,9 @@ public class Tab4 extends Fragment {
         // Inicializar tiempos aleatorios y porcentaje al cargar la vista
         inicializarTiempos();
 
+        // Subir precios de luz al Firestore solo una vez
+        //subirPreciosLuzAFirestore();
+
         // Inicializar RecyclerView
         recyclerViewPreciosLuz.setLayoutManager(new LinearLayoutManager(getContext()));
         preciosLuzList = generarListaPreciosLuz(); // Genera datos de ejemplo
@@ -150,8 +161,25 @@ public class Tab4 extends Fragment {
         botonIniciarCarga.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                verificarPermisoNotificaciones();
-                isCargaIniciada = true;
+                Intent intent = getActivity().getIntent();
+                if (intent != null) { // Verifica que el Intent no sea null
+                    Bundle extras = intent.getExtras();
+                    if (extras != null && extras.containsKey("estacionSeleccionada")) { // Verifica que extras no sean null y contenga la clave
+                        estacionSelecionada = extras.getBoolean("estacionSeleccionada");
+                    } else {
+                        estacionSelecionada = false; // Si no hay extras, establece un valor predeterminado
+                    }
+                } else {
+                    estacionSelecionada = false; // Si el Intent es null, establece un valor predeterminado
+                }
+
+                if (!estacionSelecionada) {
+                    Toast.makeText(getActivity(), "Reserva una estación primero.", Toast.LENGTH_SHORT).show();
+                } else {
+                    verificarPermisoNotificaciones();
+                    isCargaIniciada = true;
+                    isCargaDetenida = false; // Reiniciar el estado de detención al iniciar
+                }
             }
         });
 
@@ -160,10 +188,17 @@ public class Tab4 extends Fragment {
             @Override
             public void onClick(View v) {
                 isCargaDetenida = true; // Marcar que se ha detenido la carga
+                isCargaIniciada = false; // Detener cualquier actualización de carga
                 Toast.makeText(getActivity(), "Carga detenida correctamente", Toast.LENGTH_SHORT).show();
 
                 Intent servicioCargaIntent = new Intent(getActivity(), ServicioCargaCoche.class);
                 getActivity().stopService(servicioCargaIntent);
+
+                // Calcular puntos proporcionalmente: 100 puntos por hora (60 minutos)
+                int puntosObtenidos = (tiempoActual * 100) / 60;
+                Tab1.puntosDisponibles += puntosObtenidos; // Sumar los puntos al total
+
+                Toast.makeText(getActivity(), "Has ganado " + puntosObtenidos + " puntos.", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -183,11 +218,11 @@ public class Tab4 extends Fragment {
         // Configurar listener para el botón "Precios Luz"
         botonPreciosLuz.setOnClickListener(v -> {
             // Verificar si el RecyclerView está visible y alternar su visibilidad
-            if (recyclerViewPreciosLuz.getVisibility() == View.VISIBLE) {
-                recyclerViewPreciosLuz.setVisibility(View.GONE);
+            if (recyclerViewPreciosLuz.getVisibility() == View.VISIBLE) {recyclerViewPreciosLuz.setVisibility(View.GONE);
                 Toast.makeText(getActivity(), "Ocultando precios de la luz", Toast.LENGTH_SHORT).show();
             } else {
                 recyclerViewPreciosLuz.setVisibility(View.VISIBLE);
+                cargarPreciosLuzDesdeFirestore();
                 Toast.makeText(getActivity(), "Mostrando precios de la luz", Toast.LENGTH_SHORT).show();
                 // Notificar cambios en el adaptador (esto ahora debería funcionar)
                 adapter.notifyDataSetChanged();
@@ -234,14 +269,78 @@ public class Tab4 extends Fragment {
     }
 
     //Destruir para no dejar fugas de memoria
-   @Override
+    @Override
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacks(actualizarTiemposRunnable);
     }
+
+    private void subirPreciosLuzAFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        List<PrecioLuz> listaPreciosLuz = generarListaPreciosLuz(); // Esta es la lista que quieres subir
+
+        for (PrecioLuz precioLuz : listaPreciosLuz) {
+            // Crear un mapa con los datos del precio de luz
+            Map<String, Object> precioLuzMap = new HashMap<>();
+            precioLuzMap.put("precio", precioLuz.getPrecioKWh());
+            precioLuzMap.put("hora", precioLuz.getHorario());
+            precioLuzMap.put("dia", precioLuz.getDiaSemana());
+
+            // Subir a Firestore en la colección "precios_luz"
+            db.collection("precios_luz")
+                    .add(precioLuzMap)
+                    .addOnSuccessListener(documentReference -> {
+                        Log.d("Firestore", "Precio de luz añadido con ID: " + documentReference.getId());
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("Firestore", "Error al añadir precio de luz", e);
+                    });
+        }
+    }
+
+    private void cargarPreciosLuzDesdeFirestore() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("precios_luz")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<PrecioLuz> listaPreciosLuz = new ArrayList<>();
+                    for (DocumentSnapshot document : queryDocumentSnapshots) {
+                        Double precio = document.getDouble("precio");
+                        String hora = document.getString("hora");
+                        String dia = document.getString("dia");
+
+                        if (precio != null && hora != null && dia != null) {
+                            listaPreciosLuz.add(new PrecioLuz(precio, hora, dia));
+                        }
+                    }
+
+                    // Ordenar la lista por día y luego por hora
+                    Collections.sort(listaPreciosLuz, new Comparator<PrecioLuz>() {
+                        @Override
+                        public int compare(PrecioLuz p1, PrecioLuz p2) {
+                            // Comparar por día
+                            int diaComparison = p1.getDiaSemana().compareTo(p2.getDiaSemana());
+                            if (diaComparison != 0) {
+                                return diaComparison;
+                            }
+                            // Si los días son iguales, comparar por hora
+                            return p1.getHorario().compareTo(p2.getHorario());
+                        }
+                    });
+
+                    // Actualizar el adaptador con la lista ordenada
+                    adapter = new PrecioLuzAdapter(listaPreciosLuz);
+                    recyclerViewPreciosLuz.setAdapter(adapter);
+                    recyclerViewPreciosLuz.setVisibility(View.VISIBLE);
+
+                    // Notificar al adaptador que los datos han cambiado
+                    adapter.notifyDataSetChanged();
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Firestore", "Error al cargar precios de luz", e);
+                    Toast.makeText(getActivity(), "Error al cargar los precios de luz", Toast.LENGTH_SHORT).show();
+                });
+    }
 }
-
-
-
-
-
