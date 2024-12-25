@@ -299,6 +299,8 @@ public class Tab4 extends Fragment {
         }
     }
 
+    //Para cargar toda la lista de precios desde el Firestore
+    // Método para cargar precios desde Firestore
     private void cargarPreciosLuzDesdeFirestore() {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -320,12 +322,12 @@ public class Tab4 extends Fragment {
                     Collections.sort(listaPreciosLuz, new Comparator<PrecioLuz>() {
                         @Override
                         public int compare(PrecioLuz p1, PrecioLuz p2) {
-                            // Comparar por día
-                            int diaComparison = p1.getDiaSemana().compareTo(p2.getDiaSemana());
+                            // Comparar por índice del día de la semana
+                            int diaComparison = Integer.compare(obtenerIndiceDiaSemana(p1.getDiaSemana()), obtenerIndiceDiaSemana(p2.getDiaSemana()));
                             if (diaComparison != 0) {
                                 return diaComparison;
                             }
-                            // Si los días son iguales, comparar por hora
+                            // Si los días son iguales, comparar por horario (hora)
                             return p1.getHorario().compareTo(p2.getHorario());
                         }
                     });
@@ -343,4 +345,27 @@ public class Tab4 extends Fragment {
                     Toast.makeText(getActivity(), "Error al cargar los precios de luz", Toast.LENGTH_SHORT).show();
                 });
     }
+
+    // Método para obtener el índice numérico del día de la semana
+    private int obtenerIndiceDiaSemana(String diaSemana) {
+        switch (diaSemana) {
+            case "Lunes":
+                return 0;
+            case "Martes":
+                return 1;
+            case "Miércoles":
+                return 2;
+            case "Jueves":
+                return 3;
+            case "Viernes":
+                return 4;
+            case "Sábado":
+                return 5;
+            case "Domingo":
+                return 6;
+            default:
+                return -1;
+        }
+    }
+
 }
