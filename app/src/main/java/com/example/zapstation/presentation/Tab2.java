@@ -152,7 +152,7 @@ public class Tab2 extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 // Lógica para ir a la actividad de registro (puedes adaptarla)
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
+                Intent intent = new Intent(getActivity(), CustomLoginActivity.class);
                 startActivity(intent);
             }
         });
