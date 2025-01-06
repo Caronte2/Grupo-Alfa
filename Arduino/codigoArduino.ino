@@ -7,8 +7,8 @@ const char* ssid = "Rusell pagame";
 const char* password = "123456789";
 //-----------------Sensor Ultrasonido-----------
 // Declaro los pines del sensor de ultrasonidos
-#define trigPin 5
-#define echoPin 18
+#define trigPin 26
+#define echoPin 36
 
 // Defino la velocidad del sonido
 #define velocidadSonido 0.034
@@ -29,7 +29,10 @@ char texto[200];
 //-------------------------------------------------------------------------------------------
 void setup() {
   //Inicio todo
+  M5.begin();
   Serial.begin(115200);
+  M5.Lcd.setTextSize(3);
+  M5.Lcd.setCursor(10, 10);
   //Configurar los pines del sensor de ULTRASONIDOS
   pinMode(trigPin, OUTPUT); // Salida
   pinMode(echoPin, INPUT); //Entrada
@@ -37,24 +40,26 @@ void setup() {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   if (WiFi.waitForConnectResult() != WL_CONNECTED){
-    Serial.println("Error al conectar a la WiFI");
+    M5.Lcd.println("Error al conectar a la WiFI");
     while(1){
       delay(1000);
     }
   }else{
-    Serial.println("Se a conectado correctamente");
+    M5.Lcd.println("Se a conectado correctamente");
   }
 
   if(udp.listen(5678)){
     Serial.print("UDP escuchando en IP: ");
-    Serial.println(WiFi.localIP());
+    M5.Lcd.println(WiFi.localIP());
     udp.onPacket([](AsyncUDPPacket packet){
       Serial.write(packet.data(), packet.length());
-      Serial.println();
+      M5.Lcd.println();
+      M5.Lcd.clear();
     });
   }else{
-    Serial.println("UDP no funciona");
+    M5.Lcd.println("UDP no funciona");
   }
+  
 }
 //------------------------------------------------------------------------------------------
 //                                      Loop
@@ -69,9 +74,11 @@ void loop() {
   serializeJson(jsonBuffer, texto);
   
   udp.broadcastTo(texto, 1234); // Enviar al puerto 1234
+  M5.Lcd.setCursor(10, 100);
   Serial.print("Enviado: ");
-  Serial.println(texto);
-  delay(1000);
+  M5.Lcd.println(texto);
+  delay(2000);
+  M5.Lcd.clear();
 }
 
 //------------------------------------------------------------------------------------------
@@ -92,5 +99,5 @@ void sensorUltrasonido(){
   // Calculo de la distancia
   distancia = duracion * velocidadSonido/2; 
 
-  Serial.println(distancia);
+  M5.Lcd.println(distancia);
 }
