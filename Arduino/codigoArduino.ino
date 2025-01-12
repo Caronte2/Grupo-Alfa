@@ -7,8 +7,8 @@ const char* ssid = "Rusell pagame";
 const char* password = "123456789";
 //-----------------Sensor Ultrasonido-----------
 // Declaro los pines del sensor de ultrasonidos
-#define trigPin 26
-#define echoPin 36
+#define trigPin 16
+#define echoPin 17
 
 // Defino la velocidad del sonido
 #define velocidadSonido 0.034
