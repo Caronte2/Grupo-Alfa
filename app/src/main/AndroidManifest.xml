@@ -72,6 +72,10 @@
             android:name=".presentation.AcercaDeActivity"
             android:exported="true"
             android:screenOrientation="portrait"></activity>
+
+        <activity
+            android:name=".Mqtt"
+            android:exported="true"></activity>
     </application>
 
 </manifest>

@@ -3,6 +3,7 @@ package com.example.zapstation;
 import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.TextView;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -14,69 +15,72 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
 public class Mqtt extends Activity implements MqttCallback {
 
-    private static final String topic = "dbayluj/test";
-    private static final String hello = "Bon dia Gandia";
-    private static final int qos = 1;
-    private static final boolean retain = false;
-    private static final String broker = "tcp://test.mosquitto.org:1883";
-    private static final String clientId = "Test134568789";
-    private MqttClient client;
+    private static final String TAG = "MqttActivity";
+    private TextView proximidad, gps;
+    private MqttClient mqttClient;
+    private final String serverUri = "tcp://broker.hivemq.com:1883"; //192.168.224.105 la raspberry
+    private final String topic = "proximidad/1";
+    private final String topic2 = "gps/1";
+    private final String clientId = "AndroidClient";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        try {
-            client = new MqttClient(broker, clientId, new
-                    MemoryPersistence()); // Conexión con el bróker
-            MqttConnectOptions connOpts = new
-                    MqttConnectOptions();
-            connOpts.setCleanSession(true);
-            connOpts.setKeepAliveInterval(60);
-            connOpts.setWill(topic,
-                    "Desconectada!".getBytes(), qos, retain);
-            client.connect(connOpts);
-            client.setCallback(this); // Callback
-            // Suscripción al tópico
-            client.subscribe(topic, qos);
-            Log.i("MQTT", "Suscripción al tópico: " +
-                    topic);
-            MqttMessage message = new
-                    MqttMessage(hello.getBytes());
-            message.setQos(qos);
-            client.publish(topic, message); // Envío
-            Log.i("MQTT", "Mensaje enviado: " + hello);
-        } catch (MqttException e) {
-            Log.e("MQTT", "Error al conectar con el bróker: " + e.getMessage());
-        }
-    }
+        setContentView(R.layout.mqtt);
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+        proximidad = findViewById(R.id.proximidad);
+        gps = findViewById(R.id.gps);
+
         try {
-            if (client != null && client.isConnected()) {
-                client.disconnect();
-                Log.i("MQTT", "Cliente desconectado");
-            }
+            mqttClient = new MqttClient(serverUri, clientId, new MemoryPersistence());
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setCleanSession(true);
+
+            mqttClient.setCallback(this);
+            mqttClient.connect(options);
+            mqttClient.subscribe(topic);
+            mqttClient.subscribe(topic2);
+
         } catch (MqttException e) {
-            Log.e("MQTT", "Error al desconectar el cliente: " + e.getMessage());
+            Log.e(TAG, "Error al conectar o suscribirse al broker MQTT", e);
         }
     }
 
     @Override
     public void connectionLost(Throwable cause) {
-        Log.i("MQTT", "Conexión perdida...");
+        Log.e(TAG, "Conexión perdida con el broker MQTT", cause);
+
+        // Intentar reconectar
+        try {
+            MqttConnectOptions options = new MqttConnectOptions();
+            options.setCleanSession(true);
+            mqttClient.connect(options);
+            mqttClient.subscribe(topic);
+            mqttClient.subscribe(topic2);
+            Log.i(TAG, "Reconexión exitosa");
+        } catch (MqttException e) {
+            Log.e(TAG, "Error al intentar reconectar", e);
+        }
     }
 
     @Override
-    public void messageArrived(String topic, MqttMessage mens) throws Exception {
-        String payload = new String(mens.getPayload());
-        Log.i("MQTT", "Hemos recibido el mensaje: " +
-                payload);
+    public void messageArrived(String topic, MqttMessage message) {
+        final String data = new String(message.getPayload());
+        Log.i(TAG, "Mensaje recibido en el tópico " + topic + ": " + data);
+        runOnUiThread(() -> {
+            switch (topic) {
+                case "proximidad/1":
+                    proximidad.setText("Proximidad: " + data + "m");
+                    break;
+                case "gps/1":
+                    gps.setText("GPS: " + data + "º");
+                    break;
+            }
+        });
     }
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
-        Log.i("MQTT", "Entrega completa!");
+        Log.i(TAG, "Mensaje entregado con éxito");
     }
 }
