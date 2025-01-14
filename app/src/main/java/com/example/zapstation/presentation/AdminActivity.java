@@ -64,6 +64,7 @@ public class AdminActivity extends AppCompatActivity {
         // Inicializar adaptador sin el listener
         adaptador = new EstacionAdapter(new FirestoreRecyclerOptions.Builder<Estacion>()
                 .setQuery(FirebaseFirestore.getInstance().collection("estaciones"), Estacion.class)
+                .setLifecycleOwner(this)
                 .build());
         recyclerView.setAdapter(adaptador);
 
