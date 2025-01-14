@@ -1,6 +1,5 @@
 package com.example.zapstation.presentation;
 
-
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -21,19 +20,16 @@ import com.example.zapstation.data.EstacionAdapter;
 import com.example.zapstation.model.Estacion;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
 public class AdminActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
     private EstacionAdapter adaptador;
-    private List<Estacion> listaEstaciones = new ArrayList<>();
     private FirebaseUser usuario;
 
     @Override
@@ -45,14 +41,17 @@ public class AdminActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        // Inicialización del adaptador antes de configurarlo en el RecyclerView
-        adaptador = new EstacionAdapter(new ArrayList<>());
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        // Inicializar adaptador sin el listener
+        adaptador = new EstacionAdapter(new FirestoreRecyclerOptions.Builder<Estacion>()
+                .setQuery(FirebaseFirestore.getInstance().collection("estaciones"), Estacion.class)
+                .build());
         recyclerView.setAdapter(adaptador);
 
-        // Pasar el OnItemClickListener al adaptador
+        // Configurar el OnItemClickListener después de la inicialización
         adaptador.setOnItemClickListener(position -> mostrarEstacion(position));
 
         // Obtener las preferencias de configuración del número máximo de estaciones
@@ -69,79 +68,41 @@ public class AdminActivity extends AppCompatActivity {
                 actualizarEstacionesConLimite(nuevoMax);
             }
         });
-        // La función cargarDatosFalsos() ya no es necesaria aquí
     }
 
-    private void obtenerEstacionesDesdeFirebase(final int limite) {
+    private void obtenerEstacionesDesdeFirebase(int limite) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("estaciones")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        QuerySnapshot querySnapshot = task.getResult();
-                        if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                            Log.d("AdminActivity", "Número de estaciones obtenidas: " + querySnapshot.size());
-                            listaEstaciones.clear(); // Limpiar la lista antes de añadir los datos nuevos
 
-                            for (DocumentSnapshot document : querySnapshot) {
-                                if (document.contains("nombre") && document.contains("direccion")) {
-                                    String nombre = document.getString("nombre");
-                                    String direccion = document.getString("direccion");
-                                    double valoracion = document.getDouble("valoracion") != null ? document.getDouble("valoracion") : 0.0;
-                                    String fotoUrl = document.getString("foto");
-                                    GeoPoint geoPoint = document.getGeoPoint("coordenadas");
+        // Crear consulta con límite
+        Query query = db.collection("estaciones").limit(limite);
 
-                                    if (geoPoint != null) {
-                                        Estacion estacion = new Estacion(
-                                                nombre,
-                                                direccion,
-                                                geoPoint.getLatitude(),
-                                                geoPoint.getLongitude(),
-                                                fotoUrl,
-                                                (int) valoracion,
-                                                "" // Comentario vacío por defecto
-                                        );
-                                        listaEstaciones.add(estacion);
-                                    } else {
-                                        Log.w("AdminActivity", "Estación " + nombre + " no tiene coordenadas");
-                                    }
-                                }
-                            }
+        // Crear opciones de FirestoreRecycler
+        FirestoreRecyclerOptions<Estacion> options = new FirestoreRecyclerOptions.Builder<Estacion>()
+                .setQuery(query, Estacion.class)
+                .build();
 
-                            // Actualizar el RecyclerView con los datos obtenidos
-                            actualizarEstacionesConLimite(limite);
-                        } else {
-                            Log.e("AdminActivity", "No se encontraron estaciones o consulta vacía");
-                        }
-                    } else {
-                        Log.e("AdminActivity", "Error al obtener las estaciones de Firebase", task.getException());
-                    }
-                });
+        // Establecer adaptador con las opciones creadas
+        adaptador.updateOptions(options);
     }
 
     private void actualizarEstacionesConLimite(int limite) {
-        // Verificar si la lista de estaciones excede el límite
-        if (listaEstaciones.size() > limite) {
-            adaptador.setEstaciones(listaEstaciones.subList(0, limite));
-        } else {
-            adaptador.setEstaciones(listaEstaciones);
-        }
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Query query = db.collection("estaciones").limit(limite);
+
+        // Crear opciones con la nueva consulta
+        FirestoreRecyclerOptions<Estacion> options = new FirestoreRecyclerOptions.Builder<Estacion>()
+                .setQuery(query, Estacion.class)
+                .build();
+
+        // Actualizar las opciones del adaptador y notificar los cambios
+        adaptador.updateOptions(options);
+
+        // Notificar que los datos han cambiado, especialmente si el número de elementos ha cambiado
         adaptador.notifyDataSetChanged();
     }
 
-
-    private void cargarDatosFalsos() {
-        List<Estacion> estacionesPrueba = new ArrayList<>();
-        estacionesPrueba.add(new Estacion("Estación A", "Dirección A", -34.5, 138.6, "https://url_imagen", 5, "Comentario 1"));
-        estacionesPrueba.add(new Estacion("Estación B", "Dirección B", -35.5, 137.6, "https://url_imagen", 3, "Comentario 2"));
-        estacionesPrueba.add(new Estacion("Estación C", "Dirección C", -36.5, 139.6, "https://url_imagen", 4, "Comentario 3"));
-
-        adaptador.setEstaciones(estacionesPrueba); // Establece las estaciones falsos en el adaptador
-        adaptador.notifyDataSetChanged(); // Notifica al adaptador que actualice la vista
-    }
-
     private void mostrarEstacion(int position) {
-        Estacion estacion = listaEstaciones.get(position);
+        Estacion estacion = adaptador.getItem(position);
         // Implementar la lógica para mostrar la información de la estación
     }
 
@@ -197,8 +158,28 @@ public class AdminActivity extends AppCompatActivity {
         Intent intent = new Intent(this, NuevaEstacionActivity.class);
         startActivity(intent);
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        adaptador.startListening();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        adaptador.stopListening();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Asegúrate de que el adaptador esté actualizado después de cambios de configuración.
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int maxEstaciones = Integer.parseInt(preferences.getString("max_estaciones", "20"));
+
+        // Actualizar el adaptador si es necesario
+        actualizarEstacionesConLimite(maxEstaciones);
+    }
 }
-
-
-
-

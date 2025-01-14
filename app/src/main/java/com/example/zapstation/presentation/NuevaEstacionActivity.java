@@ -1,6 +1,9 @@
 package com.example.zapstation.presentation;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -12,26 +15,26 @@ import android.widget.RatingBar;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.zapstation.R;
 import com.example.zapstation.model.Estacion;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
-
-import java.util.UUID;
 
 public class NuevaEstacionActivity extends AppCompatActivity {
 
     private EditText nombreEditText, direccionEditText, comentarioEditText;
     private ImageView fotoImageView;
+    private Button guardarEstacion;
     private RatingBar ratingEstacion;
     private Uri imageUri;  // Uri para almacenar la imagen seleccionada
+    private GeoPoint geoPoint;  // Deberías asignarlo con las coordenadas de la estación
 
-    // GeoPoint debería recibir las coordenadas de la nueva estación, por ejemplo con un mapa.
-    private GeoPoint geoPoint;  // Deberías asignarlo con las coordenadas de la estación, de lo contrario lo dejarías null.
+    private FusedLocationProviderClient fusedLocationClient;  // Proveedor de ubicación
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,15 @@ public class NuevaEstacionActivity extends AppCompatActivity {
         comentarioEditText = findViewById(R.id.comentarioEstacion);
         fotoImageView = findViewById(R.id.imagenEstacion);
         ratingEstacion = findViewById(R.id.ratingEstacion);
+        guardarEstacion = findViewById(R.id.guardarEstacionButton);
+
+        // Inicializar el FusedLocationProviderClient
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+
+        // Llamar para obtener la ubicación
+        obtenerUbicacionActual();
+
+        guardarEstacion.setOnClickListener(v -> añadirEstacion());
 
         // Configurar el evento para seleccionar una foto
         fotoImageView.setOnClickListener(v -> openImagePicker());
@@ -65,82 +77,80 @@ public class NuevaEstacionActivity extends AppCompatActivity {
         }
     }
 
-    public void añadirEstacion(View view) {
+    // Método para obtener la ubicación actual
+    private void obtenerUbicacionActual() {
+        // Verificar si el permiso de ubicación ha sido concedido
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Solicitar permisos de ubicación
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+            return;
+        }
+
+        // Obtener la ubicación actual
+        fusedLocationClient.getLastLocation()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && task.getResult() != null) {
+                        Location location = task.getResult();
+                        // Crear un GeoPoint con la latitud y longitud obtenida
+                        geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    } else {
+                        Toast.makeText(NuevaEstacionActivity.this, "No se pudo obtener la ubicación", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+
+    // Método para manejar el resultado de la solicitud de permisos
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == 1) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permiso concedido, obtener la ubicación
+                obtenerUbicacionActual();
+            } else {
+                // Permiso denegado
+                Toast.makeText(this, "Permiso de ubicación denegado", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    // Método para añadir la estación a Firebase
+    public void añadirEstacion() {
         String nombre = nombreEditText.getText().toString().trim();
         String direccion = direccionEditText.getText().toString().trim();
         String comentario = comentarioEditText.getText().toString().trim();
         float valoracion = ratingEstacion.getRating();
 
         // Verificar que los campos no estén vacíos
-        if (TextUtils.isEmpty(nombre) || TextUtils.isEmpty(direccion) || geoPoint == null) {
+        if (TextUtils.isEmpty(nombre) || TextUtils.isEmpty(direccion)) {
             Toast.makeText(this, "Por favor, completa todos los campos y selecciona una ubicación.", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Subir imagen y obtener URL si se seleccionó una imagen
-        if (imageUri != null) {
-            subirImagen((imagenUrl) -> {
-                // Crear la nueva estación con la URL de la imagen cuando se haya cargado
-                Estacion nuevaEstacion = new Estacion(nombre, direccion, geoPoint.getLatitude(), geoPoint.getLongitude(), comentario, (int) valoracion, imagenUrl);
+        // Si no hay imagen seleccionada, asigna una cadena vacía
+        String fotoUrl = imageUri != null ? imageUri.toString() : "";
 
-                // Guardar la estación en Firestore
-                FirebaseFirestore db = FirebaseFirestore.getInstance();
-                db.collection("estaciones")
-                        .add(nuevaEstacion)
-                        .addOnSuccessListener(documentReference -> {
-                            Toast.makeText(this, "Estación añadida correctamente", Toast.LENGTH_SHORT).show();
-                            finish(); // Cierra la actividad después de guardar la estación
-                        })
-                        .addOnFailureListener(e -> {
-                            Toast.makeText(this, "Error al añadir la estación.", Toast.LENGTH_SHORT).show();
-                        });
-            });
-        } else {
-            // Si no hay imagen, guarda la estación solo con el resto de los datos
-            Estacion nuevaEstacion = new Estacion(nombre, direccion, geoPoint.getLatitude(), geoPoint.getLongitude(), comentario, (int) valoracion, "");
+        // Crear la nueva estación con los datos ingresados
+        Estacion nuevaEstacion = new Estacion(
+                nombre,
+                direccion,
+                geoPoint.getLatitude(),
+                geoPoint.getLongitude(),
+                comentario,
+                (int) valoracion,
+                fotoUrl  // Guardamos la foto como cadena vacía si no se selecciona ninguna
+        );
 
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("estaciones")
-                    .add(nuevaEstacion)
-                    .addOnSuccessListener(documentReference -> {
-                        Toast.makeText(this, "Estación añadida correctamente", Toast.LENGTH_SHORT).show();
-                        finish(); // Cierra la actividad después de guardar la estación
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Error al añadir la estación.", Toast.LENGTH_SHORT).show();
-                    });
-        }
-    }
-
-    // Método para subir la imagen al almacenamiento de Firebase y devolver la URL
-    private void subirImagen(OnImageUploadedListener listener) {
-        if (imageUri == null) {
-            listener.onImageUploaded("");  // Si no hay imagen seleccionada, pasa una cadena vacía
-            return;
-        }
-
-        // Generar una ruta única para la imagen
-        String fileName = "estacion_" + UUID.randomUUID().toString();
-        StorageReference storageRef = FirebaseStorage.getInstance().getReference().child("images/" + fileName);
-
-        // Subir la imagen a Firebase Storage
-        storageRef.putFile(imageUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    // Obtener la URL de descarga después de la carga exitosa
-                    storageRef.getDownloadUrl().addOnSuccessListener(uri -> {
-                        // Pasar la URL a la estación
-                        listener.onImageUploaded(uri.toString());
-                    });
+        // Guardar la estación en Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("estaciones")
+                .add(nuevaEstacion)
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(this, "Estación añadida correctamente", Toast.LENGTH_SHORT).show();
+                    finish(); // Cierra la actividad después de guardar la estación
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al cargar la imagen.", Toast.LENGTH_SHORT).show();
-                    listener.onImageUploaded("");  // En caso de error, pasa una cadena vacía
+                    Toast.makeText(this, "Error al añadir la estación.", Toast.LENGTH_SHORT).show();
                 });
     }
-
-    // Interfaz para manejar la respuesta de la carga de la imagen
-    private interface OnImageUploadedListener {
-        void onImageUploaded(String imageUrl);
-    }
 }
-
