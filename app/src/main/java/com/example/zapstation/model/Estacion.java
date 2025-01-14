@@ -14,24 +14,23 @@ public class Estacion {
     // Constructor vacío para Firestore
     public Estacion() {}
 
-    public Estacion(String nombre, String direccion, double latitud, double longitud, String comentario, int valoracion, String foto) {
-            // Validar la latitud y longitud antes de cualquier inicialización
-            if (latitud < -90 || latitud > 90) {
-                throw new IllegalArgumentException("Latitude tiene que estar en el rango de [-90, 90]");
-            }
-            if (longitud < -180 || longitud > 180) {
-                throw new IllegalArgumentException("Longitude tiene que estar en el rango de [-180, 180]");
-            }
-            this.nombre = nombre;
-            this.direccion = direccion;
-            this.posicion = new GeoPoint(latitud, longitud);
-            this.valoracion = valoracion;
-            this.comentario = comentario;
-            this.foto = foto;
+    public Estacion(String nombre, String direccion, double latitud, double longitud, String comentario, int valoracion, String foto){
+        // Validar la latitud y longitud antes de cualquier inicialización
+        if (latitud < -90 || latitud > 90) {
+            throw new IllegalArgumentException("Latitude tiene que estar en el rango de [-90, 90]");
         }
+        if (longitud < -180 || longitud > 180) {
+            throw new IllegalArgumentException("Longitude tiene que estar en el rango de [-180, 180]");
+        }
+        this.nombre = nombre;
+        this.direccion = direccion;
+        this.posicion = new GeoPoint(latitud, longitud);
+        this.valoracion = valoracion;
+        this.comentario = comentario;
+        this.foto = foto;
+    }
 
-
-        // Getters y setters
+    // Getters y setters
     public String getNombre() {
         return nombre;
     }

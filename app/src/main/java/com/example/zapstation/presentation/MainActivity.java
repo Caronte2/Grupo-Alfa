@@ -108,7 +108,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Método para verificar el rol del usuario
-    // Método para verificar el rol del usuario
     private void verificarRol(String uid) {
         FirebaseFirestore firestore = FirebaseFirestore.getInstance();
         firestore.collection("usuarios").document(uid).get()

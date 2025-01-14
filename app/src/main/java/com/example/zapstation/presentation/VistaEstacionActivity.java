@@ -3,7 +3,9 @@ package com.example.zapstation.presentation;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
@@ -16,99 +18,206 @@ import com.bumptech.glide.Glide;
 import com.example.zapstation.R;
 import com.example.zapstation.data.EstacionesLista;
 import com.example.zapstation.model.Estacion;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class VistaEstacionActivity extends AppCompatActivity {
 
     private Estacion estacion;
-    private int pos;
     private ImageView foto;
-    private EstacionesLista estacionesLista;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.info_estacion_completa);
+
         Toolbar toolbar = findViewById(R.id.toolbarEstacion);
         setSupportActionBar(toolbar);
 
-        // Inicializar EstacionesLista para consultar datos en Firestore
-        estacionesLista = new EstacionesLista();
-        pos = getIntent().getIntExtra("pos", 0); // Obtener posición o ID de la estación
-        cargarEstacion(pos); // Cargar los datos de la estación desde Firestore
-        foto = findViewById(R.id.fotoEstacion); // ImageView donde se mostrará la foto de la estación
+        // Obtener el nombre de la estación desde el Intent
+        String nombreEstacion = getIntent().getStringExtra("nombreEstacion");
+        if (nombreEstacion == null || nombreEstacion.isEmpty()) {
+            Toast.makeText(this, "Nombre de la estación no válido.", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
+
+        // Referencia a las vistas
+        TextView tvNombre = findViewById(R.id.nombreEstacion);
+        TextView tvDireccion = findViewById(R.id.direccionEstacion);
+        TextView tvComentario = findViewById(R.id.comentarioEstacion);
+        TextView tvValoracion = findViewById(R.id.valoracionEstacion);
+        TextView tvLatitud = findViewById(R.id.latitudEstacion);
+        TextView tvLongitud = findViewById(R.id.longitudEstacion);
+        ImageView ivFoto = findViewById(R.id.fotoEstacion);
+        foto = ivFoto;
+
+        // Consultar los datos de la estación desde Firestore
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("estaciones")
+                .whereEqualTo("nombre", nombreEstacion)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        // Obtener el primer documento
+                        estacion = queryDocumentSnapshots.getDocuments().get(0).toObject(Estacion.class);
+                        if (estacion != null) {
+                            // Actualizar la interfaz con los datos obtenidos
+                            tvNombre.setText(estacion.getNombre());
+                            tvDireccion.setText(estacion.getDireccion());
+                            tvComentario.setText(estacion.getComentario());
+                            tvValoracion.setText("Valoración: " + estacion.getValoracion() + "/5");
+
+                            // Mostrar las coordenadas (Latitud y Longitud)
+                            tvLatitud.setText("Latitud: " + estacion.getPosicion().getLatitude());
+                            tvLongitud.setText("Longitud: " + estacion.getPosicion().getLongitude());
+
+                            if (estacion.getFoto() != null && !estacion.getFoto().isEmpty()) {
+                                Glide.with(this).load(estacion.getFoto()).into(ivFoto);
+                            } else {
+                                ivFoto.setImageResource(R.drawable.punto_carga); // Imagen por defecto
+                            }
+                        }
+                    } else {
+                        Toast.makeText(this, "No se encontró la estación.", Toast.LENGTH_SHORT).show();
+                        finish();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al cargar datos: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Log.e("FirestoreError", "Error al cargar datos de la estación", e);
+                    finish();
+                });
+
+        // Configurar el botón de eliminar
+        Button btnEliminar = findViewById(R.id.btnEliminarEstacion);
+        btnEliminar.setOnClickListener(v -> eliminarEstacion());
+
+        // Configurar el botón de compartir
+        Button btnCompartir = findViewById(R.id.btnCompartir);
+        btnCompartir.setOnClickListener(this::compartirEstacion);
+
+        // Configurar el botón de editar
+        Button btnEditar = findViewById(R.id.btnEditarEstacion);
+        btnEditar.setOnClickListener(this::editarEstacion);
     }
 
-    // Cargar datos de la estación desde Firestore
-    private void cargarEstacion(int pos) {
-        estacionesLista.elemento(String.valueOf(pos), new EstacionesLista.EscuchadorElemento() {
-            @Override
-            public void onRespuesta(Estacion estacionData) {
-                estacion = estacionData; // Obtener la estación desde Firestore
-                actualizaVistas(); // Actualizar las vistas con los datos
-            }
 
-            @Override
-            public void onError(String error) {
-                // Mostrar mensaje de error en caso de falla
-                Toast.makeText(VistaEstacionActivity.this, error, Toast.LENGTH_LONG).show();
-            }
-        });
+    public void editarEstacion(View view) {
+        if (estacion == null) {
+            Toast.makeText(this, "No se puede editar la estación, no hay datos disponibles.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // Preparar el Intent para abrir el formulario de edición
+        Intent intent = new Intent(this, EditarEstacionActivity.class);
+        intent.putExtra("nombreEstacion", estacion.getNombre());
+        intent.putExtra("direccionEstacion", estacion.getDireccion());
+        intent.putExtra("comentarioEstacion", estacion.getComentario());
+        intent.putExtra("valoracionEstacion", estacion.getValoracion());
+        intent.putExtra("fotoEstacion", estacion.getFoto());
+
+        // Iniciar la actividad para que el usuario pueda editar los datos
+        startActivityForResult(intent, 1001); // Código de solicitud
     }
 
-    // Actualiza las vistas con la información de la estación
-    private void actualizaVistas() {
-        TextView nombre = findViewById(R.id.nombre);
-        TextView direccion = findViewById(R.id.direccion);
-        TextView comentario = findViewById(R.id.comentarioEstacion);
-        RatingBar valoracion = findViewById(R.id.valoracion);
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
 
-        // Llenar los campos con los datos obtenidos
-        nombre.setText(estacion.getNombre());
-        direccion.setText(estacion.getDireccion());
-        comentario.setText(estacion.getComentario());
-        valoracion.setRating(estacion.getValoracion()); // Configurar el rating de la estación
+        if (requestCode == 1001 && resultCode == RESULT_OK) {
+            // Recuperamos los nuevos datos desde el formulario
+            String nuevoNombre = data.getStringExtra("nombreEstacion");
+            String nuevaDireccion = data.getStringExtra("direccionEstacion");
+            String nuevoComentario = data.getStringExtra("comentarioEstacion");
+            float nuevaValoracion = data.getFloatExtra("valoracionEstacion", 0f);
+            String nuevaFoto = data.getStringExtra("fotoEstacion");
 
-        // Cargar la foto desde la URL utilizando Glide
-        ponerFoto(foto, estacion.getFoto());
-    }
+            // Actualizamos la estación localmente
+            estacion.setNombre(nuevoNombre);
+            estacion.setDireccion(nuevaDireccion);
+            estacion.setComentario(nuevoComentario);
+            estacion.setValoracion((int) nuevaValoracion); // Convertir la valoración float a entero
+            estacion.setFoto(nuevaFoto);
 
-    // Método para cargar la imagen en el ImageView utilizando Glide
-    private void ponerFoto(ImageView imageView, String uri) {
-        if (uri != null && !uri.isEmpty()) {
-            // Usando Glide para cargar la imagen desde la URL en el ImageView
-            Glide.with(this)
-                    .load(uri)  // URI de la imagen
-                    .into(imageView);  // Establecerla en el ImageView
-        } else {
-            // Si la URL es vacía o nula, limpiar la imagen del ImageView
-            imageView.setImageBitmap(null);
+            // Actualizamos Firebase Firestore
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            db.collection("estaciones").document(estacion.getNombre())
+                    .set(estacion)
+                    .addOnSuccessListener(aVoid -> {
+                        Toast.makeText(this, "Estación actualizada correctamente", Toast.LENGTH_SHORT).show();
+                        // Recargamos la vista con los nuevos datos
+                        actualizarVista();
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(this, "Error al actualizar la estación.", Toast.LENGTH_SHORT).show();
+                        Log.e("ActualizarError", "Error al actualizar la estación", e);
+                    });
         }
     }
 
-    // Método para eliminar la estación
-    public void eliminarEstacion(View view) {
-        estacionesLista.borrar(String.valueOf(estacion.getNombre()));
-        Toast.makeText(this, "Estación eliminada", Toast.LENGTH_SHORT).show();
-        finish(); // Finalizar la actividad después de la eliminación
+    // Método que actualiza la vista con la nueva información de la estación
+    private void actualizarVista() {
+        if (estacion != null) {
+            TextView nombre = findViewById(R.id.nombreEstacion);
+            TextView direccion = findViewById(R.id.direccionEstacion);
+            TextView comentario = findViewById(R.id.comentarioEstacion);
+            TextView valoracion = findViewById(R.id.valoracionEstacion);
+            TextView latitud = findViewById(R.id.latitudEstacion);
+            TextView longitud = findViewById(R.id.longitudEstacion);
+            ImageView ivFoto = findViewById(R.id.fotoEstacion);
+
+            nombre.setText(estacion.getNombre());
+            direccion.setText(estacion.getDireccion());
+            comentario.setText(estacion.getComentario());
+            valoracion.setText("Valoración: " + estacion.getValoracion() + "/5");
+
+            // Actualizar las coordenadas (latitud, longitud)
+            latitud.setText("Latitud: " + estacion.getPosicion().getLatitude());
+            longitud.setText("Longitud: " + estacion.getPosicion().getLongitude());
+
+            if (estacion.getFoto() != null && !estacion.getFoto().isEmpty()) {
+                Glide.with(this).load(estacion.getFoto()).into(ivFoto);
+            } else {
+                ivFoto.setImageResource(R.drawable.punto_carga); // Imagen por defecto
+            }
+        }
     }
 
-    // Método para actualizar la estación
-    public void actualizarEstacion(View view) {
-        // Actualizar la estación en Firestore
-        estacionesLista.actualiza(String.valueOf(estacion.getNombre()), estacion);
-        Toast.makeText(this, "Estación actualizada", Toast.LENGTH_SHORT).show();
-    }
-
-    // Método para compartir la estación
     public void compartirEstacion(View view) {
-        try {
-            // Crear un intento para compartir la información de la estación
-            Intent i = new Intent(Intent.ACTION_SEND);
-            i.setType("text/plain");
-            i.putExtra(Intent.EXTRA_TEXT, estacion.getNombre() + " - " + estacion.getComentario()); // Compartir nombre y comentario
-            startActivity(i); // Iniciar la acción de compartir
-        } catch (Exception e) {
-            Toast.makeText(this, "Error al compartir: ", Toast.LENGTH_SHORT).show();
+        if (estacion == null) {
+            Toast.makeText(this, "No hay información de estación para compartir.", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        String mensaje = "Estación de carga:\n" +
+                "Nombre: " + estacion.getNombre() + "\n" +
+                "Dirección: " + estacion.getDireccion() + "\n" +
+                "Comentario: " + estacion.getComentario() + "\n" +
+                "Valoración: " + estacion.getValoracion() + "/5";
+
+        Intent compartirIntent = new Intent(Intent.ACTION_SEND);
+        compartirIntent.setType("text/plain");
+        compartirIntent.putExtra(Intent.EXTRA_TEXT, mensaje);
+
+        startActivity(Intent.createChooser(compartirIntent, "Compartir estación"));
+    }
+    public void eliminarEstacion() {
+        if (estacion == null) {
+            Toast.makeText(this, "No se puede eliminar la estación, no hay datos disponibles.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String idEstacion = estacion.getNombre();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("estaciones").document(idEstacion)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(this, "Estación eliminada correctamente.", Toast.LENGTH_SHORT).show();
+                    finish(); // Regresar a la actividad anterior
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(this, "Error al eliminar la estación.", Toast.LENGTH_SHORT).show();
+                    Log.e("EliminarError", "Error al eliminar la estación", e);
+                });
     }
 }
+

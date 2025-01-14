@@ -3,12 +3,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/scrollViewEstacion"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:padding="16dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="8dp">
 
         <!-- Toolbar -->
         <androidx.appcompat.widget.Toolbar
@@ -18,9 +20,7 @@
             android:background="?attr/colorPrimary"
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"/>
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
         <!-- Nombre de la estación -->
         <TextView
@@ -28,6 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="8dp"
             android:text="Nombre de la estación"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
@@ -36,6 +38,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
             android:onClick="verMapaEstacion">
             <ImageView
                 android:id="@+id/iconoDireccionEstacion"
@@ -46,8 +50,41 @@
                 android:id="@+id/direccionEstacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
                 android:text="Dirección de la estación"
                 android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <!-- Coordenadas de la estación: Latitud y Longitud -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp">
+            <ImageView
+                android:id="@+id/iconoCoordenadasEstacion"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_mylocation" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginStart="8dp">
+                <TextView
+                    android:id="@+id/latitudEstacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Latitud: 0.0"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+                <TextView
+                    android:id="@+id/longitudEstacion"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Longitud: 0.0"
+                    android:textAppearance="?android:attr/textAppearanceMedium" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- Valoración de la estación -->
@@ -55,7 +92,9 @@
             android:id="@+id/valoracionEstacion"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
             android:gravity="center"
+            android:padding="8dp"
             android:text="Valoración: 5/5"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
@@ -64,13 +103,16 @@
             android:id="@+id/comentarioEstacion"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:padding="8dp"
             android:text="Comentario sobre la estación"
             android:textAppearance="?android:attr/textAppearanceMedium" />
 
         <!-- Imagen de la estación -->
         <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp">
             <ImageView
                 android:id="@+id/fotoEstacion"
                 android:layout_width="match_parent"
@@ -80,6 +122,42 @@
                 android:src="@drawable/cochecargando" />
         </FrameLayout>
 
+        <!-- Botón para compartir -->
+        <Button
+            android:id="@+id/btnCompartir"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="Compartir Estación"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:padding="12dp"
+            android:textColor="@android:color/white"
+            android:background="?attr/colorPrimary" />
+
+        <!-- Botón para editar -->
+        <Button
+            android:id="@+id/btnEditarEstacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Editar Estación"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:padding="12dp"
+            android:textColor="@android:color/white"
+            android:background="?attr/colorPrimary" />
+
+        <!-- Botón para eliminar -->
+        <Button
+            android:id="@+id/btnEliminarEstacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:text="Eliminar Estación"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:padding="12dp"
+            android:textColor="@android:color/white"
+            android:background="@android:color/holo_red_light" />
 
     </LinearLayout>
 </ScrollView>

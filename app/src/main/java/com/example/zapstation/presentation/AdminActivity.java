@@ -103,7 +103,15 @@ public class AdminActivity extends AppCompatActivity {
 
     private void mostrarEstacion(int position) {
         Estacion estacion = adaptador.getItem(position);
-        // Implementar la lógica para mostrar la información de la estación
+
+        if (estacion != null) {
+            Intent intent = new Intent(this, VistaEstacionActivity.class);
+            // Pasar el nombre de la estación al Intent
+            intent.putExtra("nombreEstacion", estacion.getNombre());
+            startActivity(intent);
+        } else {
+            Toast.makeText(this, "No se pudo cargar la estación seleccionada.", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void mostrarDialogoCerrarSesion() {
