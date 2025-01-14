@@ -1,10 +1,13 @@
 package com.example.zapstation.data;
 
+import android.util.Log;
+
 import com.example.zapstation.model.Estacion;
-import com.example.zapstation.model.TipoEstacion;
+import com.example.zapstation.model.GeoPunto;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+
 
 import java.util.HashMap;
 import java.util.Map;
@@ -16,13 +19,8 @@ public class EstacionesLista implements EstacionesAsinc {
     public EstacionesLista() {
         db = FirebaseFirestore.getInstance();  // Inicializamos Firestore
         estacionesRef = db.collection("estaciones");  // Referencia a la colección "estaciones"
-    }
 
-    public Estacion elemento(int id) {
-        // Este método no se utiliza, ya que es asincrónico
-        return null;
     }
-
     @Override
     public void elemento(String id, EscuchadorElemento escuchador) {
         estacionesRef.document(id).get()
@@ -45,8 +43,7 @@ public class EstacionesLista implements EstacionesAsinc {
         Map<String, Object> estacionData = new HashMap<>();
         estacionData.put("nombre", estacion.getNombre());
         estacionData.put("direccion", estacion.getDireccion());
-        estacionData.put("posicion", estacion.getPosicion());  // Firestore ya maneja GeoPoint
-        estacionData.put("tipo", estacion.getTipo());
+        estacionData.put("posicion", new GeoPoint(estacion.getPosicion().getLatitude(), estacion.getPosicion().getLongitude()));
         estacionData.put("valoracion", estacion.getValoracion());
         estacionData.put("comentario", estacion.getComentario());
         estacionData.put("foto", estacion.getFoto());
@@ -62,31 +59,29 @@ public class EstacionesLista implements EstacionesAsinc {
     }
 
     @Override
-    public String nuevo() {
-        // Crear una nueva estación vacía (en Firestore)
-        Estacion estacion = new Estacion();  // Estación vacía
+    public String nuevo(String nombre, String direccion, double valoracion, String fotoUrl, GeoPunto geoPunto) {
+        // Crear una nueva instancia de Estacion con los parámetros dados
+        Estacion estacion = new Estacion(nombre, direccion, geoPunto.getLatitud(), geoPunto.getLongitud(), "", (int) valoracion, fotoUrl);
         final String[] documentId = new String[1];
 
+        // Agregar la estación a Firestore
         estacionesRef.add(estacion)
                 .addOnSuccessListener(documentReference -> {
-                    // Estación creada
                     documentId[0] = documentReference.getId();  // Obtener el ID del documento
                 })
                 .addOnFailureListener(e -> {
-                    // Error
+                    // Manejar error
                 });
 
-        return documentId[0];  // Retorna el ID del documento creado
+        return documentId[0];  // Devolver el ID del documento creado
     }
 
     @Override
     public void borrar(String id) {
         estacionesRef.document(id).delete()
                 .addOnSuccessListener(aVoid -> {
-                    // Estación eliminada correctamente
                 })
                 .addOnFailureListener(e -> {
-                    // Error al eliminar
                 });
     }
 
@@ -96,7 +91,6 @@ public class EstacionesLista implements EstacionesAsinc {
                 "nombre", estacion.getNombre(),
                 "direccion", estacion.getDireccion(),
                 "posicion", estacion.getPosicion(),
-                "tipo", estacion.getTipo(),
                 "valoracion", estacion.getValoracion(),
                 "comentario", estacion.getComentario(),
                 "foto", estacion.getFoto()
@@ -117,61 +111,5 @@ public class EstacionesLista implements EstacionesAsinc {
                 .addOnFailureListener(e -> {
                     escuchador.onError("Error al obtener el tamaño");
                 });
-    }
-
-    public void borrar(int id) {
-        estacionesRef.document(String.valueOf(id)).delete()
-                .addOnSuccessListener(aVoid -> {
-                    // Estación eliminada correctamente
-                })
-                .addOnFailureListener(e -> {
-                    // Error al eliminar
-                });
-    }
-
-    public int tamaño() {
-        // Obtener el número de estaciones en Firestore (no se usa)
-        estacionesRef.get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    long tamaño = queryDocumentSnapshots.size();
-                    // Aquí puedes manejar el tamaño de la colección de estaciones
-                });
-        return 0;  // Aquí debes devolver el tamaño, pero necesita ser asincrónico
-    }
-
-    public void actualiza(int id, Estacion estacion) {
-        estacionesRef.document(String.valueOf(id)).update(
-                "nombre", estacion.getNombre(),
-                "direccion", estacion.getDireccion(),
-                "posicion", estacion.getPosicion(),
-                "tipo", estacion.getTipo(),
-                "valoracion", estacion.getValoracion(),
-                "comentario", estacion.getComentario(),
-                "foto", estacion.getFoto()
-        ).addOnSuccessListener(aVoid -> {
-            // Estación actualizada correctamente
-        }).addOnFailureListener(e -> {
-            // Error al actualizar
-        });
-    }
-
-    // Añadir ejemplos de estaciones
-    public void añadeEjemplos() {
-        Estacion estacion1 = new Estacion("Ajuntament de Sueca",
-                "Plaça de l'Ajuntament, 10, 46410 Sueca, València",
-                -0.310510, 39.202553, TipoEstacion.HOTEL, 644307085, "https://www.sueca.es/",
-                "Mal lloc pa carregar el coche.", 1, "cochecargando");
-        añade(estacion1);
-
-        Estacion estacion2 = new Estacion("Plaça de l'estació",
-                "Parque de la estación, 46410 Sueca, Valencia",
-                -0.308471, 39.205706, TipoEstacion.HOTEL, 644306095, "https://www.sueca.es/",
-                "Ñenfe Cercanias.", 4, "punto_carga");
-        añade(estacion2);
-
-        Estacion estacion3 = new Estacion("Escuela Politécnica Superior de Gandía",
-                "C/ Paranimf, 1 46730 Gandia (SPAIN)", -0.166093, 38.995656, TipoEstacion.HOTEL, 962849300,
-                "http://www.epsg.upv.es", "Uno de los mejores lugares para formarse.", 5, "foto_epsg");
-        añade(estacion3);
     }
 }

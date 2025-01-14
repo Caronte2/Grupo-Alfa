@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Preferencia para limitar el número máximo de estaciones que se muestran en la pantalla -->
+    <EditTextPreference
+        android:key="max_lugares"
+        android:title="@string/max_stations_title"
+    android:defaultValue="10"
+    android:inputType="number"
+    android:summary="@string/max_stations_summary"
+     />
+
+</PreferenceScreen>

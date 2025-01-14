@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Toolbar for editing a station -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:title="Nueva Estación"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"/>
+
+        <!-- Textview for Station Name -->
+        <TextView
+            android:id="@+id/textViewNombre"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nombre de la estación:"
+            app:layout_constraintTop_toBottomOf="@+id/toolbar"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- EditText for the name of the station -->
+        <EditText
+            android:id="@+id/nombreEstacion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Nombre"
+            android:inputType="text"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewNombre"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Textview for Address -->
+        <TextView
+            android:id="@+id/textViewDireccion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dirección:"
+            app:layout_constraintTop_toBottomOf="@+id/nombreEstacion"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- EditText for Address -->
+        <EditText
+            android:id="@+id/direccionEstacion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Dirección"
+            android:inputType="text|textPostalAddress"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewDireccion"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Textview for Comments -->
+        <TextView
+            android:id="@+id/textViewComentario"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Comentario:"
+            app:layout_constraintTop_toBottomOf="@+id/direccionEstacion"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- EditText for Comments -->
+        <EditText
+            android:id="@+id/comentarioEstacion"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:hint="Comentario adicional"
+            android:inputType="text|textLongMessage|textImeMultiLine"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewComentario"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Textview for the Photo Field -->
+        <TextView
+            android:id="@+id/textViewFoto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Foto de la estación:"
+            app:layout_constraintTop_toBottomOf="@+id/comentarioEstacion"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- ImageView to show the selected photo -->
+        <ImageView
+            android:id="@+id/imagenEstacion"
+            android:layout_width="0dp"
+            android:layout_height="200dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="Imagen de la estación"
+            android:src="@android:drawable/ic_menu_camera"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textViewFoto" />
+
+        <!-- Button to pick a photo -->
+        <Button
+            android:id="@+id/seleccionarFotoButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Seleccionar Foto"
+            app:layout_constraintTop_toBottomOf="@+id/imagenEstacion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <!-- Textview for Rating -->
+        <TextView
+            android:id="@+id/textViewRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calificación (1-5):"
+            app:layout_constraintTop_toBottomOf="@+id/seleccionarFotoButton"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <!-- RatingBar for rating the station -->
+        <RatingBar
+            android:id="@+id/ratingEstacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:numStars="5"
+            android:stepSize="1"
+            android:rating="0"
+            app:layout_constraintTop_toBottomOf="@+id/textViewRating"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
+
+        <!-- Button to Save New Station -->
+        <Button
+            android:id="@+id/guardarEstacionButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Guardar Estación"
+            app:layout_constraintTop_toBottomOf="@+id/ratingEstacion"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>

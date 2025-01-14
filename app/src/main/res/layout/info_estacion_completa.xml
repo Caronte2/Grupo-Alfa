@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/scrollViewEstacion"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <!-- Toolbar -->
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbarEstacion"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            android:elevation="4dp"
+            android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"/>
+
+        <!-- Nombre de la estación -->
+        <TextView
+            android:id="@+id/nombreEstacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Nombre de la estación"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <!-- Dirección de la estación -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:onClick="verMapaEstacion">
+            <ImageView
+                android:id="@+id/iconoDireccionEstacion"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@android:drawable/ic_menu_myplaces" />
+            <TextView
+                android:id="@+id/direccionEstacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Dirección de la estación"
+                android:textAppearance="?android:attr/textAppearanceMedium" />
+        </LinearLayout>
+
+        <!-- Valoración de la estación -->
+        <TextView
+            android:id="@+id/valoracionEstacion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="Valoración: 5/5"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <!-- Comentarios sobre la estación -->
+        <TextView
+            android:id="@+id/comentarioEstacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Comentario sobre la estación"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <!-- Imagen de la estación -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <ImageView
+                android:id="@+id/fotoEstacion"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="Foto de la estación"
+                android:src="@drawable/cochecargando" />
+        </FrameLayout>
+
+
+    </LinearLayout>
+</ScrollView>

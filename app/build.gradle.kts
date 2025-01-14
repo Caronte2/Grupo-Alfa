@@ -35,6 +35,10 @@ android {
 dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.ui.auth)
+    implementation(libs.firebase.storage)
+    implementation(libs.preference)
+    annotationProcessor ("com.github.bumptech.glide:compiler:4.13.0")
+    implementation("com.github.bumptech.glide:glide:4.13.0")
     implementation(libs.volley)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.play.services.auth)
@@ -43,9 +47,7 @@ dependencies {
     implementation (libs.play.services.location)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.ui.firestore)
-
     implementation (libs.org.eclipse.paho.client.mqttv3)
-
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
