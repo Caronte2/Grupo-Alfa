@@ -6,6 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -31,6 +34,8 @@ public class AdminActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private EstacionAdapter adaptador;
     private FirebaseUser usuario;
+    private EditText editTextBuscarEstacion;
+    private Button buttonBuscarEstacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,17 @@ public class AdminActivity extends AppCompatActivity {
         recyclerView = findViewById(R.id.recycler_view);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        editTextBuscarEstacion = findViewById(R.id.editTextBuscarEstacion);
+        buttonBuscarEstacion = findViewById(R.id.buttonBuscarEstacion);
+
+        // Configurar el botón de búsqueda
+        buttonBuscarEstacion.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buscarEstacion();
+            }
+        });
 
         // Inicializar adaptador sin el listener
         adaptador = new EstacionAdapter(new FirestoreRecyclerOptions.Builder<Estacion>()
@@ -70,6 +86,35 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
+    private void buscarEstacion() {
+        String nombreBuscado = editTextBuscarEstacion.getText().toString().trim();
+
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
+        int maxEstaciones = Integer.parseInt(preferences.getString("max_estaciones", "20"));
+
+        if (nombreBuscado.isEmpty()) {
+            obtenerEstacionesDesdeFirebase(maxEstaciones);
+            return;
+        }
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Ajustar consulta para búsqueda parcial
+        Query query = db.collection("estaciones")
+                .orderBy("nombre")
+                .startAt(nombreBuscado)
+                .endAt(nombreBuscado + "\uf8ff")
+
+                .limit(maxEstaciones);
+
+        FirestoreRecyclerOptions<Estacion> options = new FirestoreRecyclerOptions.Builder<Estacion>()
+                .setQuery(query, Estacion.class)
+                .build();
+
+        adaptador.updateOptions(options);
+        adaptador.notifyDataSetChanged();
+    }
+
     private void obtenerEstacionesDesdeFirebase(int limite) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -83,6 +128,7 @@ public class AdminActivity extends AppCompatActivity {
 
         // Establecer adaptador con las opciones creadas
         adaptador.updateOptions(options);
+        adaptador.notifyDataSetChanged();
     }
 
     private void actualizarEstacionesConLimite(int limite) {
@@ -183,11 +229,9 @@ public class AdminActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        // Asegúrate de que el adaptador esté actualizado después de cambios de configuración.
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
         int maxEstaciones = Integer.parseInt(preferences.getString("max_estaciones", "20"));
 
-        // Actualizar el adaptador si es necesario
         actualizarEstacionesConLimite(maxEstaciones);
     }
 }
