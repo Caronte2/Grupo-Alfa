@@ -71,11 +71,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:hint="Latitud"
+            android:hint="Latitud: Dejar en blanco para obtener tú posición"
             android:inputType="numberDecimal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/direccionEstacion"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/direccionEstacion" />
 
         <!-- EditText para ingresar la Longitud de la Estación -->
         <EditText
@@ -84,11 +84,11 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:hint="Longitud"
+            android:hint="Longitud: Dejar en blanco para obtener tú posición"
             android:inputType="numberDecimal"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/latitudEstacion"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/latitudEstacion" />
 
         <!-- Texto para los Comentarios de la Estación -->
         <TextView

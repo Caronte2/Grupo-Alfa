@@ -136,22 +136,9 @@ public class VistaEstacionActivity extends AppCompatActivity {
             estacion.setNombre(nuevoNombre);
             estacion.setDireccion(nuevaDireccion);
             estacion.setComentario(nuevoComentario);
-            estacion.setValoracion((int) nuevaValoracion); // Convertir la valoración float a entero
+            estacion.setValoracion((int) nuevaValoracion);
             estacion.setFoto(nuevaFoto);
 
-            // Actualizamos Firebase Firestore
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection("estaciones").document(estacion.getNombre())
-                    .set(estacion)
-                    .addOnSuccessListener(aVoid -> {
-                        Toast.makeText(this, "Estación actualizada correctamente", Toast.LENGTH_SHORT).show();
-                        // Recargamos la vista con los nuevos datos
-                        actualizarVista();
-                    })
-                    .addOnFailureListener(e -> {
-                        Toast.makeText(this, "Error al actualizar la estación.", Toast.LENGTH_SHORT).show();
-                        Log.e("ActualizarError", "Error al actualizar la estación", e);
-                    });
         }
     }
 

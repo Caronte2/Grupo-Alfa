@@ -126,8 +126,9 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         mapa = googleMap;
         mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mapa.getUiSettings().setZoomControlsEnabled(true);
+        mapa.setMyLocationEnabled(true);
 
-        // Ahora puedes agregar los marcadores, ya que el mapa está listo
+        // Agraga los marcadores, ya que el mapa está listo
         cargarEstaciones();
 
         // Listener para cuando se hace clic en un marcador

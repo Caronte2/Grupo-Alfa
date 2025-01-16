@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
 import com.example.zapstation.R;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -183,16 +184,16 @@ public class Tab2 extends Fragment {
             float valoracion = data.getFloatExtra("valoracion", 0.0f);
             comentarioEstacion = data.getStringExtra("comentario");
 
-            String fotoEstacion = data.getStringExtra("imagenEstacion");
+            String fotoUrl = data.getStringExtra("imagenEstacion");  // Obtener URL de Firebase Storage
 
             // Actualizar la interfaz del fragmento con los datos recibidos
-            mostrarDatosEstacion(nombreEstacion, direccionEstacion, fotoEstacion, valoracion);
+            mostrarDatosEstacion(nombreEstacion, direccionEstacion, fotoUrl, valoracion);
 
             estacionSeleccionada = true;
         }
     }
 
-    private void mostrarDatosEstacion(String nombre, String direccion, String imagenNombre, float estrellas) {
+    private void mostrarDatosEstacion(String nombre, String direccion, String fotoUrl, float estrellas) {
         TextView nombreEstacion = getView().findViewById(R.id.nombreEstacion);
         TextView direccionEstacion = getView().findViewById(R.id.direccionEstacion);
         ImageView imagenImageView = getView().findViewById(R.id.imagenEstacion);
@@ -202,15 +203,14 @@ public class Tab2 extends Fragment {
         direccionEstacion.setText(direccion);
         valoracion.setRating(estrellas);
 
-        // Cargar la imagen desde los recursos usando el nombre de la imagen
-        int imagenResId = getResources().getIdentifier(imagenNombre, "drawable", getActivity().getPackageName());
-
-        if (imagenResId != 0) {
-            // Si la imagen se encuentra en los recursos, cargarla
-            imagenImageView.setImageResource(imagenResId);
+        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+            // Cargar la imagen desde Firebase Storage usando Glide
+            Glide.with(getActivity())
+                    .load(fotoUrl)  // Foto URL obtenida de Firestore
+                    .into(imagenImageView);
         } else {
-            // Si no se encuentra la imagen, puedes establecer una imagen por defecto
-            imagenImageView.setImageResource(R.drawable.ejemplo2);
+            // Si no hay URL de imagen, establecer una imagen predeterminada
+            imagenImageView.setImageResource(R.drawable.ejemplo2);  // Imagen predeterminada
         }
     }
 
