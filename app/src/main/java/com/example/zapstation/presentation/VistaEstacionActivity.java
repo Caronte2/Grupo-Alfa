@@ -19,6 +19,9 @@ import com.example.zapstation.R;
 import com.example.zapstation.data.EstacionesLista;
 import com.example.zapstation.model.Estacion;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 
 public class VistaEstacionActivity extends AppCompatActivity {
 
@@ -188,22 +191,56 @@ public class VistaEstacionActivity extends AppCompatActivity {
 
         startActivity(Intent.createChooser(compartirIntent, "Compartir estación"));
     }
+
     public void eliminarEstacion() {
         if (estacion == null) {
             Toast.makeText(this, "No se puede eliminar la estación, no hay datos disponibles.", Toast.LENGTH_SHORT).show();
             return;
         }
-        String idEstacion = estacion.getNombre();
+
+        // Filtrar por el nombre de la estación en Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("estaciones").document(idEstacion)
-                .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Estación eliminada correctamente.", Toast.LENGTH_SHORT).show();
-                    finish(); // Regresar a la actividad anterior
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(this, "Error al eliminar la estación.", Toast.LENGTH_SHORT).show();
-                    Log.e("EliminarError", "Error al eliminar la estación", e);
+        db.collection("estaciones")
+                .whereEqualTo("nombre", estacion.getNombre()) // Filtramos por nombre
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                        // Obtener el ID del primer documento que coincida
+                        QuerySnapshot result = task.getResult();
+                        String documentId = result.getDocuments().get(0).getId();
+
+                        // Obtener la URL de la foto desde el documento
+                        String fotoUrl = result.getDocuments().get(0).getString("foto");
+
+                        // Eliminar la foto de Firebase Storage si existe
+                        if (fotoUrl != null && !fotoUrl.isEmpty()) {
+                            // Obtener la referencia de la foto en Firebase Storage
+                            FirebaseStorage storage = FirebaseStorage.getInstance();
+                            StorageReference photoRef = storage.getReferenceFromUrl(fotoUrl);
+
+                            // Eliminar la foto
+                            photoRef.delete().addOnSuccessListener(aVoid -> {
+                                Log.d("EliminarFoto", "Foto eliminada correctamente.");
+                            }).addOnFailureListener(e -> {
+                                Log.e("EliminarFoto", "Error al eliminar la foto", e);
+                            });
+                        }
+
+                        // Eliminar el documento de Firestore
+                        db.collection("estaciones")
+                                .document(documentId)
+                                .delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Estación y foto eliminada correctamente.", Toast.LENGTH_SHORT).show();
+                                    finish(); // Regresar a la actividad anterior
+                                })
+                                .addOnFailureListener(e -> {
+                                    Toast.makeText(this, "Error al eliminar la estación.", Toast.LENGTH_SHORT).show();
+                                    Log.e("EliminarError", "Error al eliminar la estación", e);
+                                });
+                    } else {
+                        Toast.makeText(this, "No se encontró la estación con ese nombre.", Toast.LENGTH_SHORT).show();
+                    }
                 });
     }
 }
