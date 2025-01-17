@@ -142,6 +142,8 @@ public class VistaEstacionActivity extends AppCompatActivity {
             estacion.setValoracion((int) nuevaValoracion);
             estacion.setFoto(nuevaFoto);
 
+            //Actualizamos la vista
+            actualizarVista();
         }
     }
 

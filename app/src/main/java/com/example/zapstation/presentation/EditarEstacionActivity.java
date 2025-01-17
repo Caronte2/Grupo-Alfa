@@ -7,6 +7,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RatingBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -29,8 +30,8 @@ import android.location.Location;
 
 public class EditarEstacionActivity extends AppCompatActivity {
 
-    private EditText nombreEditText, direccionEditText, comentarioEditText;
-    private EditText latitudEditText, longitudEditText;
+    private EditText direccionEditText, comentarioEditText, latitudEditText, longitudEditText;
+    private TextView nombreText;
     private RatingBar ratingEstacion;
     private ImageView imagenEstacion;
 
@@ -52,7 +53,7 @@ public class EditarEstacionActivity extends AppCompatActivity {
         storageReference = FirebaseStorage.getInstance().getReference();
 
         // Obtener las vistas
-        nombreEditText = findViewById(R.id.nombreEstacion);
+        nombreText = findViewById(R.id.nombreEstacion);
         direccionEditText = findViewById(R.id.direccionEstacion);
         comentarioEditText = findViewById(R.id.comentarioEstacion);
         latitudEditText = findViewById(R.id.latitudEstacion);
@@ -73,7 +74,7 @@ public class EditarEstacionActivity extends AppCompatActivity {
         final double longitudRecibida = intent.getDoubleExtra("longitudEstacion", 0.0);
 
         // Pre-poblar el formulario con los datos de la estación actual
-        nombreEditText.setText(nombreEstacion);
+        nombreText.setText(nombreEstacion);
         direccionEditText.setText(direccionEstacion);
         comentarioEditText.setText(comentarioEstacion);
         ratingEstacion.setRating(valoracionEstacion);
@@ -87,7 +88,7 @@ public class EditarEstacionActivity extends AppCompatActivity {
 
         // Actualizar los cambios
         actualizarButton.setOnClickListener(v -> {
-            String nuevoNombre = nombreEditText.getText().toString().trim();
+            String nuevoNombre = nombreText.getText().toString().trim();
             String nuevaDireccion = direccionEditText.getText().toString().trim();
             String nuevoComentario = comentarioEditText.getText().toString().trim();
             float nuevaValoracion = ratingEstacion.getRating();
@@ -129,7 +130,7 @@ public class EditarEstacionActivity extends AppCompatActivity {
                     Toast.makeText(this, "Error al subir la imagen.", Toast.LENGTH_SHORT).show();
                 });
             } else {
-                actualizarEstacion(nuevoNombre, nuevaDireccion, nuevoComentario, nuevaValoracion, "", latitudEstacion, longitudEstacion);
+                actualizarEstacion(nuevoNombre, nuevaDireccion, nuevoComentario, nuevaValoracion, fotoEstacion, latitudEstacion, longitudEstacion);
             }
         });
     }

@@ -121,11 +121,11 @@ public class Tab1 extends Fragment {
         db.collection("premios")
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    premios.clear(); // Limpiar la lista antes de agregar nuevos datos
+                    premios.clear();
                     for (DocumentSnapshot document : queryDocumentSnapshots) {
                         String nombre = document.getString("nombre");
                         Long puntos = document.getLong("puntos");
-                        Long recursoImagen = document.getLong("recursoImagen"); // Nota: Firestore guarda los recursos como Long
+                        Long recursoImagen = document.getLong("recursoImagen");
 
                         if (nombre != null && puntos != null && recursoImagen != null) {
                             premios.add(new Premio(nombre, puntos.intValue(), recursoImagen.intValue()));

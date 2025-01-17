@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scrollViewEstacion"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -17,7 +18,7 @@
             android:elevation="4dp"
             android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
@@ -26,44 +27,49 @@
             android:id="@+id/nombreEstacion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="15dp"
             android:gravity="center"
             android:text="Nombre de la estación"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            app:layout_constraintTop_toBottomOf="@id/toolbarEstacion"
+            android:textSize="24sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/toolbarEstacion" />
 
         <!-- Dirección de la estación -->
         <ImageView
             android:id="@+id/iconoDireccionEstacion"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="16dp"
             android:src="@android:drawable/ic_menu_myplaces"
-            app:layout_constraintTop_toBottomOf="@id/nombreEstacion"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/nombreEstacion" />
 
         <TextView
             android:id="@+id/direccionEstacion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
+            android:layout_marginStart="5dp"
             android:text="Dirección de la estación"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintTop_toBottomOf="@id/nombreEstacion"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iconoDireccionEstacion"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iconoDireccionEstacion"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/iconoDireccionEstacion" />
 
         <!-- Coordenadas de la estación -->
         <ImageView
             android:id="@+id/iconoCoordenadasEstacion"
             android:layout_width="40dp"
             android:layout_height="40dp"
+            android:layout_marginStart="5dp"
             android:layout_marginTop="16dp"
             android:src="@android:drawable/ic_menu_mylocation"
-            app:layout_constraintTop_toBottomOf="@id/iconoDireccionEstacion"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/iconoDireccionEstacion" />
 
         <TextView
             android:id="@+id/latitudEstacion"
@@ -72,21 +78,26 @@
             android:layout_marginStart="8dp"
             android:text="Latitud: 0.0"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintTop_toBottomOf="@id/iconoDireccionEstacion"
+            android:textSize="16sp"
+            app:layout_constraintBottom_toBottomOf="@+id/iconoCoordenadasEstacion"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@id/iconoCoordenadasEstacion"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toTopOf="@+id/iconoCoordenadasEstacion"
+            app:layout_constraintVertical_bias="0.0" />
 
         <TextView
             android:id="@+id/longitudEstacion"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_marginStart="8dp"
+            android:layout_marginTop="4dp"
             android:text="Longitud: 0.0"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintTop_toBottomOf="@id/latitudEstacion"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toEndOf="@id/iconoCoordenadasEstacion"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/latitudEstacion" />
 
         <!-- Valoración de la estación -->
         <TextView
@@ -97,9 +108,10 @@
             android:gravity="center"
             android:text="Valoración: 5/5"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintTop_toBottomOf="@id/longitudEstacion"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/longitudEstacion" />
 
         <!-- Comentarios sobre la estación -->
         <TextView
@@ -107,11 +119,13 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
+            android:gravity="center"
             android:text="Comentario sobre la estación"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            app:layout_constraintTop_toBottomOf="@id/valoracionEstacion"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintTop_toBottomOf="@id/valoracionEstacion" />
 
         <!-- Imagen de la estación -->
         <ImageView
