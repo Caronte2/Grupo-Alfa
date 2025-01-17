@@ -165,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
                     case 1:
                         return new Tab2();
                     case 2:
-                        return new Tab3(); // Home / Hay dos clases tab3 y customlogin
+                        return new HomePage(); // Home
                     case 3:
                         return new Tab4();
                     case 4:
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
                     case 0:
                         return new Tab2(); // Map
                     case 1:
-                        return new Tab3(); // Home / Hay dos clases tab3 y customlogin
+                        return new LandingPage(); // LandingPage
                     case 2:
                         return new TabInfo(); // Info
                 }
