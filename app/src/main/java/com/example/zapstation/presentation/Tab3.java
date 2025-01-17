@@ -46,6 +46,7 @@ public class Tab3 extends Fragment {
         TextView texto2 = view.findViewById(R.id.texto2);
         TextView texto3 = view.findViewById(R.id.texto3);
         TextView texto4 = view.findViewById(R.id.texto4);
+        TextView texto5 = view.findViewById(R.id.texto5);
         ImageView mobil = view.findViewById(R.id.mobil);
         ImageView imagenRegistrado = view.findViewById(R.id.imagenRegistrado);
 
@@ -82,6 +83,7 @@ public class Tab3 extends Fragment {
             registrarButton.setVisibility(View.VISIBLE);
             texto1.setVisibility(View.VISIBLE);
             texto2.setVisibility(View.VISIBLE);
+            texto5.setVisibility(View.VISIBLE);
             mobil.setVisibility(View.VISIBLE);
 
             //Registrado
@@ -106,6 +108,7 @@ public class Tab3 extends Fragment {
             registrarButton.setVisibility(View.GONE);
             texto1.setVisibility(View.GONE);
             texto2.setVisibility(View.GONE);
+            texto5.setVisibility(View.GONE);
             mobil.setVisibility(View.GONE);
 
             //Registrado
@@ -113,6 +116,7 @@ public class Tab3 extends Fragment {
             textBienvenido.setText("Bienvenido" + " " +  usuario.getDisplayName());
             texto3.setVisibility(View.VISIBLE);
             texto4.setVisibility(View.VISIBLE);
+
             imagenRegistrado.setVisibility(View.VISIBLE);
         }
 
