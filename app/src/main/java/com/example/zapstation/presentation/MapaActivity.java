@@ -175,7 +175,7 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
     // Método para agregar marcador en el mapa
     private void agregarMarcador(Estacion estacion, LatLng ubicacion) {
         // Obtener el icono para el marcador
-        Bitmap iGrande = BitmapFactory.decodeResource(getResources(), R.drawable.hotel);
+        Bitmap iGrande = BitmapFactory.decodeResource(getResources(), R.drawable.icono_estacion);
         Bitmap icono = Bitmap.createScaledBitmap(iGrande, iGrande.getWidth() / 7, iGrande.getHeight() / 7, false);
 
         // Agregar marcador al mapa

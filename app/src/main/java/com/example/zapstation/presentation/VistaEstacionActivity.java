@@ -1,5 +1,6 @@
 package com.example.zapstation.presentation;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -11,6 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
@@ -93,7 +95,7 @@ public class VistaEstacionActivity extends AppCompatActivity {
 
         // Configurar el botón de eliminar
         Button btnEliminar = findViewById(R.id.btnEliminarEstacion);
-        btnEliminar.setOnClickListener(v -> eliminarEstacion());
+        btnEliminar.setOnClickListener(v -> mostrarDialogoBorrar());
 
         // Configurar el botón de compartir
         Button btnCompartir = findViewById(R.id.btnCompartir);
@@ -244,6 +246,35 @@ public class VistaEstacionActivity extends AppCompatActivity {
                         Toast.makeText(this, "No se encontró la estación con ese nombre.", Toast.LENGTH_SHORT).show();
                     }
                 });
+    }
+
+    // Mostrar el popup para confirmar si desea borrar la estacion
+    private void mostrarDialogoBorrar() {
+        // Crear el AlertDialog
+        AlertDialog.Builder builder = new AlertDialog.Builder(VistaEstacionActivity.this);
+        builder.setTitle("Eliminar Permanentemente");
+        builder.setMessage("Esta acción es irreversible. ¿Quieres eliminar la estación?");
+
+        // Botón para ir a registrarse
+        builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                eliminarEstacion();
+            }
+        });
+
+        // Botón para cancelar la acción
+        builder.setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                // Cerrar el diálogo
+                dialog.dismiss();
+            }
+        });
+
+        // Mostrar el diálogo
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 }
 
