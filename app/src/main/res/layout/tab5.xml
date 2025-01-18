@@ -68,6 +68,7 @@
         android:layout_height="25dp"
         app:layout_constraintStart_toEndOf="@+id/imagen"
         app:layout_constraintTop_toTopOf="@+id/imagen"
+        android:drawableTint="@color/icon_color"
         app:srcCompat="@drawable/user" />
 
     <ImageView
@@ -77,6 +78,7 @@
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toEndOf="@+id/imagen"
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        android:drawableTint="@color/icon_color"
         app:srcCompat="@drawable/mail" />
 
     <ImageView
@@ -86,6 +88,7 @@
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toEndOf="@+id/imagen"
         app:layout_constraintTop_toBottomOf="@+id/imageView4"
+        android:drawableTint="@color/icon_color"
         app:srcCompat="@drawable/uid" />
 
             <ImageView
@@ -96,6 +99,7 @@
                 android:layout_marginEnd="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:drawableTint="@color/icon_color"
                 app:srcCompat="@drawable/log_out" />
 
     <Button
@@ -159,6 +163,7 @@
                 app:layout_constraintBottom_toBottomOf="@+id/textView2"
                 app:layout_constraintStart_toEndOf="@+id/textView2"
                 app:layout_constraintTop_toTopOf="@+id/textView2"
+                android:drawableTint="@color/icon_color"
                 app:srcCompat="@drawable/monedero" />
 
     <TextView

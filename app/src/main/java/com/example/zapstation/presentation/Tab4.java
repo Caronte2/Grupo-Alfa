@@ -1,6 +1,8 @@
 package com.example.zapstation.presentation;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -14,6 +16,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -75,13 +79,44 @@ public class Tab4 extends Fragment {
                 tiempoCargaActual.setText("Tiempo de carga actual: " + tiempoActual + " minutos");
                 tiempoCargaEstimado.setText("Tiempo de carga estimado: " + tiempoEstimado + " minutos");
 
+                // Enviar una notificación cuando la carga llegue al 100%
+                if (porcentajeCarga == 100) {
+                    enviarNotificacion();
+                }
+
                 // Continuar la actualización periódica hasta que la carga esté completa
                 if (tiempoActual < 100 && porcentajeCarga < 100) {
-                    handler.postDelayed(this, 5000); // Actualización cada minuto
+                    handler.postDelayed(this, 1000); // Actualización cada minuto
                 }
             }
         }
     };
+
+    private void enviarNotificacion() {
+        // Crear el canal de notificaciones (solo necesario para Android 8.0 o superior)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            String channelId = "carga_completa_channel";
+            CharSequence name = "Carga Completa";
+            int importance = NotificationManager.IMPORTANCE_DEFAULT;
+            NotificationChannel channel = new NotificationChannel(channelId, name, importance);
+            NotificationManager notificationManager = getActivity().getSystemService(NotificationManager.class);
+            if (notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+            }
+        }
+
+        // Crear la notificación
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(getActivity(), "carga_completa_channel")
+                .setSmallIcon(R.drawable.icono_estacion) // Aquí puedes colocar el icono de tu notificación
+                .setContentTitle("¡Carga Completa!")
+                .setContentText("La carga de tu coche ha llegado al 100%.")
+                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+                .setAutoCancel(true);
+
+        // Obtener el NotificationManager y mostrar la notificación
+        NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(getActivity());
+        notificationManagerCompat.notify(1, builder.build());
+    }
 
     //Permisos
     private static final int PERMISSION_REQUEST_CODE = 1;
@@ -199,6 +234,8 @@ public class Tab4 extends Fragment {
                 Tab1.puntosDisponibles += puntosObtenidos; // Sumar los puntos al total
 
                 Toast.makeText(getActivity(), "Has ganado " + puntosObtenidos + " puntos.", Toast.LENGTH_SHORT).show();
+
+                tiempoActual = 0;
             }
         });
 

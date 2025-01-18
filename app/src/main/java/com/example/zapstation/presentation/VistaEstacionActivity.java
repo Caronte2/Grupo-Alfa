@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 
 import com.bumptech.glide.Glide;
@@ -34,6 +35,9 @@ public class VistaEstacionActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.info_estacion_completa);
+
+        //No me gusta el modo noche
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         Toolbar toolbar = findViewById(R.id.toolbarEstacion);
         setSupportActionBar(toolbar);

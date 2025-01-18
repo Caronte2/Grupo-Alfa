@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 
 import com.example.zapstation.R;
 
@@ -15,6 +16,9 @@ public class AcercaDeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.acerca_de);
+
+        //No me gusta el modo noche
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         //Botón para volver atrás
         Button volver_atrasButton = findViewById(R.id.volver_atras);

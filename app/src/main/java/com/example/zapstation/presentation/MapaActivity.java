@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.FragmentActivity;
 
@@ -50,6 +51,9 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mapa);
+
+        //No me gusta el modo noche
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         //Solo se usa una vez pa subir a Firestore
         //EstacionesLista estacionesLista = new EstacionesLista();

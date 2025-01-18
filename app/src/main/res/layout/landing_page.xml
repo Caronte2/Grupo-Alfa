@@ -4,21 +4,27 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true">
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <TextView
             android:id="@+id/texto1"
             android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
-            android:text="Somos tu mejor alternativa si deseas encontrar un punto de carga para tu coche eléctrico.  Consigue puntos para utilizar en descuentos y mucho más si te registras ya!"
+            android:text="Somos tu mejor alternativa si deseas encontrar un punto de carga para tu coche eléctrico.  Consigue puntos para utilizar en descuentos y mucho más si te registras ya"
             android:textAlignment="center"
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.496"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toBottomOf="@+id/textView17" />
 
         <Button
             android:id="@+id/registrarButton"
@@ -47,8 +53,9 @@
             android:textStyle="bold"
             app:cornerRadius="10dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/registrarButton" />
+            app:layout_constraintTop_toBottomOf="@+id/texto2" />
 
         <TextView
             android:id="@+id/texto2"
@@ -60,7 +67,7 @@
             android:textSize="16sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/loginButton" />
+            app:layout_constraintTop_toBottomOf="@+id/registrarButton" />
 
         <ImageView
             android:id="@+id/mobil"
@@ -68,26 +75,41 @@
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/texto2"
+            app:layout_constraintTop_toBottomOf="@+id/loginButton"
             app:layout_constraintVertical_bias="1.0"
             app:srcCompat="@drawable/mobil_ejemplo" />
 
         <TextView
             android:id="@+id/texto5"
-            android:layout_width="153dp"
-            android:layout_height="274dp"
+            android:layout_width="95dp"
+            android:layout_height="299dp"
             android:layout_marginEnd="10dp"
             android:gravity="center"
             android:text="Disfruta de todas nuestras ventajas en la app.\n\n¡INICIA SESIÓN YA!"
             android:textColor="#000000"
-            android:textSize="24sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="1.0"
-            app:layout_constraintStart_toStartOf="@+id/texto2"
-            app:layout_constraintTop_toBottomOf="@+id/texto2"
-            app:layout_constraintVertical_bias="0.726" />
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            app:layout_constraintHorizontal_bias="0.964"
+            app:layout_constraintStart_toStartOf="@+id/loginButton"
+            app:layout_constraintTop_toBottomOf="@+id/loginButton"
+            app:layout_constraintVertical_bias="0.478" />
 
+        <TextView
+            android:id="@+id/textView17"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:gravity="center"
+            android:text="¡Carga tu coche ya!"
+            android:textColor="#000000"
+            android:textSize="34sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 </FrameLayout>
