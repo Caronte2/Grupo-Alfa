@@ -10,13 +10,13 @@ import androidx.preference.PreferenceFragmentCompat;
 
 import com.example.zapstation.R;
 
-public class PreferenciasFragment extends PreferenceFragmentCompat {  // Cambié el nombre de la clase aquí
+public class PreferenciasFragment extends PreferenceFragmentCompat {
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
         // Cargar las preferencias desde el archivo XML
         setPreferencesFromResource(R.xml.preferenciasadmin, rootKey);
 
-        final EditTextPreference maximo = findPreference("max_estaciones");  // Asegúrate de que el nombre coincida
+        final EditTextPreference maximo = findPreference("max_estaciones");
 
         if (maximo != null) {
             // Establecer el resumen inicial basado en el valor actual de la preferencia

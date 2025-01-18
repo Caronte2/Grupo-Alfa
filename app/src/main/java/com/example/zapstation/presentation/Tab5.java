@@ -34,10 +34,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class Tab5 extends Fragment {
 
     private FirebaseUser usuario;
-    Button acercaDe, cambiarContrasenya;
+    Button acercaDe, cambiarContrasenya, anyadirTarjateCredito, anyadirSaldo;
     private FirebaseAuth auth;
-    TextView nombre, correo, uid;
+    TextView nombre, correo, uid, saldo;
     NetworkImageView foto;
+    private boolean tieneTarjetaCredito = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -57,7 +58,10 @@ public class Tab5 extends Fragment {
         nombre = view.findViewById(R.id.nombre);
         correo = view.findViewById(R.id.correo);
         uid = view.findViewById(R.id.uid);
+        saldo = view.findViewById(R.id.saldo);
         foto = view.findViewById(R.id.imagen);
+        anyadirTarjateCredito = view.findViewById(R.id.anyadirTarjateCredito);
+        anyadirSaldo = view.findViewById(R.id.anyadirSaldo);
         ImageView btnCerrarSesion = view.findViewById(R.id.btn_cerrar_sesion);
 
         Button btnEditarPerfil = view.findViewById(R.id.btnEditarPerfil);
@@ -70,6 +74,75 @@ public class Tab5 extends Fragment {
             public void onClick(View v) {
                 Intent intent = new Intent(getActivity(), AcercaDeActivity.class);
                 startActivity(intent);
+            }
+        });
+
+        //Añadir tarjeta de credito
+        anyadirTarjateCredito.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                tieneTarjetaCredito = true;
+                Toast.makeText(getActivity(), "Tarjeta de credito añadida.", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        //Añadir saldo al monedero
+        anyadirSaldo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (tieneTarjetaCredito) {
+                    final EditText inputSaldo = new EditText(getActivity());
+                    inputSaldo.setHint("Ingresa la cantidad");
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Añadir saldo")
+                            .setMessage("Introduce la cantidad que deseas añadir a tu monedero")
+                            .setView(inputSaldo)
+                            .setPositiveButton("Añadir", (dialog, which) -> {
+                                String saldoStr = inputSaldo.getText().toString().trim();
+                                if (!saldoStr.isEmpty()) {
+                                    try {
+                                        // Eliminar el símbolo del euro
+                                        saldoStr = saldoStr.replaceAll("[^\\d.,]", "");
+
+                                        // Intentamos convertir el texto a un número
+                                        double saldoAñadir = Double.parseDouble(saldoStr);
+                                        if (saldoAñadir > 0) {
+                                            // Obtener el saldo actual desde el TextView
+                                            String saldoActualStr = saldo.getText().toString().trim();
+                                            double saldoQueTiene = 0.0;
+
+                                            // Verifica si el saldo actual tiene algún valor, sino asume 0.0
+                                            if (!saldoActualStr.isEmpty()) {
+                                                // Eliminar el símbolo del euro en caso de que esté presente
+                                                saldoActualStr = saldoActualStr.replaceAll("[^\\d.,]", "");
+                                                saldoQueTiene = Double.parseDouble(saldoActualStr);
+                                            }
+
+                                            // Sumar el nuevo saldo
+                                            saldoQueTiene += saldoAñadir;
+
+                                            // Actualizar el TextView con el nuevo saldo
+                                            saldo.setText(String.format("%.2f", saldoQueTiene) + "€");
+
+                                            // Mostrar mensaje de éxito
+                                            Toast.makeText(getActivity(), "Saldo añadido: " + saldoAñadir, Toast.LENGTH_SHORT).show();
+                                        } else {
+                                            Toast.makeText(getActivity(), "Por favor, ingresa una cantidad positiva", Toast.LENGTH_SHORT).show();
+                                        }
+                                    } catch (NumberFormatException e) {
+                                        Toast.makeText(getActivity(), "Por favor, ingresa una cantidad válida", Toast.LENGTH_SHORT).show();
+                                    }
+                                } else {
+                                    Toast.makeText(getActivity(), "La cantidad no puede estar vacía", Toast.LENGTH_SHORT).show();
+                                }
+                            })
+                            .setNegativeButton("Cancelar", null)
+                            .create()
+                            .show();
+                } else {
+                    Toast.makeText(getActivity(), "Añada una tarjeta de credito para usar esta opción.", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
