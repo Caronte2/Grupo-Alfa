@@ -5,6 +5,7 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -14,6 +15,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.MediaItem;
+import com.google.android.exoplayer2.ui.PlayerView;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
@@ -37,6 +41,9 @@ import java.util.List;
 import java.util.Map;
 
 public class Tab4 extends Fragment {
+
+    private ExoPlayer player;
+    private PlayerView playerView;
 
     private boolean isCargaDetenida = false; // Variable para rastrear si se pulsó "Detener carga"
     private boolean isCargaIniciada = false; // Variable para rastrear si se pulsó "Iniciar carga"
@@ -177,6 +184,17 @@ public class Tab4 extends Fragment {
         porcentajeBateria = rootView.findViewById(R.id.porcentajebateria);
         recyclerViewPreciosLuz = rootView.findViewById(R.id.recyclerViewPreciosLuz);
 
+        // Codigo camara
+        playerView = rootView.findViewById(R.id.player_view);
+        player = new ExoPlayer.Builder(getActivity()).build();
+        playerView.setPlayer(player);
+        String streamUrl = "rtsp://192.168.43.105:8554/live.stream";
+        Uri uri = Uri.parse(streamUrl);
+        MediaItem mediaItem = MediaItem.fromUri(uri);
+        player.setMediaItem(mediaItem);
+        player.prepare();
+        player.play();
+
         // Inicializar tiempos aleatorios y porcentaje al cargar la vista
         inicializarTiempos();
 
@@ -310,6 +328,9 @@ public class Tab4 extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacks(actualizarTiemposRunnable);
+        if (player != null){
+            player.release();
+        }
     }
 
     private void subirPreciosLuzAFirestore() {

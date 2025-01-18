@@ -33,6 +33,7 @@ android {
 }
 
 dependencies {
+    implementation ("com.google.android.exoplayer:exoplayer:2.19.0")
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.ui.auth)
     implementation(libs.firebase.storage)

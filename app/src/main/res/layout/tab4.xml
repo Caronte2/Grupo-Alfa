@@ -71,6 +71,18 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/iniciarCarga" />
 
+            <com.google.android.exoplayer2.ui.PlayerView
+                android:id="@+id/player_view"
+                android:layout_width="0dp"
+                android:layout_height="250dp"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="10dp"
+                android:background="#000000"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textView14"
+                app:resize_mode="fit"/>
+
             <Button
                 android:id="@+id/iniciarCarga"
                 android:layout_width="0dp"
@@ -84,28 +96,15 @@
                 app:layout_constraintStart_toStartOf="@+id/detenerCarga"
                 app:layout_constraintTop_toBottomOf="@+id/porcentajebateria" />
 
-            <ImageView
-                android:id="@+id/imageView7"
-                android:layout_width="250dp"
-                android:layout_height="150dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="20dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.495"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView14"
-                app:srcCompat="@drawable/cochecargando" />
-
             <TextView
                 android:id="@+id/tiempoCarga"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="10dp"
                 android:text="Tiempo de carga actual:"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView7" />
+                app:layout_constraintTop_toBottomOf="@+id/player_view" />
 
             <TextView
                 android:id="@+id/tiempoCargaEstimado"
