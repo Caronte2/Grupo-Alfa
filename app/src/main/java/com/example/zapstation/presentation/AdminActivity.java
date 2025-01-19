@@ -1,5 +1,6 @@
 package com.example.zapstation.presentation;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AlertDialog;
@@ -36,12 +38,17 @@ public class AdminActivity extends AppCompatActivity {
     private EstacionAdapter adaptador;
     private FirebaseUser usuario;
     private EditText editTextBuscarEstacion;
+    private static TextView proximidadTextView;
+    private static TextView gpsTextView;
     private Button buttonBuscarEstacion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
+
+        proximidadTextView = findViewById(R.id.proximidadTextView);
+        gpsTextView = findViewById(R.id.gpsTextView);
 
         //No me gusta el modo noche
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -89,6 +96,18 @@ public class AdminActivity extends AppCompatActivity {
                 actualizarEstacionesConLimite(nuevoMax);
             }
         });
+    }
+
+    public static void actualizarMqtt(Context context) {
+        // Recuperar datos de MQTT desde SharedPreferences
+        SharedPreferences sharedPreferences = context.getSharedPreferences("MqttData", Context.MODE_PRIVATE);
+        String proximidad = sharedPreferences.getString("proximidad", "No disponible");
+        String gps = sharedPreferences.getString("gps", "No disponible");
+
+
+        AdminActivity activity = (AdminActivity) context;
+        activity.proximidadTextView.setText("Proximidad: " + proximidad + "m");
+        activity.gpsTextView.setText("GPS: " + gps + "º");
     }
 
     private void buscarEstacion() {

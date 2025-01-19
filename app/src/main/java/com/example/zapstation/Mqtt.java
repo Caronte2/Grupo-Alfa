@@ -1,11 +1,14 @@
 package com.example.zapstation;
 
 import android.app.Activity;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatDelegate;
+
+import com.example.zapstation.presentation.AdminActivity;
 
 import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
 import org.eclipse.paho.client.mqttv3.MqttCallback;
@@ -72,17 +75,28 @@ public class Mqtt extends Activity implements MqttCallback {
     public void messageArrived(String topic, MqttMessage message) {
         final String data = new String(message.getPayload());
         Log.i(TAG, "Mensaje recibido en el tópico " + topic + ": " + data);
+
+        // Guardar datos en SharedPreferences
+        SharedPreferences sharedPreferences = getSharedPreferences("MqttData", MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
         runOnUiThread(() -> {
             switch (topic) {
                 case "proximidad/1":
                     proximidad.setText("Proximidad: " + data + "m");
+                    editor.putString("proximidad", data);
                     break;
                 case "gps/1":
                     gps.setText("GPS: " + data + "º");
+                    editor.putString("gps", data);
                     break;
             }
+            editor.apply();
         });
+
+        AdminActivity.actualizarMqtt(this);
     }
+
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken token) {
