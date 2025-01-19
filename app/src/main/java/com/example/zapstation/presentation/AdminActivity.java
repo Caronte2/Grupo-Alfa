@@ -41,29 +41,18 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttMessage;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 
-public class AdminActivity extends AppCompatActivity implements MqttCallback {
+public class AdminActivity extends AppCompatActivity{
 
     private RecyclerView recyclerView;
     private EstacionAdapter adaptador;
     private FirebaseUser usuario;
     private EditText editTextBuscarEstacion;
-    private static TextView proximidadTextView;
-    private static TextView gpsTextView;
     private Button buttonBuscarEstacion;
-
-    private MqttClient mqttClient;
-    private final String serverUri = "tcp://192.168.43.105:1883"; // Configura tu servidor MQTT
-    private final String topicProximidad = "proximidad/1";
-    private final String topicGps = "gps/1";
-    private final String clientId = "ZapStationAdmin";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
-
-        proximidadTextView = findViewById(R.id.proximidadTextView);
-        gpsTextView = findViewById(R.id.gpsTextView);
 
         // No me gusta el modo noche
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -107,80 +96,6 @@ public class AdminActivity extends AppCompatActivity implements MqttCallback {
             }
         });
 
-        // Iniciar conexión MQTT en un hilo de fondo
-        new MqttConnectTask().execute();
-    }
-
-    private class MqttConnectTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                mqttClient = new MqttClient(serverUri, clientId, new MemoryPersistence());
-                MqttConnectOptions options = new MqttConnectOptions();
-                options.setCleanSession(true);
-                mqttClient.setCallback(AdminActivity.this);
-                mqttClient.connect(options);
-                mqttClient.subscribe(topicProximidad);
-                mqttClient.subscribe(topicGps);
-            } catch (MqttException e) {
-                Log.e("Mqtt", "Error al conectar o suscribirse al broker MQTT", e);
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            // Aquí puedes actualizar la UI si es necesario
-            Log.i("Mqtt", "Conexión y suscripción exitosa");
-        }
-    }
-
-    @Override
-    public void connectionLost(Throwable cause) {
-        Log.e("Mqtt", "Conexión perdida con el broker MQTT", cause);
-
-        // Intentar reconectar en un hilo de fondo
-        new MqttReconnectTask().execute();
-    }
-
-    private class MqttReconnectTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... params) {
-            try {
-                MqttConnectOptions options = new MqttConnectOptions();
-                options.setCleanSession(true);
-                mqttClient.connect(options);
-                mqttClient.subscribe(topicProximidad);
-                mqttClient.subscribe(topicGps);
-                Log.i("Mqtt", "Reconexión exitosa");
-            } catch (MqttException e) {
-                Log.e("Mqtt", "Error al intentar reconectar", e);
-            }
-            return null;
-        }
-    }
-
-    @Override
-    public void messageArrived(String topic, MqttMessage message) {
-        final String data = new String(message.getPayload());
-        Log.i("Mqtt", "Mensaje recibido en el tópico " + topic + ": " + data);
-
-        runOnUiThread(() -> {
-            switch (topic) {
-                case "proximidad/1":
-                    proximidadTextView.setText("Proximidad: " + data + "m");
-                    break;
-                case "gps/1":
-                    gpsTextView.setText("GPS: " + data + "º");
-                    break;
-            }
-        });
-    }
-
-    @Override
-    public void deliveryComplete(IMqttDeliveryToken token) {
-        Log.i("Mqtt", "Mensaje entregado con éxito");
     }
 
     private void buscarEstacion() {
