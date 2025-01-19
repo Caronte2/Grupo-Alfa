@@ -1,10 +1,9 @@
 package com.example.zapstation.presentation;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -23,7 +22,6 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.zapstation.MqttService;
 import com.example.zapstation.R;
 import com.example.zapstation.data.EstacionAdapter;
 import com.example.zapstation.model.Estacion;
@@ -35,7 +33,15 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 
-public class AdminActivity extends AppCompatActivity {
+import org.eclipse.paho.client.mqttv3.IMqttDeliveryToken;
+import org.eclipse.paho.client.mqttv3.MqttCallback;
+import org.eclipse.paho.client.mqttv3.MqttClient;
+import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
+import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttMessage;
+import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+
+public class AdminActivity extends AppCompatActivity implements MqttCallback {
 
     private RecyclerView recyclerView;
     private EstacionAdapter adaptador;
@@ -45,6 +51,12 @@ public class AdminActivity extends AppCompatActivity {
     private static TextView gpsTextView;
     private Button buttonBuscarEstacion;
 
+    private MqttClient mqttClient;
+    private final String serverUri = "tcp://192.168.43.105:1883"; // Configura tu servidor MQTT
+    private final String topicProximidad = "proximidad/1";
+    private final String topicGps = "gps/1";
+    private final String clientId = "ZapStationAdmin";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,11 +65,7 @@ public class AdminActivity extends AppCompatActivity {
         proximidadTextView = findViewById(R.id.proximidadTextView);
         gpsTextView = findViewById(R.id.gpsTextView);
 
-        // Registrar el BroadcastReceiver
-        IntentFilter filter = new IntentFilter("com.example.zapstation.MQTT_UPDATE");
-        registerReceiver(mqttReceiver, filter);
-
-        //No me gusta el modo noche
+        // No me gusta el modo noche
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
 
         usuario = FirebaseAuth.getInstance().getCurrentUser();
@@ -72,12 +80,7 @@ public class AdminActivity extends AppCompatActivity {
         buttonBuscarEstacion = findViewById(R.id.buttonBuscarEstacion);
 
         // Configurar el botón de búsqueda
-        buttonBuscarEstacion.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                buscarEstacion();
-            }
-        });
+        buttonBuscarEstacion.setOnClickListener(v -> buscarEstacion());
 
         // Inicializar adaptador sin el listener
         adaptador = new EstacionAdapter(new FirestoreRecyclerOptions.Builder<Estacion>()
@@ -87,7 +90,7 @@ public class AdminActivity extends AppCompatActivity {
         recyclerView.setAdapter(adaptador);
 
         // Configurar el OnItemClickListener después de la inicialización
-        adaptador.setOnItemClickListener(position -> mostrarEstacion(position));
+        adaptador.setOnItemClickListener(this::mostrarEstacion);
 
         // Obtener las preferencias de configuración del número máximo de estaciones
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -103,25 +106,82 @@ public class AdminActivity extends AppCompatActivity {
                 actualizarEstacionesConLimite(nuevoMax);
             }
         });
+
+        // Iniciar conexión MQTT en un hilo de fondo
+        new MqttConnectTask().execute();
     }
 
-    private final BroadcastReceiver mqttReceiver = new BroadcastReceiver() {
+    private class MqttConnectTask extends AsyncTask<Void, Void, Void> {
         @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent != null && "com.example.zapstation.MQTT_UPDATE".equals(intent.getAction())) {
-                // Recuperar los datos de SharedPreferences
-                SharedPreferences sharedPreferences = context.getSharedPreferences("MqttData", Context.MODE_PRIVATE);
-                String proximidad = sharedPreferences.getString("proximidad", "No disponible");
-                String gps = sharedPreferences.getString("gps", "No disponible");
-
-                // Actualizar la UI con los datos recibidos
-                proximidadTextView.setText("Proximidad: " + proximidad + "m");
-                gpsTextView.setText("GPS: " + gps + "°");
-
-                Log.d("AdminActivity", "Datos recibidos: Proximidad=" + proximidad + ", GPS=" + gps);
+        protected Void doInBackground(Void... params) {
+            try {
+                mqttClient = new MqttClient(serverUri, clientId, new MemoryPersistence());
+                MqttConnectOptions options = new MqttConnectOptions();
+                options.setCleanSession(true);
+                mqttClient.setCallback(AdminActivity.this);
+                mqttClient.connect(options);
+                mqttClient.subscribe(topicProximidad);
+                mqttClient.subscribe(topicGps);
+            } catch (MqttException e) {
+                Log.e("Mqtt", "Error al conectar o suscribirse al broker MQTT", e);
             }
+            return null;
         }
-    };
+
+        @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            // Aquí puedes actualizar la UI si es necesario
+            Log.i("Mqtt", "Conexión y suscripción exitosa");
+        }
+    }
+
+    @Override
+    public void connectionLost(Throwable cause) {
+        Log.e("Mqtt", "Conexión perdida con el broker MQTT", cause);
+
+        // Intentar reconectar en un hilo de fondo
+        new MqttReconnectTask().execute();
+    }
+
+    private class MqttReconnectTask extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... params) {
+            try {
+                MqttConnectOptions options = new MqttConnectOptions();
+                options.setCleanSession(true);
+                mqttClient.connect(options);
+                mqttClient.subscribe(topicProximidad);
+                mqttClient.subscribe(topicGps);
+                Log.i("Mqtt", "Reconexión exitosa");
+            } catch (MqttException e) {
+                Log.e("Mqtt", "Error al intentar reconectar", e);
+            }
+            return null;
+        }
+    }
+
+    @Override
+    public void messageArrived(String topic, MqttMessage message) {
+        final String data = new String(message.getPayload());
+        Log.i("Mqtt", "Mensaje recibido en el tópico " + topic + ": " + data);
+
+        runOnUiThread(() -> {
+            switch (topic) {
+                case "proximidad/1":
+                    proximidadTextView.setText("Proximidad: " + data + "m");
+                    break;
+                case "gps/1":
+                    gpsTextView.setText("GPS: " + data + "º");
+                    break;
+            }
+        });
+    }
+
+    @Override
+    public void deliveryComplete(IMqttDeliveryToken token) {
+        Log.i("Mqtt", "Mensaje entregado con éxito");
+    }
 
     private void buscarEstacion() {
         String nombreBuscado = editTextBuscarEstacion.getText().toString().trim();
@@ -141,7 +201,6 @@ public class AdminActivity extends AppCompatActivity {
                 .orderBy("nombre")
                 .startAt(nombreBuscado)
                 .endAt(nombreBuscado + "\uf8ff")
-
                 .limit(maxEstaciones);
 
         FirestoreRecyclerOptions<Estacion> options = new FirestoreRecyclerOptions.Builder<Estacion>()
@@ -270,15 +329,5 @@ public class AdminActivity extends AppCompatActivity {
         int maxEstaciones = Integer.parseInt(preferences.getString("max_estaciones", "20"));
 
         actualizarEstacionesConLimite(maxEstaciones);
-
-        Intent intent = new Intent(this, MqttService.class);
-        startService(intent);
     }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        unregisterReceiver(mqttReceiver);
-    }
-
 }
