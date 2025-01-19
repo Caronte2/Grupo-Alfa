@@ -2,7 +2,7 @@
   "project_info": {
     "project_number": "9519272491",
     "project_id": "zapstation-e9447",
-    "storage_bucket": "zapstation-e9447.appspot.com"
+    "storage_bucket": "zapstation-e9447.firebasestorage.app"
   },
   "client": [
     {
@@ -14,11 +14,27 @@
       },
       "oauth_client": [
         {
+          "client_id": "9519272491-9sqq9qaa972so723savvp1jgilr24v6j.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zapstation",
+            "certificate_hash": "11cea6d87822ec958bed1ca85fb765012b019ad5"
+          }
+        },
+        {
           "client_id": "9519272491-ceuamtbrtpthsah5f6liev2im4cghac1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.example.zapstation",
             "certificate_hash": "799fa37b2247715c69a8f88442d450d4439122b7"
+          }
+        },
+        {
+          "client_id": "9519272491-lr4549a68j2mjjmijfr1n6m0qg6ri4kd.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.zapstation",
+            "certificate_hash": "22675fb09493222f19e0ad96be1433b38e048bad"
           }
         },
         {

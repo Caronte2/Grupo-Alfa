@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".presentation.MainActivity">
 
     <ScrollView
         android:id="@+id/contenedor"
@@ -68,6 +68,7 @@
         android:layout_height="25dp"
         app:layout_constraintStart_toEndOf="@+id/imagen"
         app:layout_constraintTop_toTopOf="@+id/imagen"
+        android:drawableTint="@color/icon_color"
         app:srcCompat="@drawable/user" />
 
     <ImageView
@@ -77,6 +78,7 @@
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toEndOf="@+id/imagen"
         app:layout_constraintTop_toBottomOf="@+id/imageView2"
+        android:drawableTint="@color/icon_color"
         app:srcCompat="@drawable/mail" />
 
     <ImageView
@@ -86,6 +88,7 @@
         android:layout_marginTop="5dp"
         app:layout_constraintStart_toEndOf="@+id/imagen"
         app:layout_constraintTop_toBottomOf="@+id/imageView4"
+        android:drawableTint="@color/icon_color"
         app:srcCompat="@drawable/uid" />
 
             <ImageView
@@ -96,6 +99,7 @@
                 android:layout_marginEnd="10dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:drawableTint="@color/icon_color"
                 app:srcCompat="@drawable/log_out" />
 
     <Button
@@ -151,18 +155,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imagen" />
 
-    <ImageView
-        android:id="@+id/imageView3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="5dp"
-        app:layout_constraintBottom_toBottomOf="@+id/textView2"
-        app:layout_constraintStart_toEndOf="@+id/textView2"
-        app:layout_constraintTop_toTopOf="@+id/textView2"
-        app:srcCompat="@drawable/monedero" />
+            <ImageView
+                android:id="@+id/imageView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                app:layout_constraintStart_toEndOf="@+id/textView2"
+                app:layout_constraintTop_toTopOf="@+id/textView2"
+                android:drawableTint="@color/icon_color"
+                app:srcCompat="@drawable/monedero" />
 
     <TextView
-        android:id="@+id/textView16"
+        android:id="@+id/saldo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="5dp"
@@ -194,7 +199,7 @@
         app:layout_constraintTop_toBottomOf="@+id/acercaDe" />
 
     <Button
-        android:id="@+id/button4"
+        android:id="@+id/anyadirTarjateCredito"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -207,7 +212,7 @@
         app:layout_constraintTop_toBottomOf="@+id/cambiarContrasenya" />
 
     <Button
-        android:id="@+id/button5"
+        android:id="@+id/anyadirSaldo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
@@ -215,9 +220,9 @@
         android:text="Añadir saldo al monedero"
         android:textColor="#000000"
         app:cornerRadius="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/button4"
-        app:layout_constraintStart_toStartOf="@+id/button4"
-        app:layout_constraintTop_toBottomOf="@+id/button4" />
+        app:layout_constraintEnd_toEndOf="@+id/anyadirTarjateCredito"
+        app:layout_constraintStart_toStartOf="@+id/anyadirTarjateCredito"
+        app:layout_constraintTop_toBottomOf="@+id/anyadirTarjateCredito" />
 
     <Button
         android:id="@+id/button6"
@@ -228,9 +233,9 @@
         android:text="Ver historial de pagos"
         android:textColor="#000000"
         app:cornerRadius="10dp"
-        app:layout_constraintEnd_toEndOf="@+id/button5"
-        app:layout_constraintStart_toStartOf="@+id/button5"
-        app:layout_constraintTop_toBottomOf="@+id/button5" />
+        app:layout_constraintEnd_toEndOf="@+id/anyadirSaldo"
+        app:layout_constraintStart_toStartOf="@+id/anyadirSaldo"
+        app:layout_constraintTop_toBottomOf="@+id/anyadirSaldo" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
