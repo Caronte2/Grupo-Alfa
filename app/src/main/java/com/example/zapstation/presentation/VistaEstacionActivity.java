@@ -41,7 +41,7 @@ public class VistaEstacionActivity extends AppCompatActivity implements MqttCall
     private ImageView foto;
     private TextView proximidadTextView, gpsTextView;
     private MqttClient mqttClient;
-    private final String serverUri = "tcp://192.168.43.105:1883"; // Configura tu servidor MQTT
+    private final String serverUri = "tcp://192.168.85.162:1883"; // Configura tu servidor MQTT
     private final String topicProximidad = "proximidad/1";
     private final String topicGps = "gps/1";
     private final String clientId = "ZapStationAdmin";
