@@ -1,7 +1,9 @@
 package com.example.zapstation.presentation;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,6 +23,7 @@ import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.zapstation.MqttService;
 import com.example.zapstation.R;
 import com.example.zapstation.data.EstacionAdapter;
 import com.example.zapstation.model.Estacion;
@@ -49,6 +52,10 @@ public class AdminActivity extends AppCompatActivity {
 
         proximidadTextView = findViewById(R.id.proximidadTextView);
         gpsTextView = findViewById(R.id.gpsTextView);
+
+        // Registrar el BroadcastReceiver
+        IntentFilter filter = new IntentFilter("com.example.zapstation.MQTT_UPDATE");
+        registerReceiver(mqttReceiver, filter);
 
         //No me gusta el modo noche
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -98,17 +105,23 @@ public class AdminActivity extends AppCompatActivity {
         });
     }
 
-    public static void actualizarMqtt(Context context) {
-        // Recuperar datos de MQTT desde SharedPreferences
-        SharedPreferences sharedPreferences = context.getSharedPreferences("MqttData", Context.MODE_PRIVATE);
-        String proximidad = sharedPreferences.getString("proximidad", "No disponible");
-        String gps = sharedPreferences.getString("gps", "No disponible");
+    private final BroadcastReceiver mqttReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && "com.example.zapstation.MQTT_UPDATE".equals(intent.getAction())) {
+                // Recuperar los datos de SharedPreferences
+                SharedPreferences sharedPreferences = context.getSharedPreferences("MqttData", Context.MODE_PRIVATE);
+                String proximidad = sharedPreferences.getString("proximidad", "No disponible");
+                String gps = sharedPreferences.getString("gps", "No disponible");
 
+                // Actualizar la UI con los datos recibidos
+                proximidadTextView.setText("Proximidad: " + proximidad + "m");
+                gpsTextView.setText("GPS: " + gps + "°");
 
-        AdminActivity activity = (AdminActivity) context;
-        activity.proximidadTextView.setText("Proximidad: " + proximidad + "m");
-        activity.gpsTextView.setText("GPS: " + gps + "º");
-    }
+                Log.d("AdminActivity", "Datos recibidos: Proximidad=" + proximidad + ", GPS=" + gps);
+            }
+        }
+    };
 
     private void buscarEstacion() {
         String nombreBuscado = editTextBuscarEstacion.getText().toString().trim();
@@ -257,5 +270,15 @@ public class AdminActivity extends AppCompatActivity {
         int maxEstaciones = Integer.parseInt(preferences.getString("max_estaciones", "20"));
 
         actualizarEstacionesConLimite(maxEstaciones);
+
+        Intent intent = new Intent(this, MqttService.class);
+        startService(intent);
     }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        unregisterReceiver(mqttReceiver);
+    }
+
 }
