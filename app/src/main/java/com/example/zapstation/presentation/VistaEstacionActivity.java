@@ -189,7 +189,7 @@ public class VistaEstacionActivity extends AppCompatActivity implements MqttCall
         runOnUiThread(() -> {
             switch (topic) {
                 case "proximidad/1":
-                    proximidadTextView.setText("Proximidad: " + data + "m");
+                    proximidadTextView.setText("Proximidad: " + data + "cm");
                     break;
                 case "gps/1":
                     gpsTextView.setText("GPS: " + data + "º");
