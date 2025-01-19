@@ -23,7 +23,7 @@ public class Mqtt extends Activity implements MqttCallback {
     private static final String TAG = "MqttActivity";
     private TextView proximidad, gps;
     private MqttClient mqttClient;
-    private final String serverUri = "tcp://broker.hivemq.com:1883"; //192.168.224.105 la raspberry
+    private final String serverUri = "tcp://192.168.43.105:1883"; //192.168.224.105 la raspberry
     private final String topic = "proximidad/1";
     private final String topic2 = "gps/1";
     private final String clientId = "AndroidClient";
