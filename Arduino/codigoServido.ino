@@ -5,11 +5,11 @@
 #include <TinyGPS++.h>
 #include <PubSubClient.h>
 // Pines de los LEDs
-#define ledVerde 23
-#define ledRoja 19
+#define ledVerde 2
+#define ledRoja 5
 //-----------------Configuración wifi-------------
-const char* ssid = "Rusell pagame";
-const char* password = "123456789";
+const char* ssid = "Rusell pagame"; // SSID del wifi
+const char* password = "123456789"; //Contra del wifi
 //------------------Declaro udp---------------------
 AsyncUDP udp;
 //Formato json
@@ -37,13 +37,14 @@ double longitud;
 //distancia
 int distancia;
 //----------------------------------MQTT-----------------------------------------------
-const char *mqtt_server = "192.168.224.105";
+const char *mqtt_server = "192.168.8.105";
 const int mqtt_port = 1883; 
 WiFiClient espClient;
 PubSubClient client(espClient);
 //char msg[50];
 //char msg2[50];
-String msg;
+String msg_distancia;
+String msg_gps;
 
 //--------------------------------------------------------------------------------------------
 //                                    Configurar udp
@@ -68,6 +69,8 @@ void encenderLed(){
 void setup() {
   M5.begin();
   Serial.begin(115200);
+  //para inicializar random
+  randomSeed(analogRead(0));
   //formato de texto en el m5stack
   M5.Lcd.setTextSize(3);
   M5.Lcd.setCursor(10, 10);
@@ -149,16 +152,21 @@ void loop() {
   distancia = jsonBufferRecv["Distancia"];
   encenderLed();
   sensorGps();
-  msg = "distancia: " + String(distancia) + " latitud: " + String(latitud, 6) + " longitud: " + String(longitud, 6);
-  client.publish("prueba/1", msg.c_str());
+  //IF para falsear datos
+  if(longitud == 0 && latitud == 0){
+    msg_distancia = String(distancia);
+    msg_gps = String(random(-90,90), 6) + "º, " + String(random(-180,180), 6);
+    client.publish("proximidad/1", msg_distancia.c_str());
+    client.publish("gps/1", msg_gps.c_str());
+  }else{
+    msg_distancia = String(distancia);
+    msg_gps = String(latitud, 6) + String(longitud, 6);
+    client.publish("proximidad/1", msg_distancia.c_str());
+    client.publish("gps/1", msg_gps.c_str());
+  }
+    
+  //----------------------
   M5.Lcd.setCursor(10, 100);
-  M5.Lcd.println(msg);
-  //snprintf(msg, sizeof(msg), "{\"distancia\": %d}", distancia);
-  //M5.Lcd.println(msg);
-  //client.publish("prueba/distancia", msg);
-  //String localizacion = String(gps.location.lat(), 6) + ", " + String(gps.location.lng(), 6);
-  //snprintf (msg2, 75, "Localización: %s", localizacion.c_str);
-  //client.publish("prueba/localizar", msg2);
   delay(2000);
   M5.Lcd.clear();
 }
@@ -178,3 +186,4 @@ void reconnect() {
     }
   }
 }
+
