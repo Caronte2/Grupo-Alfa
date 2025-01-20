@@ -130,7 +130,12 @@ public class MapaActivity extends FragmentActivity implements OnMapReadyCallback
         mapa = googleMap;
         mapa.setMapType(GoogleMap.MAP_TYPE_NORMAL);
         mapa.getUiSettings().setZoomControlsEnabled(true);
-        mapa.setMyLocationEnabled(true);
+
+        if (ActivityCompat.checkSelfPermission(this, ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            mapa.setMyLocationEnabled(true);
+        } else {
+            ActivityCompat.requestPermissions(this, new String[]{ACCESS_FINE_LOCATION}, 1);
+        }
 
         // Agraga los marcadores, ya que el mapa está listo
         cargarEstaciones();
